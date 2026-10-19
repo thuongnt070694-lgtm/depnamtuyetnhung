@@ -37,9 +37,13 @@ window.addEventListener('storage', async () => {
 
 // Tải và áp dụng cấu hình ảnh Banner & Xưởng da
 async function applyHomepageConfig() {
-  if (typeof loadHomepageConfig !== 'function') return;
-  const config = await loadHomepageConfig();
-  if (!config) return;
+  let config = null;
+  if (typeof loadHomepageConfig === 'function') {
+    config = await loadHomepageConfig();
+  }
+  if (!config && typeof HOMEPAGE_CONFIG !== 'undefined') {
+    config = HOMEPAGE_CONFIG;
+  }
 
   const heroImg = document.getElementById('hero-featured-img');
   const heroName = document.getElementById('hero-featured-name');
@@ -48,12 +52,26 @@ async function applyHomepageConfig() {
   const story1 = document.getElementById('story-img-1');
   const story2 = document.getElementById('story-img-2');
 
-  if (heroImg && config.heroImage) heroImg.src = config.heroImage;
-  if (heroName && config.heroTitle) heroName.innerText = config.heroTitle;
-  if (heroPrice && config.heroPrice) heroPrice.innerText = formatCurrency(config.heroPrice);
-  if (heroOrigPrice && config.heroOriginalPrice) heroOrigPrice.innerText = formatCurrency(config.heroOriginalPrice);
-  if (story1 && config.storyImage1) story1.src = config.storyImage1;
-  if (story2 && config.storyImage2) story2.src = config.storyImage2;
+  const isCustomHero = config && config.heroImage && !config.heroImage.includes('photo-1603808033192-082d6919d3e1');
+
+  if (isCustomHero) {
+    if (heroImg && config.heroImage) heroImg.src = config.heroImage;
+    if (heroName && config.heroTitle) heroName.innerText = config.heroTitle;
+    if (heroPrice && config.heroPrice) heroPrice.innerText = formatCurrency(config.heroPrice);
+    if (heroOrigPrice && config.heroOriginalPrice) heroOrigPrice.innerText = formatCurrency(config.heroOriginalPrice);
+  } else if (loadedProducts && loadedProducts.length > 0 && loadedProducts[0].images && loadedProducts[0].images.length > 0) {
+    // Tự động lấy ảnh Dép Da Thật của mẫu dép đầu tiên đưa lên Banner
+    const p1 = loadedProducts[0];
+    if (heroImg && p1.images[0]) heroImg.src = p1.images[0];
+    if (heroName) heroName.innerText = p1.name;
+    if (heroPrice) heroPrice.innerText = formatCurrency(p1.price);
+    if (heroOrigPrice) heroOrigPrice.innerText = formatCurrency(p1.originalPrice || p1.price);
+  }
+
+  if (config) {
+    if (story1 && config.storyImage1) story1.src = config.storyImage1;
+    if (story2 && config.storyImage2) story2.src = config.storyImage2;
+  }
 }
 
 // Format tiền tệ Việt Nam (VNĐ)

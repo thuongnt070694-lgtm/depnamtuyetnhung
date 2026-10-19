@@ -28,23 +28,34 @@
         <button onclick="openProductModal()" class="px-5 py-2.5 rounded-xl btn-leather-primary font-bold text-xs flex items-center gap-1.5 shadow-sm">
           <span>+ Thêm Mẫu Dép Mới</span>
         </button>
+        <button onclick="publishDirectlyToGitHub()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-700 to-green-600 hover:from-emerald-800 hover:to-green-700 text-white font-extrabold text-xs flex items-center gap-2 shadow-md transition-all hover:scale-105">
+          <span>🚀 Xuất Bản Lên Web (1-Click)</span>
+        </button>
       </div>
     </div>
 
     <!-- KHUNG HƯỚNG DẪN ĐỒNG BỘ CHO KHÁCH & ĐIỆN THOẠI KHÁC XEM -->
-    <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300/80 rounded-2xl p-5 mb-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-emerald-50 via-amber-50 to-orange-50 border-2 border-emerald-500/60 rounded-2xl p-5 mb-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
       <div class="space-y-1">
         <div class="flex items-center gap-2">
-          <span class="text-base">🚀</span>
-          <h4 class="font-extrabold text-amber-950 text-sm">Cách để người khác và điện thoại xem được ảnh mới (Đồng bộ lên Vercel):</h4>
+          <span class="px-2 py-0.5 rounded bg-emerald-700 text-white font-black text-[10px] uppercase tracking-wider">Tự Động 100%</span>
+          <h4 class="font-extrabold text-emerald-950 text-sm">Xuất Bản Lên Vercel Để Khách Xem Được Ảnh Mới (Không Cần Tải File):</h4>
         </div>
         <p class="text-xs text-stone-600 leading-relaxed max-w-3xl">
-          Khi sửa trên trang này, dữ liệu mới lưu trên máy tính bạn. Để người khác xem qua link <code class="bg-white px-1.5 py-0.5 rounded text-amber-900 font-bold border border-amber-200">depnamtuyetnhung.vercel.app</code> cũng thấy ảnh mới: Bấm nút <strong>"Tải File products.js"</strong> ➔ chép đè vào <code class="bg-white px-1.5 py-0.5 rounded text-amber-900 font-bold border border-amber-200">assets/js/</code> ➔ chạy <code class="bg-white px-1.5 py-0.5 rounded text-amber-900 font-bold border border-amber-200">push-to-github.bat</code>.
+          Khi sửa xong, chỉ cần bấm nút <strong>"🚀 Xuất Bản Lên Web (1-Click)"</strong>. Hệ thống sẽ tự động gửi dữ liệu lên GitHub và Vercel cập nhật sau 20 giây cho mọi điện thoại cùng thấy. Không cần tải file hay chạy lệnh gì nữa!
         </p>
       </div>
-      <button onclick="exportProductsFile()" class="px-5 py-3 bg-amber-900 hover:bg-amber-950 text-white font-bold text-xs rounded-xl shadow-md whitespace-nowrap flex items-center gap-2 transition-all flex-shrink-0">
-        <span>📥 Tải File products.js Mới</span>
-      </button>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button onclick="publishDirectlyToGitHub()" class="px-5 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs rounded-xl shadow-lg whitespace-nowrap flex items-center gap-2 transition-all hover:scale-105">
+          <span>🚀 Xuất Bản Lên Web (1-Click)</span>
+        </button>
+        <button onclick="openGitHubTokenModal()" class="p-3 bg-white hover:bg-stone-50 border border-stone-300 text-stone-700 font-bold text-xs rounded-xl shadow-xs transition-colors" title="Cài đặt GitHub Token">
+          <span>⚙️ Token</span>
+        </button>
+        <button onclick="exportProductsFile()" class="px-3.5 py-3 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold text-xs rounded-xl shadow-xs transition-colors" title="Tải file dự phòng">
+          <span>📥 Tải File</span>
+        </button>
+      </div>
     </div>
 
     <!-- TABS CHUYỂN ĐỔI CHỨC NĂNG -->
@@ -441,6 +452,68 @@
     </div>
   </div>
 
+  <!-- MODAL GITHUB TOKEN SETUP (1-CLICK PUBLISH) -->
+  <div id="github-token-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative">
+      <button onclick="closeGitHubTokenModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 font-bold text-lg">✕</button>
+      
+      <div class="flex items-center gap-2.5 mb-2">
+        <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800 text-lg font-bold">🔑</span>
+        <h3 class="text-xl font-black text-stone-900 font-serif-heading">Kết Nối Xuất Bản Tự Động 1-Click</h3>
+      </div>
+      <p class="text-xs text-stone-500 mb-4 leading-relaxed">
+        Chỉ cần dán mã GitHub Token <strong>1 lần duy nhất</strong>. Từ lần sau, mỗi khi thêm ảnh hoặc đổi giá, bạn chỉ cần bấm nút <em>"🚀 Xuất Bản Lên Web (1-Click)"</em> là Vercel tự động cập nhật cho mọi người xem ngay!
+      </p>
+
+      <div class="space-y-4 text-xs">
+        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 space-y-2">
+          <p class="font-bold text-amber-950 flex items-center gap-1.5 text-xs">
+            <span>👉 3 bước nhanh để lấy mã Token (Mất 20 giây):</span>
+          </p>
+          <ol class="list-decimal list-inside space-y-2 text-stone-700 pl-1 leading-relaxed">
+            <li>
+              Bấm vào link: 
+              <a href="https://github.com/settings/tokens/new?scopes=repo&description=DepNamTuyetNhungAdmin" target="_blank" class="text-blue-700 font-bold underline hover:text-blue-900">
+                Tạo mã Token trên GitHub tại đây ➔
+              </a> (đã tích sẵn quyền repo).
+            </li>
+            <li>Kéo xuống cuối trang GitHub đó và bấm nút xanh <strong>"Generate token"</strong>.</li>
+            <li>Sao chép dòng mã hiển thị ra (bắt đầu bằng <code class="font-bold text-amber-900 bg-white px-1.5 py-0.5 rounded border border-amber-200">ghp_...</code>) rồi dán vào ô bên dưới:</li>
+          </ol>
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-700 mb-1.5">Dán mã GitHub Token vào đây:</label>
+          <input 
+            type="password" 
+            id="gh-token-input" 
+            placeholder="Dán mã ghp_... vào đây" 
+            class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 font-mono text-xs focus:outline-none focus:border-emerald-700"
+          />
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <button 
+            type="button" 
+            onclick="clearSavedToken()" 
+            id="btn-clear-token" 
+            class="text-[11px] text-stone-400 hover:text-rose-600 underline hidden"
+          >
+            Xóa token đã lưu
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" onclick="closeGitHubTokenModal()" class="px-4 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold hover:bg-stone-50">
+              Hủy
+            </button>
+            <button type="button" onclick="saveTokenAndPublish()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-md flex items-center gap-1.5">
+              <span>Lưu & Xuất Bản Ngay 🚀</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION -->
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2"></div>
 
@@ -563,6 +636,16 @@
         const saved = await loadHomepageConfig();
         if (saved) {
           homepageConfig = { ...homepageConfig, ...saved };
+        }
+      }
+
+      // Nếu chưa có ảnh banner hoặc vẫn là ảnh sneaker unsplash cũ, tự động chọn ảnh dép da thật TN01
+      if (!homepageConfig.heroImage || homepageConfig.heroImage.includes('photo-1603808033192-082d6919d3e1')) {
+        if (productsList.length > 0 && productsList[0].images && productsList[0].images[0]) {
+          homepageConfig.heroImage = productsList[0].images[0];
+          homepageConfig.heroTitle = productsList[0].name;
+          homepageConfig.heroPrice = productsList[0].price;
+          homepageConfig.heroOriginalPrice = productsList[0].originalPrice || productsList[0].price;
         }
       }
 
@@ -991,6 +1074,164 @@ const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
       setTimeout(() => {
         toast.remove();
       }, 3500);
+    }
+
+    // ================= XUẤT BẢN 1-CLICK LÊN GITHUB & VERCEL =================
+    function utf8ToBase64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binary = '';
+      const len = bytes.byteLength;
+      const chunk = 0x8000;
+      for (let i = 0; i < len; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + chunk, len)));
+      }
+      return btoa(binary);
+    }
+
+    function openGitHubTokenModal() {
+      const modal = document.getElementById('github-token-modal');
+      const input = document.getElementById('gh-token-input');
+      const clearBtn = document.getElementById('btn-clear-token');
+      const saved = localStorage.getItem('tuyetnhung_gh_token');
+      if (saved) {
+        input.value = saved;
+        clearBtn.classList.remove('hidden');
+      } else {
+        input.value = '';
+        clearBtn.classList.add('hidden');
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function closeGitHubTokenModal() {
+      document.getElementById('github-token-modal').classList.add('hidden');
+    }
+
+    function clearSavedToken() {
+      if (confirm('Bạn có muốn xóa mã Token GitHub đã lưu trên trình duyệt này không?')) {
+        localStorage.removeItem('tuyetnhung_gh_token');
+        document.getElementById('gh-token-input').value = '';
+        document.getElementById('btn-clear-token').classList.add('hidden');
+        showToast('Đã xóa mã Token khỏi trình duyệt!', 'info');
+      }
+    }
+
+    async function saveTokenAndPublish() {
+      const input = document.getElementById('gh-token-input');
+      const token = input.value.trim();
+      if (!token) {
+        showToast('Vui lòng dán mã GitHub Token!', 'error');
+        return;
+      }
+      localStorage.setItem('tuyetnhung_gh_token', token);
+      closeGitHubTokenModal();
+      await publishDirectlyToGitHub();
+    }
+
+    async function publishDirectlyToGitHub() {
+      const token = localStorage.getItem('tuyetnhung_gh_token');
+      if (!token) {
+        openGitHubTokenModal();
+        return;
+      }
+
+      showToast('⏳ Đang kết nối GitHub và xuất bản lên Vercel...', 'info');
+
+      const repo = 'thuongnt070694-lgtm/depnamtuyetnhung';
+      const filePath = 'assets/js/products.js';
+      const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+
+      // Đọc các giá trị trong form Banner & Xưởng da
+      if (document.getElementById('banner-img-url')) {
+        const bImg = document.getElementById('banner-img-url').value.trim();
+        if (bImg) homepageConfig.heroImage = bImg;
+        const bName = document.getElementById('banner-name').value.trim();
+        if (bName) homepageConfig.heroTitle = bName;
+        const bPrice = parseInt(document.getElementById('banner-price').value);
+        if (bPrice) homepageConfig.heroPrice = bPrice;
+        const bOrigPrice = parseInt(document.getElementById('banner-original-price').value);
+        if (bOrigPrice) homepageConfig.heroOriginalPrice = bOrigPrice;
+
+        const s1 = document.getElementById('story1-img-url').value.trim();
+        if (s1) homepageConfig.storyImage1 = s1;
+        const s2 = document.getElementById('story2-img-url').value.trim();
+        if (s2) homepageConfig.storyImage2 = s2;
+      }
+
+      // Nếu chưa có ảnh banner hoặc vẫn là ảnh giày sneaker unsplash cũ, tự động chọn ảnh dép da thật TN01
+      if (!homepageConfig.heroImage || homepageConfig.heroImage.includes('photo-1603808033192-082d6919d3e1')) {
+        if (productsList.length > 0 && productsList[0].images && productsList[0].images[0]) {
+          homepageConfig.heroImage = productsList[0].images[0];
+          homepageConfig.heroTitle = productsList[0].name;
+          homepageConfig.heroPrice = productsList[0].price;
+          homepageConfig.heroOriginalPrice = productsList[0].originalPrice || productsList[0].price;
+        }
+      }
+
+      const code = `/**
+ * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Tự động xuất bản từ Trang Quản Trị)
+ */
+const PRODUCTS_DATA = ${JSON.stringify(productsList, null, 2)};
+
+const CATEGORIES = ${JSON.stringify(CATEGORIES, null, 2)};
+
+const STORE_INFO = ${JSON.stringify(STORE_INFO, null, 2)};
+
+const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
+`;
+
+      try {
+        // 1. Lấy SHA hiện tại của file
+        const getRes = await fetch(apiUrl, {
+          headers: {
+            'Authorization': `token ${token.trim()}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+
+        let sha = null;
+        if (getRes.ok) {
+          const data = await getRes.json();
+          sha = data.sha;
+        } else if (getRes.status === 401 || getRes.status === 403) {
+          showToast('Mã GitHub Token không hợp lệ hoặc đã hết hạn! Vui lòng dán lại mã mới.', 'error');
+          openGitHubTokenModal();
+          return;
+        }
+
+        // 2. Ghi đè file products.js mới lên GitHub
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token.trim()}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Cập nhật sản phẩm & ảnh dép da thật từ Trang Quản Trị [${new Date().toLocaleString('vi-VN')}]`,
+            content: utf8ToBase64(code),
+            sha: sha || undefined,
+            branch: 'main'
+          })
+        });
+
+        if (putRes.ok) {
+          showToast('🎉 XUẤT BẢN THÀNH CÔNG! Vercel đang cập nhật cho mọi người...', 'success');
+          alert('🎉 XUẤT BẢN THÀNH CÔNG!\\n\\nToàn bộ ảnh dép da thật và giá mới đã được gửi thẳng lên GitHub.\\nVercel đang tự động triển khai cập nhật website.\\n\\nSau khoảng 20 - 30 giây, bất kỳ ai truy cập depnamtuyetnhung.vercel.app trên điện thoại hay máy tính khác sẽ thấy ngay hình ảnh mới!');
+        } else {
+          const errData = await putRes.json();
+          console.error('Lỗi GitHub API:', errData);
+          if (putRes.status === 401 || putRes.status === 403) {
+            showToast('Mã Token không có quyền ghi repository! Hãy tạo token có tích quyền "repo".', 'error');
+            openGitHubTokenModal();
+          } else {
+            showToast('Lỗi xuất bản: ' + (errData.message || 'Không thể ghi file'), 'error');
+          }
+        }
+      } catch (err) {
+        console.error('Lỗi kết nối GitHub API:', err);
+        showToast('Lỗi kết nối mạng khi gọi GitHub API!', 'error');
+      }
     }
   </script>
 
