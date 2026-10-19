@@ -25,6 +25,9 @@
         <a href="index.html" target="_blank" class="px-4 py-2.5 rounded-xl border border-amber-900 text-amber-900 font-bold text-xs hover:bg-amber-50 flex items-center gap-1.5 transition-colors">
           <span>👁️ Xem Trang Cửa Hàng</span>
         </a>
+        <button onclick="openCategoryManagerModal()" class="px-4 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50 flex items-center gap-1.5 transition-colors shadow-2xs">
+          <span>🏷️ Quản Lý Danh Mục</span>
+        </button>
         <button onclick="openProductModal()" class="px-5 py-2.5 rounded-xl btn-leather-primary font-bold text-xs flex items-center gap-1.5 shadow-sm">
           <span>+ Thêm Mẫu Dép Mới</span>
         </button>
@@ -85,8 +88,13 @@
       <!-- BẢNG DANH SÁCH SẢN PHẨM -->
       <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden mb-6">
         
-        <div class="p-4 border-b border-stone-100 flex items-center justify-between bg-stone-50">
-          <h3 class="font-bold text-stone-800 text-sm" id="table-title">Danh Sách Dép Nam Đang Bán</h3>
+        <div class="p-4 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-stone-50">
+          <div class="flex items-center gap-3">
+            <h3 class="font-bold text-stone-800 text-sm" id="table-title">Danh Sách Dép Nam Đang Bán</h3>
+            <select id="filter-admin-category" onchange="filterAdminTableByCategory(this.value)" class="px-2.5 py-1 rounded-lg border border-stone-300 text-xs font-semibold bg-white text-stone-700 focus:outline-none focus:border-amber-800">
+              <option value="all">🔍 Tất cả danh mục</option>
+            </select>
+          </div>
           <button onclick="resetToDefaultData()" class="text-xs text-stone-500 hover:text-red-600 underline">
             Khôi phục danh sách mẫu gốc
           </button>
@@ -320,13 +328,35 @@
         <!-- Danh mục & Tag nổi bật -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold text-stone-700 mb-1">Danh Mục Dép</label>
-            <select id="edit-category" class="w-full px-3 py-2.5 rounded-xl border border-stone-300 font-medium focus:outline-none focus:border-amber-800 bg-white">
-              <option value="quai-ngang">Dép Quai Ngang</option>
-              <option value="xongon">Dép Kẹp (Xỏ Ngón)</option>
-              <option value="sandal">Sandal / Quai Hậu</option>
-              <option value="suc-da">Dép Sục Da Nam</option>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block font-bold text-stone-700">Danh Mục Sản Phẩm</label>
+              <button type="button" onclick="toggleQuickNewCategory()" class="text-[11px] font-bold text-amber-900 hover:underline">
+                + Thêm danh mục mới
+              </button>
+            </div>
+            <select id="edit-category" class="w-full px-3 py-2.5 rounded-xl border border-stone-300 font-medium focus:outline-none focus:border-amber-800 bg-white text-xs">
+              <!-- Rendered by JS -->
             </select>
+            
+            <div id="quick-new-category-box" class="hidden mt-2 p-2.5 bg-amber-50 rounded-xl border border-amber-300">
+              <label class="block font-bold text-[10px] text-amber-950 uppercase mb-1">Tên danh mục mới muốn tạo:</label>
+              <div class="flex gap-1.5">
+                <input 
+                  type="text" 
+                  id="quick-new-category-input" 
+                  placeholder="VD: Giày Lười Da, Ví Da Nam..." 
+                  class="flex-1 px-3 py-1.5 rounded-lg border border-amber-300 text-xs focus:outline-none focus:border-amber-800 bg-white"
+                  onkeydown="if(event.key === 'Enter'){ event.preventDefault(); confirmQuickNewCategory(); }"
+                />
+                <button 
+                  type="button" 
+                  onclick="confirmQuickNewCategory()" 
+                  class="px-3 py-1.5 bg-amber-900 hover:bg-amber-950 text-white font-bold text-xs rounded-lg whitespace-nowrap"
+                >
+                  Tạo Ngay
+                </button>
+              </div>
+            </div>
           </div>
           <div>
             <label class="block font-bold text-stone-700 mb-1">Huy Hiệu (Tag nổi bật)</label>
@@ -514,6 +544,57 @@
     </div>
   </div>
 
+  <!-- MODAL QUẢN LÝ DANH MỤC SẢN PHẨM -->
+  <div id="category-manager-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+      <button onclick="closeCategoryManagerModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 font-bold text-lg">✕</button>
+      
+      <div class="flex items-center gap-2.5 mb-2">
+        <span class="p-2 rounded-xl bg-amber-100 text-amber-900 text-lg font-bold">🏷️</span>
+        <h3 class="text-xl font-black text-stone-900 font-serif-heading">Quản Lý Danh Mục Sản Phẩm</h3>
+      </div>
+      <p class="text-xs text-stone-500 mb-4 leading-relaxed">
+        Tạo thêm các danh mục mới để phân loại các sản phẩm khác (ví dụ: Giày Lười Da, Ví Nam, Dép Đế Trấu...).
+      </p>
+
+      <!-- Form thêm danh mục mới -->
+      <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 mb-4">
+        <label class="block font-bold text-xs text-amber-950 mb-1.5">Tạo Danh Mục Mới:</label>
+        <div class="flex gap-2">
+          <input 
+            type="text" 
+            id="manager-new-category-input" 
+            placeholder="VD: Giày Lười Da, Ví Nam, Thắt Lưng..." 
+            class="flex-1 px-3.5 py-2.5 rounded-xl border border-amber-300 text-xs font-medium focus:outline-none focus:border-amber-900 bg-white"
+            onkeydown="if(event.key === 'Enter'){ event.preventDefault(); addNewCategoryFromManager(); }"
+          />
+          <button 
+            type="button" 
+            onclick="addNewCategoryFromManager()" 
+            class="px-4 py-2.5 bg-amber-900 hover:bg-amber-950 text-white font-bold text-xs rounded-xl whitespace-nowrap shadow-xs"
+          >
+            + Thêm Mới
+          </button>
+        </div>
+      </div>
+
+      <!-- Danh sách các danh mục hiện có -->
+      <div>
+        <label class="block font-bold text-xs text-stone-700 mb-2">Danh Sách Các Danh Mục Đang Có:</label>
+        <div class="space-y-2 max-h-60 overflow-y-auto pr-1" id="category-manager-list">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <div class="pt-4 mt-4 border-t border-stone-200 flex justify-between items-center text-xs">
+        <span class="text-stone-400">Tự động đồng bộ khi xuất bản lên web.</span>
+        <button type="button" onclick="closeCategoryManagerModal()" class="px-5 py-2 rounded-xl bg-stone-900 text-white font-bold hover:bg-stone-800">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION -->
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2"></div>
 
@@ -523,6 +604,15 @@
   <script>
     let productsList = [];
     let currentEditingImages = [];
+
+    // Danh mục sản phẩm mặc định
+    const DEFAULT_CATEGORIES = [
+      { id: "quai-ngang", name: "Dép Quai Ngang" },
+      { id: "xongon", name: "Dép Kẹp (Xỏ Ngón)" },
+      { id: "sandal", name: "Sandal & Quai Hậu" },
+      { id: "suc-da", name: "Dép Sục Da Nam" }
+    ];
+    let categoriesList = [];
 
     // Cấu hình trang chủ mặc định
     let homepageConfig = {
@@ -537,8 +627,239 @@
     // Khởi động trang quản trị
     document.addEventListener('DOMContentLoaded', async () => {
       await loadProductsData();
+      initCategoriesList();
       await loadHomepageDataIntoAdmin();
     });
+
+    // ================= LOGIC QUẢN LÝ DANH MỤC SẢN PHẨM =================
+    function initCategoriesList() {
+      const savedCats = localStorage.getItem('tuyetnhung_custom_categories');
+      if (savedCats) {
+        try {
+          categoriesList = JSON.parse(savedCats);
+        } catch(e) {
+          categoriesList = [];
+        }
+      }
+
+      if (!categoriesList || categoriesList.length === 0) {
+        if (typeof CATEGORIES !== 'undefined' && Array.isArray(CATEGORIES)) {
+          categoriesList = CATEGORIES.filter(c => c.id !== 'all').map(c => ({ id: c.id, name: c.name }));
+        } else {
+          categoriesList = [...DEFAULT_CATEGORIES];
+        }
+      }
+
+      // Quét bổ sung danh mục từ danh sách sản phẩm nếu có danh mục mới
+      if (productsList && productsList.length > 0) {
+        productsList.forEach(p => {
+          if (p.category && !categoriesList.some(c => c.id === p.category)) {
+            categoriesList.push({
+              id: p.category,
+              name: p.categoryName || p.category
+            });
+          }
+        });
+      }
+
+      saveCategoriesList();
+    }
+
+    function saveCategoriesList() {
+      try {
+        localStorage.setItem('tuyetnhung_custom_categories', JSON.stringify(categoriesList));
+      } catch(e) {
+        console.warn('Lỗi lưu danh mục:', e);
+      }
+    }
+
+    function generateCategorySlug(text) {
+      if (!text) return '';
+      return text
+        .toString()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function renderCategorySelectOptions(selectedId = null) {
+      const select = document.getElementById('edit-category');
+      if (!select) return;
+      select.innerHTML = categoriesList.map(cat => `
+        <option value="${cat.id}" ${selectedId === cat.id ? 'selected' : ''}>${cat.name}</option>
+      `).join('');
+    }
+
+    function toggleQuickNewCategory() {
+      const box = document.getElementById('quick-new-category-box');
+      const input = document.getElementById('quick-new-category-input');
+      if (!box) return;
+      if (box.classList.contains('hidden')) {
+        box.classList.remove('hidden');
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      } else {
+        box.classList.add('hidden');
+      }
+    }
+
+    function confirmQuickNewCategory() {
+      const input = document.getElementById('quick-new-category-input');
+      if (!input) return;
+      const name = input.value.trim();
+      if (!name) {
+        showToast('Vui lòng nhập tên danh mục mới!', 'error');
+        return;
+      }
+
+      let slug = generateCategorySlug(name);
+      if (!slug) {
+        slug = 'danh-muc-' + Date.now();
+      }
+
+      const existing = categoriesList.find(c => c.id === slug || c.name.toLowerCase() === name.toLowerCase());
+      if (existing) {
+        renderCategorySelectOptions(existing.id);
+        document.getElementById('quick-new-category-box').classList.add('hidden');
+        input.value = '';
+        showToast(`Danh mục "${existing.name}" đã có sẵn, đã chọn vào ô!`, 'info');
+        return;
+      }
+
+      const newCat = { id: slug, name: name };
+      categoriesList.push(newCat);
+      saveCategoriesList();
+
+      renderCategorySelectOptions(newCat.id);
+      document.getElementById('quick-new-category-box').classList.add('hidden');
+      input.value = '';
+      showToast(`🎉 Đã tạo thành công danh mục mới: "${name}"!`, 'success');
+    }
+
+    function openCategoryManagerModal() {
+      initCategoriesList();
+      renderCategoryManagerList();
+      document.getElementById('category-manager-modal').classList.remove('hidden');
+    }
+
+    function closeCategoryManagerModal() {
+      document.getElementById('category-manager-modal').classList.add('hidden');
+    }
+
+    function renderCategoryManagerList() {
+      const container = document.getElementById('category-manager-list');
+      if (!container) return;
+
+      if (categoriesList.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-stone-400 text-xs">Chưa có danh mục nào.</div>`;
+        return;
+      }
+
+      container.innerHTML = categoriesList.map((cat) => {
+        const count = productsList.filter(p => p.category === cat.id).length;
+        return `
+          <div class="flex items-center justify-between p-3 bg-stone-50 hover:bg-amber-50/50 rounded-xl border border-stone-200 transition-colors">
+            <div class="space-y-0.5">
+              <div class="font-bold text-stone-900 text-xs flex items-center gap-1.5">
+                <span>🏷️ ${cat.name}</span>
+                <span class="px-2 py-0.5 bg-amber-100 text-amber-900 rounded-full text-[10px] font-extrabold">${count} sản phẩm</span>
+              </div>
+              <div class="text-[10px] text-stone-400 font-mono">Mã danh mục (slug): ${cat.id}</div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button 
+                type="button" 
+                onclick="deleteCategory('${cat.id}')" 
+                class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg transition-colors border border-rose-200"
+                title="Xóa danh mục này"
+              >
+                🗑️ Xóa
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addNewCategoryFromManager() {
+      const input = document.getElementById('manager-new-category-input');
+      if (!input) return;
+      const name = input.value.trim();
+      if (!name) {
+        showToast('Vui lòng nhập tên danh mục cần tạo!', 'error');
+        return;
+      }
+
+      let slug = generateCategorySlug(name);
+      if (!slug) slug = 'danh-muc-' + Date.now();
+
+      const existing = categoriesList.find(c => c.id === slug || c.name.toLowerCase() === name.toLowerCase());
+      if (existing) {
+        showToast(`Danh mục "${existing.name}" đã tồn tại!`, 'error');
+        return;
+      }
+
+      categoriesList.push({ id: slug, name: name });
+      saveCategoriesList();
+      renderCategoryManagerList();
+      input.value = '';
+      showToast(`🎉 Đã thêm danh mục mới "${name}" thành công!`, 'success');
+    }
+
+    function deleteCategory(catId) {
+      const cat = categoriesList.find(c => c.id === catId);
+      if (!cat) return;
+
+      const count = productsList.filter(p => p.category === catId).length;
+      if (count > 0) {
+        const confirmTransfer = confirm(`⚠️ Danh mục "${cat.name}" hiện đang có ${count} sản phẩm đang bán!\n\nNếu xóa, các sản phẩm này sẽ được chuyển tự động về danh mục "Dép Quai Ngang".\n\nBạn có chắc chắn muốn xóa không?`);
+        if (!confirmTransfer) return;
+
+        productsList.forEach(p => {
+          if (p.category === catId) {
+            p.category = 'quai-ngang';
+            p.categoryName = 'Dép Quai Ngang';
+          }
+        });
+        saveProductsData();
+        renderAdminTable();
+      } else {
+        if (!confirm(`Bạn có chắc chắn muốn xóa danh mục "${cat.name}" không?`)) return;
+      }
+
+      categoriesList = categoriesList.filter(c => c.id !== catId);
+      if (categoriesList.length === 0) {
+        categoriesList = [...DEFAULT_CATEGORIES];
+      }
+      saveCategoriesList();
+      renderCategoryManagerList();
+      showToast(`Đã xóa danh mục "${cat.name}"!`, 'info');
+    }
+
+    function getExportCategories() {
+      const exportCats = [
+        {
+          id: "all",
+          name: "Tất Cả Sản Phẩm",
+          count: productsList.length
+        }
+      ];
+      categoriesList.forEach(cat => {
+        const count = productsList.filter(p => p.category === cat.id).length;
+        exportCats.push({
+          id: cat.id,
+          name: cat.name,
+          count: count
+        });
+      });
+      return exportCats;
+    }
 
     // Chuyển tab giữa Quản lý sản phẩm và Cài đặt Banner
     function switchTab(tab) {
@@ -583,6 +904,23 @@
       return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     }
 
+    let currentAdminCategoryFilter = 'all';
+
+    function populateAdminCategoryFilter() {
+      const select = document.getElementById('filter-admin-category');
+      if (!select) return;
+      select.innerHTML = `<option value="all">🔍 Tất cả danh mục (${productsList.length})</option>` + 
+        categoriesList.map(cat => {
+          const count = productsList.filter(p => p.category === cat.id).length;
+          return `<option value="${cat.id}" ${currentAdminCategoryFilter === cat.id ? 'selected' : ''}>🏷️ ${cat.name} (${count})</option>`;
+        }).join('');
+    }
+
+    function filterAdminTableByCategory(catId) {
+      currentAdminCategoryFilter = catId;
+      renderAdminTable();
+    }
+
     // Render bảng sản phẩm
     function renderAdminTable() {
       const tbody = document.getElementById('admin-product-tbody');
@@ -590,10 +928,28 @@
       const badge = document.getElementById('tab-products-badge');
       if (!tbody) return;
 
+      populateAdminCategoryFilter();
+
+      let displayedList = productsList;
+      if (currentAdminCategoryFilter !== 'all') {
+        displayedList = productsList.filter(p => p.category === currentAdminCategoryFilter);
+      }
+
       title.innerText = `Danh Sách Dép Nam Đang Bán (${productsList.length} mẫu)`;
       if (badge) badge.innerText = productsList.length;
 
-      tbody.innerHTML = productsList.map((p, index) => {
+      if (displayedList.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="p-8 text-center text-stone-400 font-medium">
+              Không có sản phẩm nào thuộc danh mục này. Bấm <strong>"+ Thêm Mẫu Dép Mới"</strong> để đăng sản phẩm!
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = displayedList.map((p, index) => {
         const images = Array.isArray(p.images) && p.images.length > 0 ? p.images : ['assets/images/dep-tn01.jpg'];
         const mainImage = images[0];
 
@@ -781,6 +1137,10 @@
     function openProductModal(productId = null) {
       const modal = document.getElementById('product-modal');
       const heading = document.getElementById('modal-heading');
+      initCategoriesList();
+
+      const quickBox = document.getElementById('quick-new-category-box');
+      if (quickBox) quickBox.classList.add('hidden');
 
       if (productId) {
         heading.innerText = 'Chỉnh Sửa Mẫu Dép & Thêm Nhiều Ảnh';
@@ -788,7 +1148,7 @@
         if (p) {
           document.getElementById('edit-product-id').value = p.id;
           document.getElementById('edit-name').value = p.name;
-          document.getElementById('edit-category').value = p.category;
+          renderCategorySelectOptions(p.category);
           document.getElementById('edit-tag').value = p.tag || '';
           document.getElementById('edit-price').value = p.price;
           document.getElementById('edit-original-price').value = p.originalPrice || p.price;
@@ -801,7 +1161,8 @@
         heading.innerText = 'Thêm Mẫu Dép Mới';
         document.getElementById('edit-product-id').value = '';
         document.getElementById('edit-name').value = '';
-        document.getElementById('edit-category').value = 'quai-ngang';
+        const defaultCatId = categoriesList[0] ? categoriesList[0].id : 'quai-ngang';
+        renderCategorySelectOptions(defaultCatId);
         document.getElementById('edit-tag').value = 'Mẫu Mới';
         document.getElementById('edit-price').value = '';
         document.getElementById('edit-original-price').value = '';
@@ -955,12 +1316,8 @@
       const soleType = document.getElementById('edit-sole').value.trim();
       const description = document.getElementById('edit-description').value.trim();
 
-      const categoryNames = {
-        'quai-ngang': 'Dép Quai Ngang',
-        'xongon': 'Dép Kẹp (Xỏ Ngón)',
-        'sandal': 'Sandal / Quai Hậu',
-        'suc-da': 'Dép Sục Da Nam'
-      };
+      const catObj = categoriesList.find(c => c.id === category);
+      const categoryName = catObj ? catObj.name : category;
 
       if (idVal) {
         const id = parseInt(idVal);
@@ -970,7 +1327,7 @@
             ...productsList[index],
             name,
             category,
-            categoryName: categoryNames[category] || category,
+            categoryName,
             tag,
             price,
             originalPrice,
@@ -987,7 +1344,7 @@
           id: newId,
           name,
           category,
-          categoryName: categoryNames[category] || category,
+          categoryName,
           tag,
           price,
           originalPrice,
@@ -1039,12 +1396,13 @@
     }
 
     function exportProductsFile() {
+      const exportCats = getExportCategories();
       const code = `/**
  * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Đã cập nhật từ trang quản trị)
  */
 const PRODUCTS_DATA = ${JSON.stringify(productsList, null, 2)};
 
-const CATEGORIES = ${JSON.stringify(CATEGORIES, null, 2)};
+const CATEGORIES = ${JSON.stringify(exportCats, null, 2)};
 
 const STORE_INFO = ${JSON.stringify(STORE_INFO, null, 2)};
 
@@ -1168,12 +1526,13 @@ const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
         }
       }
 
+      const exportCats = getExportCategories();
       const code = `/**
  * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Tự động xuất bản từ Trang Quản Trị)
  */
 const PRODUCTS_DATA = ${JSON.stringify(productsList, null, 2)};
 
-const CATEGORIES = ${JSON.stringify(CATEGORIES, null, 2)};
+const CATEGORIES = ${JSON.stringify(exportCats, null, 2)};
 
 const STORE_INFO = ${JSON.stringify(STORE_INFO, null, 2)};
 

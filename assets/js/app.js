@@ -32,6 +32,7 @@ window.addEventListener('storage', async () => {
     loadedProducts = await loadProductsFromStorage();
     renderProducts();
   }
+  initCategories();
   await applyHomepageConfig();
 });
 
@@ -79,12 +80,43 @@ function formatCurrency(amount) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 }
 
+// Lấy danh mục đang hoạt động (kết hợp CATEGORIES gốc và các danh mục mới tạo từ quản trị)
+function getActiveCategories() {
+  let cats = typeof CATEGORIES !== 'undefined' ? [...CATEGORIES] : [];
+  try {
+    const saved = localStorage.getItem('tuyetnhung_custom_categories');
+    if (saved) {
+      const customCats = JSON.parse(saved);
+      if (Array.isArray(customCats) && customCats.length > 0) {
+        cats = [
+          {
+            id: 'all',
+            name: 'Tất Cả Sản Phẩm',
+            count: loadedProducts.length
+          }
+        ];
+        customCats.forEach(c => {
+          const count = loadedProducts.filter(p => p.category === c.id).length;
+          cats.push({
+            id: c.id,
+            name: c.name,
+            count: count
+          });
+        });
+      }
+    }
+  } catch(e) {}
+  return cats;
+}
+
 // Khởi tạo các danh mục
 function initCategories() {
   const categoryContainer = document.getElementById('category-pills');
   if (!categoryContainer) return;
 
-  categoryContainer.innerHTML = CATEGORIES.map(cat => `
+  const cats = getActiveCategories();
+
+  categoryContainer.innerHTML = cats.map(cat => `
     <button 
       onclick="filterCategory('${cat.id}')"
       class="cat-pill px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 border whitespace-nowrap
