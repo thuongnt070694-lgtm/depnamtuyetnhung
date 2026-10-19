@@ -185,6 +185,53 @@ function getFilteredProducts() {
   return list;
 }
 
+// Tạo nút bấm liên kết mua hàng từ trang khác (Facebook, Shopee, TikTok, Lazada...)
+function renderExternalLinkButton(product, isQuickView = false) {
+  if (!product || !product.externalLink) return '';
+  const text = product.externalLinkText || 'Xem & Mua Trên Trang Này';
+  const t = text.toLowerCase();
+  
+  let icon = '🔗';
+  if (t.includes('facebook') || t.includes('fb')) icon = '💬';
+  else if (t.includes('shopee')) icon = '🛍️';
+  else if (t.includes('tiktok')) icon = '🎵';
+  else if (t.includes('lazada')) icon = '🛒';
+  else if (t.includes('zalo')) icon = '💬';
+  else if (t.includes('tiki')) icon = '📦';
+  else if (t.includes('sendo')) icon = '🚚';
+
+  const display = text.includes('↗') ? text : `${text} ↗`;
+
+  if (isQuickView) {
+    return `
+      <div class="pt-2.5">
+        <a 
+          href="${product.externalLink}" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-950 border border-amber-300 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-2xs group/extlink hover:scale-[1.01]"
+        >
+          <span class="text-sm">${icon}</span>
+          <span>${display}</span>
+        </a>
+      </div>
+    `;
+  }
+
+  return `
+    <a 
+      href="${product.externalLink}" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      onclick="event.stopPropagation()"
+      class="mt-2.5 w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-950 border border-amber-300/80 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs group/extlink hover:scale-[1.01]"
+    >
+      <span class="text-sm">${icon}</span>
+      <span class="truncate">${display}</span>
+    </a>
+  `;
+}
+
 // Render lưới sản phẩm
 function renderProducts() {
   const container = document.getElementById('product-grid');
@@ -317,18 +364,7 @@ function renderProducts() {
               </button>
             </div>
 
-            ${product.externalLink ? `
-              <a 
-                href="${product.externalLink}" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                onclick="event.stopPropagation()"
-                class="mt-2.5 w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-950 border border-amber-300/80 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs group/extlink hover:scale-[1.01]"
-              >
-                <svg class="w-3.5 h-3.5 text-amber-800 group-hover/extlink:translate-x-0.5 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                <span class="truncate">${product.externalLinkText || 'Xem & Mua Trên Trang Liên Kết ↗'}</span>
-              </a>
-            ` : ''}
+            ${renderExternalLinkButton(product)}
           </div>
         </div>
       </div>
@@ -681,19 +717,7 @@ function openQuickView(productId) {
           </button>
         </div>
 
-        ${product.externalLink ? `
-          <div class="pt-2.5">
-            <a 
-              href="${product.externalLink}" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-950 border border-amber-300 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-2xs group/extlink hover:scale-[1.01]"
-            >
-              <svg class="w-4 h-4 text-amber-800 group-hover/extlink:translate-x-0.5 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-              <span>${product.externalLinkText || 'Xem & Mua Sản Phẩm Trên Trang Liên Kết (Shopee, TikTok...) ↗'}</span>
-            </a>
-          </div>
-        ` : ''}
+        ${renderExternalLinkButton(product, true)}
       </div>
     </div>
   `;
