@@ -46,6 +46,7 @@ async function applyHomepageConfig() {
     config = HOMEPAGE_CONFIG;
   }
 
+  const heroBox = document.getElementById('hero-featured-box');
   const heroImg = document.getElementById('hero-featured-img');
   const heroName = document.getElementById('hero-featured-name');
   const heroPrice = document.getElementById('hero-featured-price');
@@ -67,6 +68,41 @@ async function applyHomepageConfig() {
     if (heroName) heroName.innerText = p1.name;
     if (heroPrice) heroPrice.innerText = formatCurrency(p1.price);
     if (heroOrigPrice) heroOrigPrice.innerText = formatCurrency(p1.originalPrice || p1.price);
+  }
+
+  // Áp dụng tỉ lệ (Ratio), góc nhìn (Position), kiểu hiển thị (Fit) và màu nền (Bg)
+  if (heroBox && heroImg && config) {
+    const fit = config.heroImageFit || 'contain';
+    const ratio = config.heroImageRatio || '4/5';
+    const pos = config.heroImagePosition || 'center';
+    const bg = config.heroImageBg || 'dark';
+
+    // Tỉ lệ khung ảnh
+    heroBox.classList.remove('aspect-[4/5]', 'aspect-square', 'aspect-[4/3]', 'aspect-auto', 'min-h-[300px]');
+    if (ratio === '4/5') {
+      heroBox.classList.add('aspect-[4/5]');
+    } else if (ratio === '1/1') {
+      heroBox.classList.add('aspect-square');
+    } else if (ratio === '4/3') {
+      heroBox.classList.add('aspect-[4/3]');
+    } else if (ratio === 'auto') {
+      heroBox.classList.add('aspect-auto', 'min-h-[300px]');
+    }
+
+    // Màu nền khung
+    heroBox.classList.remove('bg-stone-900', 'bg-white', 'bg-[#24150e]');
+    if (bg === 'white') {
+      heroBox.classList.add('bg-white');
+    } else if (bg === 'amber') {
+      heroBox.classList.add('bg-[#24150e]');
+    } else {
+      heroBox.classList.add('bg-stone-900');
+    }
+
+    // Kiểu hiển thị ảnh và góc nhìn
+    heroImg.classList.remove('object-contain', 'object-cover', 'object-center', 'object-top', 'object-bottom');
+    heroImg.classList.add(`object-${fit}`);
+    heroImg.classList.add(`object-${pos}`);
   }
 
   if (config) {

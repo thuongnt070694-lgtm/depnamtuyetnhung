@@ -153,9 +153,9 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
           <!-- Ảnh xem trước -->
           <div class="md:col-span-4 text-center">
-            <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-stone-900 border-2 border-amber-900/40 relative shadow-md mx-auto max-w-xs">
-              <img id="banner-preview-img" src="https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80" alt="Banner Preview" class="w-full h-full object-cover" />
-              <div class="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white text-left text-xs">
+            <div id="banner-preview-box" class="aspect-[4/5] rounded-2xl overflow-hidden bg-stone-900 border-2 border-amber-900/40 relative shadow-md mx-auto max-w-xs transition-all flex items-center justify-center">
+              <img id="banner-preview-img" src="https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80" alt="Banner Preview" class="w-full h-full object-contain object-center transition-all" />
+              <div class="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white text-left text-xs pointer-events-none">
                 <span class="text-amber-400 text-[10px] uppercase font-bold">Mẫu Tiêu Biểu</span>
                 <p id="banner-preview-name-text" class="font-bold line-clamp-1">Dép Quai Ngang Da Bò Sáp Cổ Điển</p>
                 <p id="banner-preview-price-text" class="text-amber-300 font-extrabold text-sm">380.000đ</p>
@@ -221,6 +221,58 @@
                   id="banner-original-price" 
                   class="w-full px-3.5 py-2.5 border rounded-xl text-sm font-semibold focus:outline-none focus:border-amber-800" 
                 />
+              </div>
+            </div>
+
+            <!-- TÙY CHỌN KÍCH THƯỚC VÀ GÓC NHÌN CHO ẢNH BANNER -->
+            <div class="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
+              <div class="flex items-center justify-between border-b border-stone-200/80 pb-2">
+                <label class="font-black text-stone-900 text-xs flex items-center gap-1.5">
+                  <span>📐 Tùy Chỉnh Kích Thước & Góc Nhìn Ảnh (Chống Cắt Chữ / Logo):</span>
+                </label>
+                <span class="text-[10px] text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded-full">Xem trước trực tiếp</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <!-- 1. Kiểu hiển thị ảnh -->
+                <div>
+                  <label class="block font-bold text-stone-700 text-[11px] mb-1">1. Kiểu hiển thị ảnh:</label>
+                  <select id="banner-img-fit" onchange="updateBannerViewSettings()" class="w-full p-2 rounded-xl border border-stone-300 text-xs font-semibold bg-white focus:outline-none focus:border-amber-800">
+                    <option value="contain">🔍 Vừa vặn (Thấy 100% ảnh, không cắt)</option>
+                    <option value="cover">🖼️ Phủ kín khung (Lấp đầy khung)</option>
+                  </select>
+                </div>
+
+                <!-- 2. Tỷ lệ khung ảnh -->
+                <div>
+                  <label class="block font-bold text-stone-700 text-[11px] mb-1">2. Tỷ lệ khung ảnh:</label>
+                  <select id="banner-img-ratio" onchange="updateBannerViewSettings()" class="w-full p-2 rounded-xl border border-stone-300 text-xs font-semibold bg-white focus:outline-none focus:border-amber-800">
+                    <option value="4/5">Đứng chuẩn (4:5)</option>
+                    <option value="1/1">Vuông (1:1)</option>
+                    <option value="4/3">Chữ nhật ngang (4:3)</option>
+                    <option value="auto">Tự động (Theo tỉ lệ ảnh)</option>
+                  </select>
+                </div>
+
+                <!-- 3. Căn chỉnh vị trí -->
+                <div>
+                  <label class="block font-bold text-stone-700 text-[11px] mb-1">3. Căn chỉnh góc nhìn:</label>
+                  <select id="banner-img-position" onchange="updateBannerViewSettings()" class="w-full p-2 rounded-xl border border-stone-300 text-xs font-semibold bg-white focus:outline-none focus:border-amber-800">
+                    <option value="center">⏺️ Căn giữa</option>
+                    <option value="top">⬆️ Căn đỉnh (Thấy logo/chữ ở đầu)</option>
+                    <option value="bottom">⬇️ Căn đáy (Thấy đế dép)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Màu nền đệm khi chọn vừa vặn -->
+              <div class="flex items-center justify-between pt-1 text-[11px] bg-white p-2.5 rounded-xl border border-stone-200">
+                <span class="text-stone-600 font-medium">Màu nền khung ảnh (khi ảnh nhỏ hơn khung):</span>
+                <div class="flex items-center gap-1.5" id="banner-bg-color-picker">
+                  <button type="button" onclick="setBannerBgColor('dark')" id="bg-btn-dark" class="px-2.5 py-1 rounded-lg text-[10px] font-bold border-2 border-stone-900 bg-stone-900 text-white shadow-2xs">Đen tối</button>
+                  <button type="button" onclick="setBannerBgColor('white')" id="bg-btn-white" class="px-2.5 py-1 rounded-lg text-[10px] font-bold border border-stone-300 bg-white text-stone-800 shadow-2xs">Trắng sáng</button>
+                  <button type="button" onclick="setBannerBgColor('amber')" id="bg-btn-amber" class="px-2.5 py-1 rounded-lg text-[10px] font-bold border border-amber-900 bg-amber-950 text-amber-200 shadow-2xs">Nâu xưởng</button>
+                </div>
               </div>
             </div>
           </div>
@@ -359,13 +411,54 @@
             </div>
           </div>
           <div>
-            <label class="block font-bold text-stone-700 mb-1">Huy Hiệu (Tag nổi bật)</label>
-            <input 
-              type="text" 
-              id="edit-tag" 
-              placeholder="VD: Bán Chạy Nhất, Mẫu Mới, Da Sáp Ngựa Điên..." 
-              class="w-full px-3 py-2.5 rounded-xl border border-stone-300 font-medium focus:outline-none focus:border-amber-800"
-            />
+            <div class="flex items-center justify-between mb-1">
+              <label class="block font-bold text-stone-700">Huy Hiệu (Tag nổi bật)</label>
+              <span class="text-[10px] text-amber-800 font-semibold">Gợi ý & tự sửa</span>
+            </div>
+            
+            <div class="space-y-1.5">
+              <!-- 1. Xổ chọn gợi ý tiêu biểu có sẵn -->
+              <select 
+                id="select-tag-preset" 
+                onchange="handleTagSelectChange(this.value)"
+                class="w-full px-3 py-2 rounded-xl border border-amber-300 font-semibold focus:outline-none focus:border-amber-800 bg-amber-50/60 text-stone-800 text-xs shadow-2xs"
+              >
+                <option value="">⚡ Gợi ý mẫu huy hiệu tiêu biểu có sẵn...</option>
+                <option value="Bán Chạy Nhất">🔥 Bán Chạy Nhất</option>
+                <option value="Mẫu Mới">✨ Mẫu Mới</option>
+                <option value="Cao Cấp">👑 Cao Cấp</option>
+                <option value="Khuyến Mãi Hot">🏷️ Khuyến Mãi Hot</option>
+                <option value="Da Bò Thật 100%">🐂 Da Bò Thật 100%</option>
+                <option value="Da Sáp Cổ Điển">🪵 Da Sáp Cổ Điển</option>
+                <option value="Da Sáp Ngựa Điên">🐎 Da Sáp Ngựa Điên</option>
+                <option value="Khâu Tay Thủ Công">🧵 Khâu Tay Thủ Công</option>
+                <option value="Đế Cao Su Đúc">👟 Đế Cao Su Đúc</option>
+                <option value="Êm Chân Chống Trơn">🛡️ Êm Chân Chống Trơn</option>
+                <option value="Chính Hãng Tuyết Nhung">⭐ Chính Hãng Tuyết Nhung</option>
+                <option value="custom">✏️ Tự Gõ Huy Hiệu Khác (Sửa ô dưới)...</option>
+                <option value="none">🚫 Không Dùng Huy Hiệu (Để Trống)</option>
+              </select>
+
+              <!-- 2. Ô sửa nội dung thủ công / tinh chỉnh -->
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="edit-tag" 
+                  placeholder="Hoặc tự gõ / chỉnh sửa chữ ở đây (VD: Bán Chạy Nhất)" 
+                  class="w-full px-3.5 py-2 rounded-xl border border-stone-300 font-bold text-xs text-amber-950 focus:outline-none focus:border-amber-800 bg-white"
+                  oninput="handleTagManualInput(this.value)"
+                />
+              </div>
+
+              <!-- 3. Nút bấm 1-chạm nhanh -->
+              <div class="flex flex-wrap items-center gap-1">
+                <span class="text-[10px] text-stone-400">Chọn nhanh:</span>
+                <button type="button" onclick="setQuickTag('Bán Chạy Nhất')" class="px-2 py-0.5 bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 rounded-md text-[10px] font-semibold transition-colors">🔥 Bán Chạy</button>
+                <button type="button" onclick="setQuickTag('Mẫu Mới')" class="px-2 py-0.5 bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 rounded-md text-[10px] font-semibold transition-colors">✨ Mẫu Mới</button>
+                <button type="button" onclick="setQuickTag('Da Bò Thật 100%')" class="px-2 py-0.5 bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 rounded-md text-[10px] font-semibold transition-colors">🐂 Da Bò Thật</button>
+                <button type="button" onclick="setQuickTag('')" class="px-1.5 py-0.5 bg-stone-100 hover:bg-rose-100 text-stone-400 hover:text-rose-700 rounded-md text-[10px] font-semibold transition-colors">Xóa</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -679,9 +772,80 @@
       heroTitle: "Dép Quai Ngang Da Bò Sáp Cổ Điển",
       heroPrice: 380000,
       heroOriginalPrice: 480000,
+      heroImageFit: "contain",
+      heroImageRatio: "4/5",
+      heroImagePosition: "center",
+      heroImageBg: "dark",
       storyImage1: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80",
       storyImage2: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80"
     };
+    let currentBannerBg = 'dark';
+
+    function setBannerBgColor(color) {
+      currentBannerBg = color;
+      const darkBtn = document.getElementById('bg-btn-dark');
+      const whiteBtn = document.getElementById('bg-btn-white');
+      const amberBtn = document.getElementById('bg-btn-amber');
+
+      if (darkBtn) {
+        darkBtn.className = color === 'dark'
+          ? 'px-2.5 py-1 rounded-lg text-[10px] font-bold border-2 border-amber-500 bg-stone-900 text-white shadow-sm ring-1 ring-amber-500'
+          : 'px-2.5 py-1 rounded-lg text-[10px] font-bold border border-stone-700 bg-stone-900 text-stone-300';
+      }
+      if (whiteBtn) {
+        whiteBtn.className = color === 'white'
+          ? 'px-2.5 py-1 rounded-lg text-[10px] font-bold border-2 border-amber-600 bg-white text-stone-900 shadow-sm ring-1 ring-amber-500'
+          : 'px-2.5 py-1 rounded-lg text-[10px] font-bold border border-stone-300 bg-white text-stone-700';
+      }
+      if (amberBtn) {
+        amberBtn.className = color === 'amber'
+          ? 'px-2.5 py-1 rounded-lg text-[10px] font-bold border-2 border-amber-400 bg-amber-950 text-amber-200 shadow-sm ring-1 ring-amber-400'
+          : 'px-2.5 py-1 rounded-lg text-[10px] font-bold border border-amber-900 bg-amber-950 text-amber-300';
+      }
+
+      updateBannerViewSettings();
+    }
+
+    function updateBannerViewSettings() {
+      const box = document.getElementById('banner-preview-box');
+      const img = document.getElementById('banner-preview-img');
+      const fitSelect = document.getElementById('banner-img-fit');
+      const ratioSelect = document.getElementById('banner-img-ratio');
+      const posSelect = document.getElementById('banner-img-position');
+
+      if (!box || !img) return;
+
+      const fit = fitSelect ? fitSelect.value : 'contain';
+      const ratio = ratioSelect ? ratioSelect.value : '4/5';
+      const pos = posSelect ? posSelect.value : 'center';
+
+      // Cập nhật ratio cho khung box
+      box.classList.remove('aspect-[4/5]', 'aspect-square', 'aspect-[4/3]', 'aspect-auto', 'min-h-[300px]');
+      if (ratio === '4/5') {
+        box.classList.add('aspect-[4/5]');
+      } else if (ratio === '1/1') {
+        box.classList.add('aspect-square');
+      } else if (ratio === '4/3') {
+        box.classList.add('aspect-[4/3]');
+      } else if (ratio === 'auto') {
+        box.classList.add('aspect-auto', 'min-h-[300px]');
+      }
+
+      // Cập nhật màu nền cho khung box
+      box.classList.remove('bg-stone-900', 'bg-white', 'bg-[#24150e]');
+      if (currentBannerBg === 'dark') {
+        box.classList.add('bg-stone-900');
+      } else if (currentBannerBg === 'white') {
+        box.classList.add('bg-white');
+      } else if (currentBannerBg === 'amber') {
+        box.classList.add('bg-[#24150e]');
+      }
+
+      // Cập nhật object-fit và object-position cho ảnh
+      img.classList.remove('object-contain', 'object-cover', 'object-center', 'object-top', 'object-bottom');
+      img.classList.add(`object-${fit}`);
+      img.classList.add(`object-${pos}`);
+    }
 
     // Khởi động trang quản trị
     document.addEventListener('DOMContentLoaded', async () => {
@@ -1000,6 +1164,48 @@
       }
     }
 
+    // ================= XỬ LÝ HUY HIỆU (TAG NỔI BẬT) =================
+    function handleTagSelectChange(val) {
+      const tagInput = document.getElementById('edit-tag');
+      if (!tagInput) return;
+
+      if (val === 'none') {
+        tagInput.value = '';
+      } else if (val === 'custom') {
+        tagInput.focus();
+        tagInput.select();
+      } else if (val) {
+        tagInput.value = val;
+      }
+    }
+
+    function handleTagManualInput(val) {
+      syncTagPresetSelect(val);
+    }
+
+    function setQuickTag(val) {
+      const tagInput = document.getElementById('edit-tag');
+      if (!tagInput) return;
+      tagInput.value = val;
+      syncTagPresetSelect(val);
+    }
+
+    function syncTagPresetSelect(tagVal) {
+      const select = document.getElementById('select-tag-preset');
+      if (!select) return;
+      const trimmed = (tagVal || '').trim();
+      if (!trimmed) {
+        select.value = 'none';
+        return;
+      }
+      const match = Array.from(select.options).find(opt => opt.value === trimmed);
+      if (match) {
+        select.value = match.value;
+      } else {
+        select.value = 'custom';
+      }
+    }
+
     // Chuyển tab giữa Quản lý sản phẩm và Cài đặt Banner
     function switchTab(tab) {
       const prodContent = document.getElementById('tab-content-products');
@@ -1166,6 +1372,19 @@
       document.getElementById('story1-preview-img').src = homepageConfig.storyImage1 || '';
       document.getElementById('story2-img-url').value = homepageConfig.storyImage2 || '';
       document.getElementById('story2-preview-img').src = homepageConfig.storyImage2 || '';
+
+      // Điền các tùy chọn tỉ lệ & góc nhìn ảnh Banner
+      if (document.getElementById('banner-img-fit')) {
+        document.getElementById('banner-img-fit').value = homepageConfig.heroImageFit || 'contain';
+      }
+      if (document.getElementById('banner-img-ratio')) {
+        document.getElementById('banner-img-ratio').value = homepageConfig.heroImageRatio || '4/5';
+      }
+      if (document.getElementById('banner-img-position')) {
+        document.getElementById('banner-img-position').value = homepageConfig.heroImagePosition || 'center';
+      }
+      setBannerBgColor(homepageConfig.heroImageBg || 'dark');
+      updateBannerViewSettings();
     }
 
     // Đổ danh sách dép vào dropdown chọn nhanh cho Banner
@@ -1271,6 +1490,17 @@
       homepageConfig.storyImage1 = document.getElementById('story1-img-url').value.trim() || homepageConfig.storyImage1;
       homepageConfig.storyImage2 = document.getElementById('story2-img-url').value.trim() || homepageConfig.storyImage2;
 
+      if (document.getElementById('banner-img-fit')) {
+        homepageConfig.heroImageFit = document.getElementById('banner-img-fit').value;
+      }
+      if (document.getElementById('banner-img-ratio')) {
+        homepageConfig.heroImageRatio = document.getElementById('banner-img-ratio').value;
+      }
+      if (document.getElementById('banner-img-position')) {
+        homepageConfig.heroImagePosition = document.getElementById('banner-img-position').value;
+      }
+      homepageConfig.heroImageBg = currentBannerBg || 'dark';
+
       if (typeof saveHomepageConfig === 'function') {
         await saveHomepageConfig(homepageConfig);
       } else {
@@ -1297,6 +1527,7 @@
           document.getElementById('edit-name').value = p.name;
           renderCategorySelectOptions(p.category);
           document.getElementById('edit-tag').value = p.tag || '';
+          syncTagPresetSelect(p.tag || '');
           document.getElementById('edit-price').value = p.price;
           document.getElementById('edit-original-price').value = p.originalPrice || p.price;
           document.getElementById('edit-leather').value = p.leatherType || '';
@@ -1329,6 +1560,7 @@
         const defaultCatId = categoriesList[0] ? categoriesList[0].id : 'quai-ngang';
         renderCategorySelectOptions(defaultCatId);
         document.getElementById('edit-tag').value = 'Mẫu Mới';
+        syncTagPresetSelect('Mẫu Mới');
         document.getElementById('edit-price').value = '';
         document.getElementById('edit-original-price').value = '';
         document.getElementById('edit-leather').value = 'Da bò sáp tự nhiên 100%';
@@ -1692,6 +1924,17 @@ const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
         if (s1) homepageConfig.storyImage1 = s1;
         const s2 = document.getElementById('story2-img-url').value.trim();
         if (s2) homepageConfig.storyImage2 = s2;
+
+        if (document.getElementById('banner-img-fit')) {
+          homepageConfig.heroImageFit = document.getElementById('banner-img-fit').value;
+        }
+        if (document.getElementById('banner-img-ratio')) {
+          homepageConfig.heroImageRatio = document.getElementById('banner-img-ratio').value;
+        }
+        if (document.getElementById('banner-img-position')) {
+          homepageConfig.heroImagePosition = document.getElementById('banner-img-position').value;
+        }
+        homepageConfig.heroImageBg = currentBannerBg || 'dark';
       }
 
       // Nếu chưa có ảnh banner hoặc vẫn là ảnh giày sneaker unsplash cũ, tự động chọn ảnh dép da thật TN01
