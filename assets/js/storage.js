@@ -131,10 +131,49 @@ async function loadProductsFromStorage() {
     } catch (e) {}
   }
 
-  // 3. Mặc định đọc từ file products.js
-  if (typeof PRODUCTS_DATA !== 'undefined' && Array.isArray(PRODUCTS_DATA)) {
-    return [...PRODUCTS_DATA];
+// Lưu cấu hình ảnh Banner và ảnh Xưởng (Trang chủ)
+async function saveHomepageConfig(config) {
+  try {
+    const db = await openDatabase();
+    if (db) {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).put(config, 'homepage_config');
+    }
+  } catch (err) {
+    console.warn('Lỗi lưu cấu hình homepage vào IndexedDB:', err);
   }
 
-  return [];
+  try {
+    localStorage.setItem('tuyetnhung_homepage_config', JSON.stringify(config));
+  } catch (err) {
+    console.warn('Lỗi lưu cấu hình homepage vào LocalStorage:', err);
+  }
 }
+
+// Đọc cấu hình ảnh Banner và ảnh Xưởng
+async function loadHomepageConfig() {
+  try {
+    const db = await openDatabase();
+    if (db) {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const req = tx.objectStore(STORE_NAME).get('homepage_config');
+      const res = await new Promise((resolve) => {
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve(null);
+      });
+      if (res) return res;
+    }
+  } catch (err) {
+    console.warn('Lỗi đọc cấu hình homepage từ IndexedDB:', err);
+  }
+
+  const local = localStorage.getItem('tuyetnhung_homepage_config');
+  if (local) {
+    try {
+      return JSON.parse(local);
+    } catch (e) {}
+  }
+
+  return null;
+}
+

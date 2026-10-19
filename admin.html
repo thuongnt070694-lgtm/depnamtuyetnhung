@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản Trị Sản Phẩm - Dép Nam Tuyết Nhung</title>
+  <title>Quản Trị Cửa Hàng - Dép Nam Tuyết Nhung</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -16,9 +16,9 @@
       <div>
         <div class="flex items-center gap-2 mb-1">
           <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-900 uppercase">Trang Quản Trị</span>
-          <h1 class="text-2xl font-black text-stone-900 font-serif-heading">Cập Nhật Sản Phẩm & Đa Ảnh</h1>
+          <h1 class="text-2xl font-black text-stone-900 font-serif-heading">Trung Tâm Quản Lý Cửa Hàng</h1>
         </div>
-        <p class="text-xs text-stone-500">Thêm nhiều góc ảnh (mặt trên, đế, góc nghiêng, trên chân), sửa tên và đổi giá bán dễ dàng</p>
+        <p class="text-xs text-stone-500">Chỉnh sửa sản phẩm, đổi giá, thêm nhiều ảnh góc chụp và tùy chỉnh ảnh Banner trang chủ</p>
       </div>
 
       <div class="flex items-center gap-3">
@@ -31,50 +31,237 @@
       </div>
     </div>
 
-    <!-- BẢNG DANH SÁCH SẢN PHẨM -->
-    <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden mb-6">
+    <!-- TABS CHUYỂN ĐỔI CHỨC NĂNG -->
+    <div class="flex items-center gap-3 mb-6">
+      <button 
+        id="tab-btn-products" 
+        onclick="switchTab('products')" 
+        class="px-5 py-3 rounded-xl text-xs font-bold transition-all bg-amber-900 text-white shadow-sm flex items-center gap-2"
+      >
+        <span>👟 Danh Sách Dép Nam</span>
+        <span class="bg-amber-800 text-amber-200 text-[10px] px-2 py-0.5 rounded-full" id="tab-products-badge">8</span>
+      </button>
+
+      <button 
+        id="tab-btn-banners" 
+        onclick="switchTab('banners')" 
+        class="px-5 py-3 rounded-xl text-xs font-bold transition-all bg-white text-stone-700 border border-stone-200 hover:border-amber-700 hover:text-amber-900 flex items-center gap-2 shadow-xs"
+      >
+        <span>🖼️ Chỉnh Sửa Ảnh Banner & Xưởng Da</span>
+        <span class="bg-amber-100 text-amber-900 text-[10px] px-2 py-0.5 rounded-full font-black">Hot</span>
+      </button>
+    </div>
+
+    <!-- ================= TAB 1: QUẢN LÝ SẢN PHẨM ================= -->
+    <div id="tab-content-products">
       
-      <div class="p-4 border-b border-stone-100 flex items-center justify-between bg-stone-50">
-        <h3 class="font-bold text-stone-800 text-sm" id="table-title">Danh Sách Dép Nam Đang Bán</h3>
-        <button onclick="resetToDefaultData()" class="text-xs text-stone-500 hover:text-red-600 underline">
-          Khôi phục danh sách mẫu gốc
-        </button>
+      <!-- BẢNG DANH SÁCH SẢN PHẨM -->
+      <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden mb-6">
+        
+        <div class="p-4 border-b border-stone-100 flex items-center justify-between bg-stone-50">
+          <h3 class="font-bold text-stone-800 text-sm" id="table-title">Danh Sách Dép Nam Đang Bán</h3>
+          <button onclick="resetToDefaultData()" class="text-xs text-stone-500 hover:text-red-600 underline">
+            Khôi phục danh sách mẫu gốc
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-stone-50 text-stone-500 border-b border-stone-200 font-semibold uppercase">
+                <th class="p-3.5 w-24 text-center">Hình Ảnh</th>
+                <th class="p-3.5">Tên Sản Phẩm & Mã</th>
+                <th class="p-3.5">Danh Mục</th>
+                <th class="p-3.5">Giá Bán Thực Tế</th>
+                <th class="p-3.5">Giá Gốc</th>
+                <th class="p-3.5">Chất Liệu Da</th>
+                <th class="p-3.5 text-center w-28">Hành Động</th>
+              </tr>
+            </thead>
+            <tbody id="admin-product-tbody" class="divide-y divide-stone-100 font-medium">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="bg-stone-50 text-stone-500 border-b border-stone-200 font-semibold uppercase">
-              <th class="p-3.5 w-24 text-center">Hình Ảnh</th>
-              <th class="p-3.5">Tên Sản Phẩm & Mã</th>
-              <th class="p-3.5">Danh Mục</th>
-              <th class="p-3.5">Giá Bán Thực Tế</th>
-              <th class="p-3.5">Giá Gốc</th>
-              <th class="p-3.5">Chất Liệu Da</th>
-              <th class="p-3.5 text-center w-28">Hành Động</th>
-            </tr>
-          </thead>
-          <tbody id="admin-product-tbody" class="divide-y divide-stone-100 font-medium">
-            <!-- Rendered by JS -->
-          </tbody>
-        </table>
+      <!-- HƯỚNG DẪN XUẤT FILE -->
+      <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-5 text-xs text-stone-700 space-y-2">
+        <h4 class="font-bold text-amber-950 text-sm flex items-center gap-2">
+          <span>💡 Lưu Ý Quan Trọng:</span>
+        </h4>
+        <p>• Khi bấm nút <strong>"Lưu Thay Đổi"</strong>, dữ liệu sản phẩm và ảnh sẽ được lưu tự động vào bộ nhớ trình duyệt (IndexedDB) không giới hạn dung lượng.</p>
+        <p>• Để lưu cố định vào mã nguồn dự án, bấm nút bên dưới để tải file <strong>products.js</strong> và chép đè vào thư mục <code class="bg-white px-1.5 py-0.5 rounded border border-amber-200 font-bold">assets/js/products.js</code>:</p>
+        <div class="pt-2">
+          <button onclick="exportProductsFile()" class="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-lg transition-colors flex items-center gap-2">
+            <span>📥 Tải File products.js Mới Để Lưu Cố Định</span>
+          </button>
+        </div>
       </div>
 
     </div>
 
-    <!-- HƯỚNG DẪN LƯU VĨNH VIỄN -->
-    <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-5 text-xs text-stone-700 space-y-2">
-      <h4 class="font-bold text-amber-950 text-sm flex items-center gap-2">
-        <span>💡 Mẹo Thêm Nhiều Ảnh:</span>
-      </h4>
-      <p>• Khi bấm nút <strong>"✏️ Sửa"</strong>, bạn có thể chọn cùng lúc <strong>nhiều file ảnh</strong> từ điện thoại/máy tính (góc chụp mặt quai dép, đế chống trượt, ảnh đi thử trên chân...).</p>
-      <p>• Bạn có thể bấm <strong>"Đặt làm ảnh chính"</strong> để chọn tấm ảnh đẹp nhất làm ảnh đại diện hiển thị ngoài trang chủ.</p>
-      <p>• Bấm <strong>"Lưu Thay Đổi"</strong> để cập nhật ngay. Để lưu vĩnh viễn dữ liệu vào mã nguồn, bấm nút bên dưới để tải file <strong>products.js</strong> và chép đè vào thư mục <code class="bg-white px-1.5 py-0.5 rounded border border-amber-200 font-bold">assets/js/products.js</code>:</p>
-      <div class="pt-2">
-        <button onclick="exportProductsFile()" class="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-lg transition-colors flex items-center gap-2">
-          <span>📥 Tải File products.js Mới Để Lưu Cố Định</span>
+    <!-- ================= TAB 2: QUẢN LÝ BANNER & ẢNH TRANG CHỦ ================= -->
+    <div id="tab-content-banners" class="hidden space-y-6">
+      
+      <!-- PHẦN 1: ẢNH BANNER MẪU DÉP NỔI BẬT ĐẦU TRANG -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+          <div>
+            <h3 class="text-base font-black text-stone-900 font-serif-heading">1. Ảnh Mẫu Dép Nổi Bật Ở Banner Đầu Trang</h3>
+            <p class="text-xs text-stone-500">Khung ảnh sản phẩm xuất hiện ngay góc phải Banner trang chủ</p>
+          </div>
+          <span class="px-2.5 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded-lg">Mục 1 (Hero Banner)</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <!-- Ảnh xem trước -->
+          <div class="md:col-span-4 text-center">
+            <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-stone-900 border-2 border-amber-900/40 relative shadow-md mx-auto max-w-xs">
+              <img id="banner-preview-img" src="https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80" alt="Banner Preview" class="w-full h-full object-cover" />
+              <div class="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white text-left text-xs">
+                <span class="text-amber-400 text-[10px] uppercase font-bold">Mẫu Tiêu Biểu</span>
+                <p id="banner-preview-name-text" class="font-bold line-clamp-1">Dép Quai Ngang Da Bò Sáp Cổ Điển</p>
+                <p id="banner-preview-price-text" class="text-amber-300 font-extrabold text-sm">380.000đ</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thông tin chỉnh sửa -->
+          <div class="md:col-span-8 space-y-3.5 text-xs">
+            <!-- Nút chọn nhanh từ sản phẩm có sẵn -->
+            <div class="p-3.5 bg-amber-50 rounded-xl border border-amber-200 space-y-1">
+              <label class="block font-bold text-amber-950">⚡ Chọn nhanh từ mẫu dép đang bán (Tự điền ảnh & giá):</label>
+              <select id="select-quick-banner-product" onchange="autoFillBannerFromProduct(this.value)" class="w-full p-2.5 rounded-lg border border-amber-300 bg-white font-medium text-xs focus:outline-none focus:border-amber-800">
+                <option value="">-- Bấm vào đây để chọn 1 mẫu dép đưa lên Banner --</option>
+              </select>
+            </div>
+
+            <!-- Tải ảnh mới từ máy -->
+            <div>
+              <label class="block font-bold text-stone-700 mb-1">Chọn ảnh Banner mới từ máy tính hoặc dán link:</label>
+              <div class="flex gap-2">
+                <input 
+                  type="text" 
+                  id="banner-img-url" 
+                  class="flex-1 px-3.5 py-2.5 border rounded-xl text-xs font-medium focus:outline-none focus:border-amber-800" 
+                  placeholder="Link ảnh hoặc assets/images/..." 
+                  oninput="updateBannerPreview(this.value)" 
+                />
+                <label class="px-4 py-2.5 bg-amber-800 text-white font-bold rounded-xl cursor-pointer hover:bg-amber-900 transition-colors flex items-center gap-1.5 flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                  <span>Chọn ảnh từ máy</span>
+                  <input type="file" accept="image/*" class="hidden" onchange="handleBannerFileSelect(event)" />
+                </label>
+              </div>
+            </div>
+
+            <!-- Tên dép nổi bật -->
+            <div>
+              <label class="block font-bold text-stone-700 mb-1">Tên mẫu dép nổi bật trên Banner:</label>
+              <input 
+                type="text" 
+                id="banner-name" 
+                class="w-full px-3.5 py-2.5 border rounded-xl font-bold text-sm focus:outline-none focus:border-amber-800" 
+                oninput="document.getElementById('banner-preview-name-text').innerText = this.value || 'Tên Mẫu Dép'"
+              />
+            </div>
+
+            <!-- Giá bán & Giá gốc -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-amber-950 mb-1">Giá bán hiển thị (VNĐ):</label>
+                <input 
+                  type="number" 
+                  id="banner-price" 
+                  class="w-full px-3.5 py-2.5 border border-amber-300 rounded-xl font-extrabold text-sm text-amber-950 focus:outline-none focus:border-amber-800" 
+                  oninput="document.getElementById('banner-preview-price-text').innerText = formatCurrency(this.value || 0)"
+                />
+              </div>
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Giá gốc gạch ngang (VNĐ):</label>
+                <input 
+                  type="number" 
+                  id="banner-original-price" 
+                  class="w-full px-3.5 py-2.5 border rounded-xl text-sm font-semibold focus:outline-none focus:border-amber-800" 
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHẦN 2: HAI TẤM ẢNH PHẦN CÂU CHUYỆN LÀM NGHỀ -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+          <div>
+            <h3 class="text-base font-black text-stone-900 font-serif-heading">2. Hai Tấm Ảnh Ghép "Câu Chuyện Làm Nghề"</h3>
+            <p class="text-xs text-stone-500">Hai bức ảnh chụp không gian thợ cắt da, may dép thủ công của xưởng Tuyết Nhung</p>
+          </div>
+          <span class="px-2.5 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded-lg">Mục 2 (Story Collage)</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+          
+          <!-- Ảnh 1 (Bên trái) -->
+          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
+            <span class="font-bold text-stone-800 block text-sm">📸 Tấm ảnh 1 (Bên trái):</span>
+            <div class="w-full h-48 rounded-xl overflow-hidden bg-stone-900 border">
+              <img id="story1-preview-img" src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover" />
+            </div>
+            <div class="flex gap-2">
+              <input 
+                type="text" 
+                id="story1-img-url" 
+                class="flex-1 px-3 py-2 border rounded-xl text-xs font-medium focus:outline-none focus:border-amber-800" 
+                placeholder="Link ảnh hoặc assets/images/..." 
+                oninput="updateStoryPreview(1, this.value)" 
+              />
+              <label class="px-3 py-2 bg-stone-800 hover:bg-stone-900 text-white font-bold rounded-xl cursor-pointer flex items-center gap-1 flex-shrink-0">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Chọn ảnh</span>
+                <input type="file" accept="image/*" class="hidden" onchange="handleStoryFileSelect(1, event)" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Ảnh 2 (Bên phải) -->
+          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
+            <span class="font-bold text-stone-800 block text-sm">📸 Tấm ảnh 2 (Bên phải - lệch xuống):</span>
+            <div class="w-full h-48 rounded-xl overflow-hidden bg-stone-900 border">
+              <img id="story2-preview-img" src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover" />
+            </div>
+            <div class="flex gap-2">
+              <input 
+                type="text" 
+                id="story2-img-url" 
+                class="flex-1 px-3 py-2 border rounded-xl text-xs font-medium focus:outline-none focus:border-amber-800" 
+                placeholder="Link ảnh hoặc assets/images/..." 
+                oninput="updateStoryPreview(2, this.value)" 
+              />
+              <label class="px-3 py-2 bg-stone-800 hover:bg-stone-900 text-white font-bold rounded-xl cursor-pointer flex items-center gap-1 flex-shrink-0">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Chọn ảnh</span>
+                <input type="file" accept="image/*" class="hidden" onchange="handleStoryFileSelect(2, event)" />
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- NÚT LƯU TOÀN BỘ CÀI ĐẶT BANNER -->
+      <div class="flex justify-end gap-3 pt-2">
+        <button 
+          onclick="saveAllHomepageSettings()" 
+          class="px-8 py-3.5 rounded-xl btn-leather-primary font-bold text-sm shadow-xl flex items-center gap-2 hover:scale-105 transition-all"
+        >
+          <svg class="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <span>💾 Lưu Cài Đặt Ảnh Banner & Trang Chủ</span>
         </button>
       </div>
+
     </div>
 
   </div>
@@ -157,10 +344,9 @@
           <div class="flex items-center justify-between">
             <div>
               <label class="block font-bold text-stone-800 text-sm">Bộ Sưu Tập Hình Ảnh Sản Phẩm *</label>
-              <span class="text-[11px] text-stone-500" id="img-count-badge">Đang có 0 ảnh (khách hàng sẽ xem được tất cả các góc ảnh này)</span>
+              <span class="text-[11px] text-stone-500" id="img-count-badge">Đang có 0 ảnh (ảnh đầu tiên là ảnh chính)</span>
             </div>
             
-            <!-- Nút chọn nhiều file từ máy tính -->
             <label class="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs rounded-xl cursor-pointer flex items-center gap-1.5 shadow-sm transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
               <span>+ Chọn Nhiều Ảnh Từ Máy</span>
@@ -247,12 +433,43 @@
   <script src="assets/js/storage.js"></script>
   <script>
     let productsList = [];
-    let currentEditingImages = []; // Danh sách nhiều ảnh của sản phẩm đang sửa
+    let currentEditingImages = [];
 
-    // Tải danh sách khi mở trang
+    // Cấu hình trang chủ mặc định
+    let homepageConfig = {
+      heroImage: "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80",
+      heroTitle: "Dép Quai Ngang Da Bò Sáp Cổ Điển",
+      heroPrice: 380000,
+      heroOriginalPrice: 480000,
+      storyImage1: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80",
+      storyImage2: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80"
+    };
+
+    // Khởi động trang quản trị
     document.addEventListener('DOMContentLoaded', async () => {
       await loadProductsData();
+      await loadHomepageDataIntoAdmin();
     });
+
+    // Chuyển tab giữa Quản lý sản phẩm và Cài đặt Banner
+    function switchTab(tab) {
+      const prodContent = document.getElementById('tab-content-products');
+      const bannerContent = document.getElementById('tab-content-banners');
+      const prodBtn = document.getElementById('tab-btn-products');
+      const bannerBtn = document.getElementById('tab-btn-banners');
+
+      if (tab === 'products') {
+        prodContent.classList.remove('hidden');
+        bannerContent.classList.add('hidden');
+        prodBtn.className = "px-5 py-3 rounded-xl text-xs font-bold transition-all bg-amber-900 text-white shadow-sm flex items-center gap-2";
+        bannerBtn.className = "px-5 py-3 rounded-xl text-xs font-bold transition-all bg-white text-stone-700 border border-stone-200 hover:border-amber-700 hover:text-amber-900 flex items-center gap-2 shadow-xs";
+      } else {
+        prodContent.classList.add('hidden');
+        bannerContent.classList.remove('hidden');
+        bannerBtn.className = "px-5 py-3 rounded-xl text-xs font-bold transition-all bg-amber-900 text-white shadow-sm flex items-center gap-2";
+        prodBtn.className = "px-5 py-3 rounded-xl text-xs font-bold transition-all bg-white text-stone-700 border border-stone-200 hover:border-amber-700 hover:text-amber-900 flex items-center gap-2 shadow-xs";
+      }
+    }
 
     async function loadProductsData() {
       if (typeof loadProductsFromStorage === 'function') {
@@ -270,6 +487,7 @@
         }
       }
       renderAdminTable();
+      populateQuickBannerSelect();
     }
 
     function formatCurrency(amount) {
@@ -280,9 +498,11 @@
     function renderAdminTable() {
       const tbody = document.getElementById('admin-product-tbody');
       const title = document.getElementById('table-title');
+      const badge = document.getElementById('tab-products-badge');
       if (!tbody) return;
 
       title.innerText = `Danh Sách Dép Nam Đang Bán (${productsList.length} mẫu)`;
+      if (badge) badge.innerText = productsList.length;
 
       tbody.innerHTML = productsList.map((p, index) => {
         const images = Array.isArray(p.images) && p.images.length > 0 ? p.images : ['assets/images/dep-tn01.jpg'];
@@ -321,7 +541,125 @@
       }).join('');
     }
 
-    // Mở modal thêm/sửa sản phẩm
+    // ================= LOGIC QUẢN LÝ ẢNH BANNER & XƯỞNG =================
+    async function loadHomepageDataIntoAdmin() {
+      if (typeof loadHomepageConfig === 'function') {
+        const saved = await loadHomepageConfig();
+        if (saved) {
+          homepageConfig = { ...homepageConfig, ...saved };
+        }
+      }
+
+      // Điền vào form Banner
+      document.getElementById('banner-img-url').value = homepageConfig.heroImage || '';
+      document.getElementById('banner-preview-img').src = homepageConfig.heroImage || '';
+      document.getElementById('banner-name').value = homepageConfig.heroTitle || '';
+      document.getElementById('banner-preview-name-text').innerText = homepageConfig.heroTitle || 'Tên Mẫu Dép';
+      document.getElementById('banner-price').value = homepageConfig.heroPrice || 380000;
+      document.getElementById('banner-preview-price-text').innerText = formatCurrency(homepageConfig.heroPrice || 380000);
+      document.getElementById('banner-original-price').value = homepageConfig.heroOriginalPrice || 480000;
+
+      // Điền vào form Story
+      document.getElementById('story1-img-url').value = homepageConfig.storyImage1 || '';
+      document.getElementById('story1-preview-img').src = homepageConfig.storyImage1 || '';
+      document.getElementById('story2-img-url').value = homepageConfig.storyImage2 || '';
+      document.getElementById('story2-preview-img').src = homepageConfig.storyImage2 || '';
+    }
+
+    // Đổ danh sách dép vào dropdown chọn nhanh cho Banner
+    function populateQuickBannerSelect() {
+      const select = document.getElementById('select-quick-banner-product');
+      if (!select) return;
+      select.innerHTML = `<option value="">-- Bấm vào đây để chọn 1 mẫu dép đưa lên Banner --</option>` + 
+        productsList.map(p => `
+          <option value="${p.id}">${p.name} - Giá: ${formatCurrency(p.price)}</option>
+        `).join('');
+    }
+
+    // Tự động điền thông tin Banner khi chọn 1 mẫu dép
+    function autoFillBannerFromProduct(productId) {
+      if (!productId) return;
+      const p = productsList.find(item => item.id === parseInt(productId));
+      if (!p) return;
+
+      const img = p.images[0] || '';
+      document.getElementById('banner-img-url').value = img;
+      document.getElementById('banner-preview-img').src = img;
+      document.getElementById('banner-name').value = p.name;
+      document.getElementById('banner-preview-name-text').innerText = p.name;
+      document.getElementById('banner-price').value = p.price;
+      document.getElementById('banner-preview-price-text').innerText = formatCurrency(p.price);
+      document.getElementById('banner-original-price').value = p.originalPrice || p.price;
+
+      showToast(`Đã áp dụng mẫu "${p.name}" vào khung Banner!`, 'info');
+    }
+
+    // Chọn ảnh Banner từ máy tính
+    async function handleBannerFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      showToast('Đang tối ưu dung lượng ảnh Banner...', 'info');
+      try {
+        const compressed = await compressImageFile(file, 1000, 1000, 0.82);
+        document.getElementById('banner-img-url').value = compressed;
+        document.getElementById('banner-preview-img').src = compressed;
+        showToast('Đã tải ảnh Banner thành công!', 'success');
+      } catch(err) {
+        showToast('Lỗi xử lý file ảnh!', 'error');
+      }
+      event.target.value = '';
+    }
+
+    function updateBannerPreview(url) {
+      if (url && url.trim()) {
+        document.getElementById('banner-preview-img').src = url.trim();
+      }
+    }
+
+    // Chọn ảnh Xưởng da (Story 1 hoặc Story 2) từ máy tính
+    async function handleStoryFileSelect(index, event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      showToast(`Đang nén ảnh xưởng ${index}...`, 'info');
+      try {
+        const compressed = await compressImageFile(file, 1000, 1000, 0.82);
+        document.getElementById(`story${index}-img-url`).value = compressed;
+        document.getElementById(`story${index}-preview-img`).src = compressed;
+        showToast(`Đã tải ảnh xưởng ${index} thành công!`, 'success');
+      } catch(err) {
+        showToast('Lỗi xử lý file ảnh!', 'error');
+      }
+      event.target.value = '';
+    }
+
+    function updateStoryPreview(index, url) {
+      if (url && url.trim()) {
+        document.getElementById(`story${index}-preview-img`).src = url.trim();
+      }
+    }
+
+    // Lưu toàn bộ cài đặt Banner và Trang chủ
+    async function saveAllHomepageSettings() {
+      homepageConfig.heroImage = document.getElementById('banner-img-url').value.trim() || homepageConfig.heroImage;
+      homepageConfig.heroTitle = document.getElementById('banner-name').value.trim() || 'Dép Quai Ngang Da Bò Sáp Cổ Điển';
+      homepageConfig.heroPrice = parseInt(document.getElementById('banner-price').value) || 380000;
+      homepageConfig.heroOriginalPrice = parseInt(document.getElementById('banner-original-price').value) || 480000;
+
+      homepageConfig.storyImage1 = document.getElementById('story1-img-url').value.trim() || homepageConfig.storyImage1;
+      homepageConfig.storyImage2 = document.getElementById('story2-img-url').value.trim() || homepageConfig.storyImage2;
+
+      if (typeof saveHomepageConfig === 'function') {
+        await saveHomepageConfig(homepageConfig);
+      } else {
+        localStorage.setItem('tuyetnhung_homepage_config', JSON.stringify(homepageConfig));
+      }
+
+      showToast('🎉 Đã lưu cài đặt Banner và 2 ảnh Xưởng da thành công! (Mở trang chủ F5 để xem)', 'success');
+    }
+
+    // ================= MODAL PRODUCT EDITING =================
     function openProductModal(productId = null) {
       const modal = document.getElementById('product-modal');
       const heading = document.getElementById('modal-heading');
@@ -339,8 +677,6 @@
           document.getElementById('edit-leather').value = p.leatherType || '';
           document.getElementById('edit-sole').value = p.soleType || '';
           document.getElementById('edit-description').value = p.description || '';
-
-          // Nạp danh sách nhiều ảnh hiện tại
           currentEditingImages = Array.isArray(p.images) && p.images.length > 0 ? [...p.images] : ['https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80'];
         }
       } else {
@@ -354,7 +690,6 @@
         document.getElementById('edit-leather').value = 'Da bò sáp tự nhiên 100%';
         document.getElementById('edit-sole').value = 'Đế cao su đúc nguyên khối chống mòn';
         document.getElementById('edit-description').value = 'Mẫu dép da nam may tay thủ công tỉ mỉ tại xưởng Tuyết Nhung.';
-
         currentEditingImages = [];
       }
 
@@ -366,7 +701,6 @@
       document.getElementById('product-modal').classList.add('hidden');
     }
 
-    // Render danh sách ảnh xem trước trong modal
     function renderGalleryPreview() {
       const container = document.getElementById('gallery-preview-container');
       const badge = document.getElementById('img-count-badge');
@@ -388,7 +722,6 @@
         <div class="relative group aspect-square rounded-xl overflow-hidden border-2 ${idx === 0 ? 'border-amber-800 ring-2 ring-amber-600/30' : 'border-stone-200'} bg-white shadow-xs">
           <img src="${img}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=200&q=80'" />
           
-          <!-- Badge Ảnh Chính -->
           ${idx === 0 ? `
             <span class="absolute top-1.5 left-1.5 bg-amber-900 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow">
               ★ ẢNH CHÍNH
@@ -399,14 +732,12 @@
             </span>
           `}
 
-          <!-- Menu nút bấm khi rê chuột vào ảnh -->
           <div class="absolute inset-0 bg-stone-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-2">
             ${idx !== 0 ? `
               <button 
                 type="button" 
                 onclick="setPrimaryImage(${idx})" 
                 class="w-full py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] rounded shadow transition-colors"
-                title="Đặt ảnh này làm ảnh đại diện ngoài trang chủ"
               >
                 Làm ảnh chính
               </button>
@@ -415,7 +746,6 @@
               type="button" 
               onclick="removeImage(${idx})" 
               class="w-full py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] rounded shadow transition-colors"
-              title="Xóa ảnh này"
             >
               🗑️ Xóa ảnh
             </button>
@@ -424,7 +754,6 @@
       `).join('');
     }
 
-    // Chọn nhiều file ảnh từ máy tính (Tự động nén tối ưu hóa và chống tràn bộ nhớ)
     async function handleMultipleFilesSelect(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
@@ -452,10 +781,9 @@
 
       renderGalleryPreview();
       showToast(`Đã thêm ${files.length} ảnh vào bộ sưu tập!`, 'success');
-      event.target.value = ''; // reset input
+      event.target.value = '';
     }
 
-    // Thêm ảnh từ ô nhập URL hoặc đường dẫn file
     function addImageFromUrl() {
       const input = document.getElementById('add-custom-img-url');
       if (!input) return;
@@ -464,14 +792,12 @@
         showToast('Vui lòng nhập đường dẫn hoặc link ảnh!', 'error');
         return;
       }
-
       currentEditingImages.push(url);
       renderGalleryPreview();
       input.value = '';
       showToast('Đã thêm 1 ảnh mới vào bộ sưu tập!', 'success');
     }
 
-    // Đặt ảnh được chọn làm ảnh đại diện (đưa lên vị trí đầu tiên)
     function setPrimaryImage(index) {
       if (index <= 0 || index >= currentEditingImages.length) return;
       const target = currentEditingImages.splice(index, 1)[0];
@@ -480,7 +806,6 @@
       showToast('Đã đổi ảnh đại diện chính của sản phẩm!', 'success');
     }
 
-    // Xóa bớt ảnh
     function removeImage(index) {
       if (index < 0 || index >= currentEditingImages.length) return;
       currentEditingImages.splice(index, 1);
@@ -488,12 +813,10 @@
       showToast('Đã xóa 1 ảnh!', 'info');
     }
 
-    // Sửa sản phẩm
     function editProduct(id) {
       openProductModal(id);
     }
 
-    // Xóa sản phẩm
     async function deleteProduct(id) {
       const p = productsList.find(item => item.id === id);
       if (!p) return;
@@ -501,11 +824,11 @@
         productsList = productsList.filter(item => item.id !== id);
         await saveProductsData();
         renderAdminTable();
+        populateQuickBannerSelect();
         showToast(`Đã xóa sản phẩm "${p.name}"!`, 'info');
       }
     }
 
-    // Lưu sản phẩm từ Modal
     async function saveProduct(event) {
       event.preventDefault();
 
@@ -532,7 +855,6 @@
       };
 
       if (idVal) {
-        // Cập nhật sản phẩm có sẵn
         const id = parseInt(idVal);
         const index = productsList.findIndex(p => p.id === id);
         if (index > -1) {
@@ -552,7 +874,6 @@
           showToast(`Đã lưu "${name}" với ${currentEditingImages.length} hình ảnh!`, 'success');
         }
       } else {
-        // Thêm sản phẩm mới
         const newId = productsList.length > 0 ? Math.max(...productsList.map(p => p.id)) + 1 : 1;
         const newProduct = {
           id: newId,
@@ -578,10 +899,10 @@
 
       await saveProductsData();
       renderAdminTable();
+      populateQuickBannerSelect();
       closeProductModal();
     }
 
-    // Lưu dữ liệu vào cả IndexedDB lẫn LocalStorage
     async function saveProductsData() {
       if (typeof saveProductsToStorage === 'function') {
         await saveProductsToStorage(productsList);
@@ -594,7 +915,6 @@
       }
     }
 
-    // Khôi phục gốc
     async function resetToDefaultData() {
       if (confirm("Bạn có chắc muốn khôi phục về danh sách 8 sản phẩm mẫu gốc không?")) {
         localStorage.removeItem('tuyetnhung_custom_products');
@@ -610,10 +930,9 @@
       }
     }
 
-    // Xuất file products.js
     function exportProductsFile() {
       const code = `/**
- * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Đã cập nhật nhiều hình ảnh)
+ * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Đã cập nhật)
  */
 const PRODUCTS_DATA = ${JSON.stringify(productsList, null, 2)};
 

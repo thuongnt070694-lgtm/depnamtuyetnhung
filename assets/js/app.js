@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (typeof loadProductsFromStorage === 'function') {
     loadedProducts = await loadProductsFromStorage();
   }
+  await applyHomepageConfig();
   initCategories();
   renderProducts();
   updateCartBadge();
@@ -31,7 +32,29 @@ window.addEventListener('storage', async () => {
     loadedProducts = await loadProductsFromStorage();
     renderProducts();
   }
+  await applyHomepageConfig();
 });
+
+// Tải và áp dụng cấu hình ảnh Banner & Xưởng da
+async function applyHomepageConfig() {
+  if (typeof loadHomepageConfig !== 'function') return;
+  const config = await loadHomepageConfig();
+  if (!config) return;
+
+  const heroImg = document.getElementById('hero-featured-img');
+  const heroName = document.getElementById('hero-featured-name');
+  const heroPrice = document.getElementById('hero-featured-price');
+  const heroOrigPrice = document.getElementById('hero-featured-original-price');
+  const story1 = document.getElementById('story-img-1');
+  const story2 = document.getElementById('story-img-2');
+
+  if (heroImg && config.heroImage) heroImg.src = config.heroImage;
+  if (heroName && config.heroTitle) heroName.innerText = config.heroTitle;
+  if (heroPrice && config.heroPrice) heroPrice.innerText = formatCurrency(config.heroPrice);
+  if (heroOrigPrice && config.heroOriginalPrice) heroOrigPrice.innerText = formatCurrency(config.heroOriginalPrice);
+  if (story1 && config.storyImage1) story1.src = config.storyImage1;
+  if (story2 && config.storyImage2) story2.src = config.storyImage2;
+}
 
 // Format tiền tệ Việt Nam (VNĐ)
 function formatCurrency(amount) {
