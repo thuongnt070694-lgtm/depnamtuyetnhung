@@ -7,8 +7,8 @@ const PRODUCTS_DATA = [
     "name": "Dép Quai Ngang Da Bò Sáp Cổ Điển - TN01",
     "category": "quai-ngang",
     "categoryName": "Dép Quai Ngang",
-    "price": 380000,
-    "originalPrice": 480000,
+    "price": 90000,
+    "originalPrice": 100000,
     "tag": "Bán Chạy Nhất",
     "isBestSeller": true,
     "rating": 5,
@@ -37,8 +37,8 @@ const PRODUCTS_DATA = [
       "Đen Huyền"
     ],
     "description": "Mẫu dép quai ngang kinh điển được chế tác từ da bò sáp tự nhiên dày 2.0mm. Thiết kế ôm vừa vặn mu bàn chân, lót đệm mút cao cấp êm ái khi đi bộ lâu. Thợ may Tuyết Nhung khâu chỉ dù thủ công từng mũi, đảm bảo không bao giờ bung tróc đế dù đi mưa nắng.",
-    "externalLink": "https://www.facebook.com/le.roi.39501789/",
-    "externalLinkText": "💬 Mua Qua Facebook ↗"
+    "externalLink": "https://shopee.vn/D%C3%A9p-Nam-Tuy%E1%BA%BFt-Nhung-%C4%90%E1%BA%BF-Cao-4cm-MS44-%E2%80%93-D%C3%A9p-Nam-Quai-Ngang-B%E1%BA%A3n-N%C3%BAt-Form-Nh%E1%BB%8F-%C3%8Am-Ch%C3%A2n-Ch%E1%BB%91ng-Tr%C6%A1n-Tr%C6%B0%E1%BB%A3t-%E2%80%93-N%C3%A2u-%C4%90en-i.79280127.3235056031?extraParams=%7B%22display_model_id%22%3A18330618750%2C%22model_selection_logic%22%3A3%7D",
+    "externalLinkText": "Mua Qua Shopee"
   },
   {
     "id": 2,
