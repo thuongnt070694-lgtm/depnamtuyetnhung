@@ -229,5 +229,10 @@ async function loadHomepageConfig() {
     } catch (e) {}
   }
 
+  // 3. Fallback sang cấu hình gốc trong products.js nếu có
+  if (typeof HOMEPAGE_CONFIG !== 'undefined' && HOMEPAGE_CONFIG) {
+    return HOMEPAGE_CONFIG;
+  }
+
   return null;
 }

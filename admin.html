@@ -31,6 +31,22 @@
       </div>
     </div>
 
+    <!-- KHUNG HƯỚNG DẪN ĐỒNG BỘ CHO KHÁCH & ĐIỆN THOẠI KHÁC XEM -->
+    <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300/80 rounded-2xl p-5 mb-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🚀</span>
+          <h4 class="font-extrabold text-amber-950 text-sm">Cách để người khác và điện thoại xem được ảnh mới (Đồng bộ lên Vercel):</h4>
+        </div>
+        <p class="text-xs text-stone-600 leading-relaxed max-w-3xl">
+          Khi sửa trên trang này, dữ liệu mới lưu trên máy tính bạn. Để người khác xem qua link <code class="bg-white px-1.5 py-0.5 rounded text-amber-900 font-bold border border-amber-200">depnamtuyetnhung.vercel.app</code> cũng thấy ảnh mới: Bấm nút <strong>"Tải File products.js"</strong> ➔ chép đè vào <code class="bg-white px-1.5 py-0.5 rounded text-amber-900 font-bold border border-amber-200">assets/js/</code> ➔ chạy <code class="bg-white px-1.5 py-0.5 rounded text-amber-900 font-bold border border-amber-200">push-to-github.bat</code>.
+        </p>
+      </div>
+      <button onclick="exportProductsFile()" class="px-5 py-3 bg-amber-900 hover:bg-amber-950 text-white font-bold text-xs rounded-xl shadow-md whitespace-nowrap flex items-center gap-2 transition-all flex-shrink-0">
+        <span>📥 Tải File products.js Mới</span>
+      </button>
+    </div>
+
     <!-- TABS CHUYỂN ĐỔI CHỨC NĂNG -->
     <div class="flex items-center gap-3 mb-6">
       <button 
@@ -941,13 +957,15 @@
 
     function exportProductsFile() {
       const code = `/**
- * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Đã cập nhật)
+ * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Đã cập nhật từ trang quản trị)
  */
 const PRODUCTS_DATA = ${JSON.stringify(productsList, null, 2)};
 
 const CATEGORIES = ${JSON.stringify(CATEGORIES, null, 2)};
 
 const STORE_INFO = ${JSON.stringify(STORE_INFO, null, 2)};
+
+const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
 `;
       const blob = new Blob([code], { type: 'application/javascript;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -956,7 +974,7 @@ const STORE_INFO = ${JSON.stringify(STORE_INFO, null, 2)};
       a.download = 'products.js';
       a.click();
       URL.revokeObjectURL(url);
-      showToast("Đã tải xuống file products.js! Hãy chép file này vào thư mục assets/js/", "success");
+      showToast("Đã tải xuống file products.js! Hãy chép file này vào assets/js/ và bấm push-to-github.bat để người khác cũng thấy!", "success");
     }
 
     function showToast(message, type = 'info') {
