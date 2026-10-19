@@ -190,3 +190,105 @@ body {
     opacity: 1;
   }
 }
+
+/* ================= RESPONSIVE FULL HD (1920px) & MỌI MÀN HÌNH ================= */
+.site-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  max-width: 80rem; /* 1280px chuẩn laptop */
+  transition: max-width 0.3s ease, padding 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .site-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .site-container {
+    max-width: 1440px;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  .site-container {
+    max-width: 1680px;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .site-container {
+    max-width: 1820px;
+    padding-left: 3.5rem;
+    padding-right: 3.5rem;
+  }
+}
+
+/* Khung ảnh Hero tự động phóng to Full HD sắc nét */
+.hero-visual-frame {
+  width: 100%;
+  max-width: 24rem; /* 384px mobile */
+  transition: all 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .hero-visual-frame {
+    max-width: 28rem; /* 448px */
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-visual-frame {
+    max-width: 28rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-visual-frame {
+    max-width: 32rem !important; /* 512px */
+  }
+}
+
+@media (min-width: 1536px) {
+  .hero-visual-frame {
+    max-width: 36rem !important; /* 576px */
+  }
+}
+
+@media (min-width: 1920px) {
+  .hero-visual-frame {
+    max-width: 40rem !important; /* 640px Full HD cực sắc nét */
+  }
+}
+
+/* Lưới sản phẩm tự biến đổi theo kích cỡ màn hình */
+@media (min-width: 1536px) {
+  .product-grid-fullhd {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 1.75rem !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  .product-grid-fullhd {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 2rem !important;
+  }
+}
+

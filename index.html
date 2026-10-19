@@ -41,8 +41,8 @@
 <body class="bg-stone-50 text-stone-800 antialiased selection:bg-amber-900 selection:text-white">
 
   <!-- TOP ANNOUNCEMENT BAR -->
-  <div class="bg-brand-950 text-amber-200 text-xs py-2 px-4 border-b border-amber-900/40">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left">
+  <div class="bg-brand-950 text-amber-200 text-xs py-2 border-b border-amber-900/40">
+    <div class="site-container flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left">
       <div class="flex items-center gap-2">
         <span class="bg-amber-700 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">Xưởng Tự Làm</span>
         <span>🎉 Khai trương ưu đãi: Giảm 10% mã <strong>TUYETNHUNG</strong> • Miễn phí vận chuyển từ 2 đôi</span>
@@ -59,7 +59,7 @@
 
   <!-- MAIN HEADER -->
   <header class="bg-white border-b border-stone-200 sticky top-0 z-40 shadow-sm backdrop-blur-md bg-white/95">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="site-container">
       <div class="flex items-center justify-between h-20 gap-4">
         
         <!-- LOGO BRAND -->
@@ -152,8 +152,8 @@
     <!-- Texture & Decorative elements -->
     <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:24px_24px]"></div>
     
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+    <div class="site-container relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-14 3xl:gap-20 items-center">
         
         <!-- Text Content -->
         <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
@@ -162,12 +162,12 @@
             Xưởng Dép Da Thủ Công Gia Truyền Tuyết Nhung
           </div>
 
-          <h1 class="text-3xl sm:text-5xl lg:text-5xl font-black font-serif-heading tracking-tight leading-tight text-stone-100">
+          <h1 class="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl 3xl:text-7xl font-black font-serif-heading tracking-tight leading-tight text-stone-100">
             Từng Đường Kim Mũi Chỉ <br />
             <span class="text-gold-gradient">Tôn Vinh Bước Chân Phái Mạnh</span>
           </h1>
 
-          <p class="text-stone-300 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
+          <p class="text-stone-300 text-sm sm:text-base xl:text-lg 3xl:text-xl max-w-xl xl:max-w-2xl 3xl:max-w-3xl mx-auto lg:mx-0 leading-relaxed font-normal">
             Chúng tôi tự hào trực tiếp thuộc da, cắt rập và may thủ công từng đôi dép da nam. 
             Sử dụng <strong>100% da bò thật nguyên tấm</strong>, khâu viền chỉ dù số 8 không bung keo, 
             đế cao su đúc nguyên khối siêu êm và chống trượt.
@@ -185,7 +185,7 @@
           </div>
 
           <!-- Trust Badges -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-stone-800 text-stone-300 text-xs">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-stone-800 text-stone-300 text-xs xl:text-sm">
             <div class="flex items-center gap-2">
               <span class="text-amber-400 font-bold text-base">✓</span>
               <span>100% Da Bò Thật</span>
@@ -206,8 +206,8 @@
         </div>
 
         <!-- Featured Banner Visual -->
-        <div class="lg:col-span-5 relative">
-          <div class="relative mx-auto max-w-sm rounded-3xl p-3 bg-gradient-to-tr from-amber-900/60 to-amber-600/30 border border-amber-500/30 shadow-2xl backdrop-blur-sm">
+        <div class="lg:col-span-5 relative flex justify-center lg:justify-end">
+          <div class="relative mx-auto lg:mr-0 hero-visual-frame rounded-3xl p-3 sm:p-4 bg-gradient-to-tr from-amber-900/60 to-amber-600/30 border border-amber-500/30 shadow-2xl backdrop-blur-sm">
             <div id="hero-featured-box" class="rounded-2xl overflow-hidden aspect-[4/5] bg-stone-900 relative flex items-center justify-center transition-all">
               <img 
                 id="hero-featured-img"
@@ -239,7 +239,7 @@
 
   <!-- STORE HIGHLIGHTS STRIP -->
   <section class="bg-amber-100/60 border-y border-amber-200 py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="site-container">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-stone-800">
         
         <div class="flex items-center gap-3.5">
@@ -287,7 +287,7 @@
   </section>
 
   <!-- PRODUCT SHOWCASE SECTION -->
-  <section id="product-section" class="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <section id="product-section" class="py-14 sm:py-20 site-container">
     
     <!-- Section Title -->
     <div class="text-center max-w-2xl mx-auto mb-10">
@@ -331,7 +331,7 @@
     </div>
 
     <!-- PRODUCT GRID -->
-    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 product-grid-fullhd gap-6">
       <!-- Javascript will populate products here -->
     </div>
 
@@ -434,7 +434,7 @@
 
   <!-- BRAND STORY / CRAFT WORKSHOP -->
   <section id="story-section" class="py-16 sm:py-24 bg-stone-900 text-stone-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="site-container">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         
         <!-- Story image collage -->
@@ -443,13 +443,13 @@
             id="story-img-1"
             src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80" 
             alt="Nghề làm da thủ công" 
-            class="rounded-2xl w-full h-64 object-cover border border-stone-700 shadow-lg"
+            class="rounded-2xl w-full h-64 sm:h-72 xl:h-80 3xl:h-96 object-cover border border-stone-700 shadow-lg"
           />
           <img 
             id="story-img-2"
             src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80" 
             alt="Khâu dép da nam thủ công" 
-            class="rounded-2xl w-full h-64 object-cover border border-stone-700 shadow-lg mt-8"
+            class="rounded-2xl w-full h-64 sm:h-72 xl:h-80 3xl:h-96 object-cover border border-stone-700 shadow-lg mt-8"
           />
         </div>
 
@@ -494,7 +494,7 @@
 
   <!-- CUSTOMER FEEDBACKS / REVIEWS -->
   <section class="py-14 sm:py-20 bg-stone-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="site-container">
       
       <div class="text-center max-w-xl mx-auto mb-12">
         <span class="text-xs font-bold text-amber-800 uppercase tracking-widest bg-amber-100 px-3 py-1 rounded-full">Phản Hồi Thực Tế</span>
@@ -568,7 +568,7 @@
 
   <!-- STORE COMMITMENTS / POLICIES -->
   <section id="commitment-section" class="py-12 bg-amber-50/60 border-y border-amber-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="site-container">
       <div class="text-center mb-8">
         <h3 class="text-xl sm:text-2xl font-black text-brand-950 font-serif-heading">Quyền Lợi Khách Hàng Khi Mua Tại Xưởng Tuyết Nhung</h3>
       </div>
@@ -595,7 +595,7 @@
 
   <!-- FOOTER -->
   <footer class="bg-brand-950 text-stone-300 pt-14 pb-8 border-t border-amber-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="site-container">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 mb-12">
         
         <!-- Col 1: Brand Info -->
@@ -810,7 +810,7 @@
 
   <!-- 2. QUICK VIEW MODAL -->
   <div id="quick-view-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 overflow-y-auto">
-    <div class="relative bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-8">
+    <div class="relative bg-white rounded-3xl max-w-3xl xl:max-w-4xl 2xl:max-w-5xl w-full shadow-2xl overflow-hidden my-8">
       <button onclick="closeQuickView()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center font-bold">
         ✕
       </button>
