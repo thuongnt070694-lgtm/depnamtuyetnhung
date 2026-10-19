@@ -8,70 +8,117 @@ const STORE_NAME = 'products_store';
 
 // Mở cơ sở dữ liệu IndexedDB của trình duyệt
 function openDatabase() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     if (!window.indexedDB) {
       resolve(null);
       return;
     }
-    const request = indexedDB.open(DB_NAME, 1);
-    request.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME);
-      }
-    };
-    request.onsuccess = (e) => resolve(e.target.result);
-    request.onerror = (e) => {
-      console.warn('Không thể mở IndexedDB, dùng LocalStorage dự phòng:', e);
+    try {
+      const request = indexedDB.open(DB_NAME, 1);
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME);
+        }
+      };
+      request.onsuccess = (e) => resolve(e.target.result);
+      request.onerror = (e) => {
+        console.warn('Không thể mở IndexedDB, dùng LocalStorage dự phòng:', e);
+        resolve(null);
+      };
+    } catch(err) {
+      console.warn('Lỗi gọi indexedDB.open:', err);
       resolve(null);
-    };
+    }
   });
 }
 
 // Nén và tối ưu hóa ảnh trước khi lưu (Giảm từ 4MB-10MB gốc xuống còn ~80KB-120KB siêu nét cho web)
-function compressImageFile(file, maxWidth = 1000, maxHeight = 1000, quality = 0.82) {
+// Có cơ chế tự động fallback nếu canvas không hỗ trợ định dạng file đặc biệt
+function compressImageFile(file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) {
   return new Promise((resolve, reject) => {
-    if (!file || !file.type.startsWith('image/')) {
-      reject(new Error('File không phải là hình ảnh'));
+    if (!file) {
+      reject(new Error('Không có file được chọn'));
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        let width = img.width;
-        let height = img.height;
-
-        // Giữ nguyên tỷ lệ khung hình
-        if (width > maxWidth || height > maxHeight) {
-          if (width > height) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          } else {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
-          }
-        }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        
-        // Làm mịn ảnh
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0, width, height);
-
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-        resolve(compressedDataUrl);
-      };
-      img.onerror = () => reject(new Error('Không thể đọc dữ liệu ảnh'));
-      img.src = e.target.result;
+    // Đọc dự phòng bằng FileReader DataURL nếu cần
+    const fallbackDirectRead = () => {
+      const r = new FileReader();
+      r.onload = (e) => resolve(e.target.result);
+      r.onerror = () => reject(new Error('Không thể đọc file ảnh'));
+      r.readAsDataURL(file);
     };
-    reader.onerror = () => reject(new Error('Lỗi đọc file'));
-    reader.readAsDataURL(file);
+
+    // Kiểm tra định dạng ảnh (hỗ trợ cả khi file.type rỗng trên Windows)
+    const isImageFile = (file.type && file.type.startsWith('image/')) || 
+                        /\.(jpe?g|png|webp|gif|bmp|jfif|heic|svg)$/i.test(file.name || '');
+    if (!isImageFile && file.type) {
+      // Nếu file có type nhưng không phải ảnh
+      reject(new Error('File đã chọn không phải định dạng hình ảnh hợp lệ'));
+      return;
+    }
+
+    try {
+      // Dùng URL.createObjectURL để load ảnh nhanh chóng và ít tốn RAM
+      const blobUrl = URL.createObjectURL(file);
+      const img = new Image();
+      
+      img.onload = () => {
+        try {
+          let width = img.naturalWidth || img.width;
+          let height = img.naturalHeight || img.height;
+
+          // Nếu ảnh quá nhỏ hoặc không đo được kích thước, fallback đọc trực tiếp
+          if (!width || !height) {
+            URL.revokeObjectURL(blobUrl);
+            fallbackDirectRead();
+            return;
+          }
+
+          // Giữ nguyên tỷ lệ khung hình
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+
+          // Làm mịn ảnh chất lượng cao
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Tạo ảnh nén JPEG nhẹ và nét
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          URL.revokeObjectURL(blobUrl);
+          resolve(compressedDataUrl);
+        } catch(canvasErr) {
+          console.warn('Canvas nén ảnh gặp sự cố, tự động đọc trực tiếp:', canvasErr);
+          URL.revokeObjectURL(blobUrl);
+          fallbackDirectRead();
+        }
+      };
+
+      img.onerror = () => {
+        // Fallback đọc trực tiếp bằng FileReader nếu thẻ Image không render được blob
+        URL.revokeObjectURL(blobUrl);
+        fallbackDirectRead();
+      };
+
+      img.src = blobUrl;
+    } catch(err) {
+      console.warn('Lỗi khởi tạo blob nén ảnh, chuyển sang đọc trực tiếp:', err);
+      fallbackDirectRead();
+    }
   });
 }
 
@@ -131,6 +178,10 @@ async function loadProductsFromStorage() {
     } catch (e) {}
   }
 
+  // 3. Mặc định trả về dữ liệu mẫu trong products.js nếu chưa có lưu trữ
+  return (typeof PRODUCTS_DATA !== 'undefined' ? [...PRODUCTS_DATA] : []);
+}
+
 // Lưu cấu hình ảnh Banner và ảnh Xưởng (Trang chủ)
 async function saveHomepageConfig(config) {
   try {
@@ -138,6 +189,10 @@ async function saveHomepageConfig(config) {
     if (db) {
       const tx = db.transaction(STORE_NAME, 'readwrite');
       tx.objectStore(STORE_NAME).put(config, 'homepage_config');
+      await new Promise((resolve) => {
+        tx.oncomplete = resolve;
+        tx.onerror = resolve;
+      });
     }
   } catch (err) {
     console.warn('Lỗi lưu cấu hình homepage vào IndexedDB:', err);
@@ -176,4 +231,3 @@ async function loadHomepageConfig() {
 
   return null;
 }
-

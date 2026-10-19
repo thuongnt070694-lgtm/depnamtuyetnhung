@@ -594,18 +594,36 @@
       showToast(`Đã áp dụng mẫu "${p.name}" vào khung Banner!`, 'info');
     }
 
+    // Helper đọc ảnh an toàn: thử nén bằng Canvas, nếu không được tự động đọc trực tiếp bằng FileReader
+    async function processImageUpload(file, maxWidth = 1200, maxHeight = 1200) {
+      if (typeof compressImageFile === 'function') {
+        try {
+          return await compressImageFile(file, maxWidth, maxHeight, 0.85);
+        } catch (e) {
+          console.warn('compressImageFile error, falling back to FileReader:', e);
+        }
+      }
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = (e) => reject(new Error('Không thể đọc dữ liệu file'));
+        reader.readAsDataURL(file);
+      });
+    }
+
     // Chọn ảnh Banner từ máy tính
     async function handleBannerFileSelect(event) {
       const file = event.target.files[0];
       if (!file) return;
 
-      showToast('Đang tối ưu dung lượng ảnh Banner...', 'info');
+      showToast('Đang tải và tối ưu ảnh Banner...', 'info');
       try {
-        const compressed = await compressImageFile(file, 1000, 1000, 0.82);
+        const compressed = await processImageUpload(file, 1200, 1200);
         document.getElementById('banner-img-url').value = compressed;
         document.getElementById('banner-preview-img').src = compressed;
         showToast('Đã tải ảnh Banner thành công!', 'success');
       } catch(err) {
+        console.error('Lỗi tải ảnh banner:', err);
         showToast('Lỗi xử lý file ảnh!', 'error');
       }
       event.target.value = '';
@@ -622,13 +640,14 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      showToast(`Đang nén ảnh xưởng ${index}...`, 'info');
+      showToast(`Đang tải và nén ảnh xưởng ${index}...`, 'info');
       try {
-        const compressed = await compressImageFile(file, 1000, 1000, 0.82);
+        const compressed = await processImageUpload(file, 1200, 1200);
         document.getElementById(`story${index}-img-url`).value = compressed;
         document.getElementById(`story${index}-preview-img`).src = compressed;
         showToast(`Đã tải ảnh xưởng ${index} thành công!`, 'success');
       } catch(err) {
+        console.error(`Lỗi tải ảnh xưởng ${index}:`, err);
         showToast('Lỗi xử lý file ảnh!', 'error');
       }
       event.target.value = '';
@@ -762,18 +781,8 @@
 
       for (const file of Array.from(files)) {
         try {
-          if (typeof compressImageFile === 'function') {
-            const compressed = await compressImageFile(file, 1000, 1000, 0.82);
-            currentEditingImages.push(compressed);
-          } else {
-            const dataUrl = await new Promise((res, rej) => {
-              const r = new FileReader();
-              r.onload = e => res(e.target.result);
-              r.onerror = rej;
-              r.readAsDataURL(file);
-            });
-            currentEditingImages.push(dataUrl);
-          }
+          const compressed = await processImageUpload(file, 1000, 1000);
+          currentEditingImages.push(compressed);
         } catch (err) {
           console.warn('Lỗi xử lý file:', err);
         }
