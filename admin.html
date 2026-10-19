@@ -467,6 +467,40 @@
           ></textarea>
         </div>
 
+        <!-- GẮN LINK SẢN PHẨM TỪ TRANG KHÁC (SHOPEE, TIKTOK, WEBSITE KHÁC...) -->
+        <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50/60 rounded-2xl border border-blue-200/80 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="block font-bold text-blue-950 text-xs flex items-center gap-1.5">
+              <span>🔗 Link Liên Kết Sản Phẩm Từ Trang Khác (Shopee, TikTok, Lazada, Web khác...):</span>
+            </label>
+            <span class="text-[10px] text-blue-600 font-medium">Tùy chọn - để trống nếu không gắn</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div class="sm:col-span-2">
+              <input 
+                type="url" 
+                id="edit-external-link" 
+                placeholder="Dán link sản phẩm (VD: https://shopee.vn/... hoặc https://vt.tiktok.com/...)" 
+                class="w-full px-3 py-2 rounded-xl border border-blue-300 text-xs font-medium focus:outline-none focus:border-blue-700 bg-white"
+                oninput="autoDetectLinkName(this.value)"
+              />
+            </div>
+            <div>
+              <input 
+                type="text" 
+                id="edit-external-link-text" 
+                placeholder="Tên nút (VD: Mua trên Shopee)" 
+                class="w-full px-3 py-2 rounded-xl border border-blue-300 text-xs font-medium focus:outline-none focus:border-blue-700 bg-white"
+                oninput="this.dataset.manualEdited='true'"
+              />
+            </div>
+          </div>
+          <p class="text-[10px] text-stone-500">
+            💡 Khi gắn link, ngay dưới sản phẩm trên web sẽ hiện nút bấm này. Khách hàng bấm vào sẽ <strong>tự động chuyển sang trang đó</strong>.
+          </p>
+        </div>
+
         <!-- Nút hành động -->
         <div class="pt-4 border-t border-stone-200 flex justify-end gap-3">
           <button type="button" onclick="closeProductModal()" class="px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold hover:bg-stone-50">
@@ -861,6 +895,28 @@
       return exportCats;
     }
 
+    // Tự động nhận diện tên sàn TMĐT khi dán link
+    function autoDetectLinkName(url) {
+      const textInput = document.getElementById('edit-external-link-text');
+      if (!textInput || textInput.dataset.manualEdited === 'true') return;
+      const u = (url || '').toLowerCase();
+      if (u.includes('shopee.vn') || u.includes('shope.ee')) {
+        textInput.value = '🛍️ Mua Trên Shopee ↗';
+      } else if (u.includes('tiktok.com')) {
+        textInput.value = '🎵 Mua Trên TikTok Shop ↗';
+      } else if (u.includes('lazada.vn') || u.includes('s.lazada.vn')) {
+        textInput.value = '🛒 Mua Trên Lazada ↗';
+      } else if (u.includes('tiki.vn')) {
+        textInput.value = '📦 Mua Trên Tiki ↗';
+      } else if (u.includes('facebook.com') || u.includes('fb.com')) {
+        textInput.value = '💬 Mua Qua Facebook ↗';
+      } else if (u.trim().length > 0) {
+        if (!textInput.value) textInput.value = '🔗 Xem & Mua Trên Trang Liên Kết ↗';
+      } else {
+        textInput.value = '';
+      }
+    }
+
     // Chuyển tab giữa Quản lý sản phẩm và Cài đặt Banner
     function switchTab(tab) {
       const prodContent = document.getElementById('tab-content-products');
@@ -966,6 +1022,14 @@
             <td class="p-3 font-bold text-stone-900">
               <div class="line-clamp-1">${p.name}</div>
               <div class="text-[10px] text-stone-400 font-normal">Mã: TN-${p.id.toString().padStart(3, '0')} ${p.tag ? `• <span class="text-amber-800 font-semibold">${p.tag}</span>` : ''}</div>
+              ${p.externalLink ? `
+                <div class="mt-1">
+                  <a href="${p.externalLink}" target="_blank" class="inline-flex items-center gap-1 text-[10px] text-blue-700 hover:text-blue-900 hover:underline font-bold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">
+                    <span>${p.externalLinkText || '🔗 Link ngoài'}</span>
+                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  </a>
+                </div>
+              ` : ''}
             </td>
             <td class="p-3 text-stone-600 font-semibold">${p.categoryName || p.category}</td>
             <td class="p-3 font-extrabold text-amber-950">${formatCurrency(p.price)}</td>
@@ -1155,6 +1219,9 @@
           document.getElementById('edit-leather').value = p.leatherType || '';
           document.getElementById('edit-sole').value = p.soleType || '';
           document.getElementById('edit-description').value = p.description || '';
+          document.getElementById('edit-external-link').value = p.externalLink || '';
+          document.getElementById('edit-external-link-text').value = p.externalLinkText || '';
+          document.getElementById('edit-external-link-text').dataset.manualEdited = p.externalLinkText ? 'true' : 'false';
           currentEditingImages = Array.isArray(p.images) && p.images.length > 0 ? [...p.images] : ['https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80'];
         }
       } else {
@@ -1169,6 +1236,9 @@
         document.getElementById('edit-leather').value = 'Da bò sáp tự nhiên 100%';
         document.getElementById('edit-sole').value = 'Đế cao su đúc nguyên khối chống mòn';
         document.getElementById('edit-description').value = 'Mẫu dép da nam may tay thủ công tỉ mỉ tại xưởng Tuyết Nhung.';
+        document.getElementById('edit-external-link').value = '';
+        document.getElementById('edit-external-link-text').value = '';
+        document.getElementById('edit-external-link-text').dataset.manualEdited = 'false';
         currentEditingImages = [];
       }
 
@@ -1315,6 +1385,11 @@
       const leatherType = document.getElementById('edit-leather').value.trim();
       const soleType = document.getElementById('edit-sole').value.trim();
       const description = document.getElementById('edit-description').value.trim();
+      const externalLink = document.getElementById('edit-external-link').value.trim();
+      let externalLinkText = document.getElementById('edit-external-link-text').value.trim();
+      if (externalLink && !externalLinkText) {
+        externalLinkText = '🔗 Xem & Mua Trên Trang Liên Kết ↗';
+      }
 
       const catObj = categoriesList.find(c => c.id === category);
       const categoryName = catObj ? catObj.name : category;
@@ -1334,7 +1409,9 @@
             images: [...currentEditingImages],
             leatherType,
             soleType,
-            description
+            description,
+            externalLink,
+            externalLinkText
           };
           showToast(`Đã lưu "${name}" với ${currentEditingImages.length} hình ảnh!`, 'success');
         }
@@ -1356,7 +1433,9 @@
           stitching: "Khâu viền chỉ dù số 8 thủ công",
           sizes: [38, 39, 40, 41, 42, 43, 44],
           colors: ["Nâu Bò", "Đen"],
-          description
+          description,
+          externalLink,
+          externalLinkText
         };
         productsList.unshift(newProduct);
         showToast(`Đã thêm mẫu dép mới "${name}" thành công!`, 'success');

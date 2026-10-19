@@ -316,6 +316,19 @@ function renderProducts() {
                 Mua Ngay
               </button>
             </div>
+
+            ${product.externalLink ? `
+              <a 
+                href="${product.externalLink}" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                onclick="event.stopPropagation()"
+                class="mt-2.5 w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-950 border border-amber-300/80 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs group/extlink hover:scale-[1.01]"
+              >
+                <svg class="w-3.5 h-3.5 text-amber-800 group-hover/extlink:translate-x-0.5 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                <span class="truncate">${product.externalLinkText || 'Xem & Mua Trên Trang Liên Kết ↗'}</span>
+              </a>
+            ` : ''}
           </div>
         </div>
       </div>
@@ -667,6 +680,20 @@ function openQuickView(productId) {
             Đặt Mua Nhanh (COD)
           </button>
         </div>
+
+        ${product.externalLink ? `
+          <div class="pt-2.5">
+            <a 
+              href="${product.externalLink}" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-950 border border-amber-300 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-2xs group/extlink hover:scale-[1.01]"
+            >
+              <svg class="w-4 h-4 text-amber-800 group-hover/extlink:translate-x-0.5 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              <span>${product.externalLinkText || 'Xem & Mua Sản Phẩm Trên Trang Liên Kết (Shopee, TikTok...) ↗'}</span>
+            </a>
+          </div>
+        ` : ''}
       </div>
     </div>
   `;
