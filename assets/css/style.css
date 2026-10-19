@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap');
+
+:root {
+  --color-primary: #78350f; /* Nâu da bò */
+  --color-primary-dark: #451a03;
+  --color-primary-light: #92400e;
+  --color-accent: #d97706; /* Vàng hổ phách / đồng */
+  --color-accent-light: #f59e0b;
+  --color-dark: #18181b;
+  --color-cream: #faf7f2;
+  --color-card-bg: #ffffff;
+}
+
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background-color: var(--color-cream);
+  color: #27272a;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.font-serif-heading {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Hiệu ứng màu da thủ công */
+.bg-leather-gradient {
+  background: linear-gradient(135deg, #2a160d 0%, #4a2111 50%, #1f0f08 100%);
+}
+
+.bg-leather-card {
+  background: linear-gradient(145deg, #ffffff 0%, #fdfbf7 100%);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Nút bấm vàng da bò cao cấp */
+.btn-leather-primary {
+  background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+  color: #ffffff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px 0 rgba(120, 53, 15, 0.39);
+}
+
+.btn-leather-primary:hover {
+  background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(120, 53, 15, 0.5);
+}
+
+.btn-gold-accent {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  color: #ffffff;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px 0 rgba(217, 119, 6, 0.35);
+}
+
+.btn-gold-accent:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.5);
+}
+
+/* Card sản phẩm hiệu ứng nâng khi hover */
+.product-card {
+  transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 25px -5px rgba(120, 53, 15, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.product-card .img-zoom {
+  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.product-card:hover .img-zoom {
+  transform: scale(1.06);
+}
+
+/* Đường viền may thủ công giả lập (Stitch effect) */
+.stitched-border {
+  border: 2px dashed #b45309;
+  border-radius: 12px;
+}
+
+/* Badge thủ công */
+.badge-handcrafted {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+/* Nút chọn size */
+.size-btn {
+  transition: all 0.2s ease;
+}
+
+.size-btn.active {
+  background-color: #78350f !important;
+  color: #ffffff !important;
+  border-color: #78350f !important;
+  font-weight: 700;
+}
+
+/* Cart Drawer Animation */
+.cart-drawer-overlay {
+  transition: opacity 0.3s ease;
+}
+
+.cart-drawer-content {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Floating contact buttons pulse */
+@keyframes ringPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(37, 211, 102, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+  }
+}
+
+@keyframes hotlinePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(220, 38, 38, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}
+
+.pulse-zalo {
+  animation: ringPulse 2s infinite;
+}
+
+.pulse-hotline {
+  animation: hotlinePulse 2s infinite;
+}
+
+/* Tùy chỉnh thanh cuộn */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1ede6;
+}
+::-webkit-scrollbar-thumb {
+  background: #b45309;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #78350f;
+}
+
+/* Toast Notification */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast-item {
+  animation: slideInToast 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes slideInToast {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

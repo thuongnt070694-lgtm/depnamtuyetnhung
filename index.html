@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dép Nam Tuyết Nhung - Giày Dép Da Nam Thủ Công Tự Làm Tại Xưởng</title>
+  <meta name="description" content="Chuyên sản xuất và phân phối dép da nam, sandal da, dép kẹp da bò thật 100% tự may thủ công. Đế cao su chống trượt, bảo hành 12 tháng, đổi size tận nhà.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fdf8f6',
+              100: '#f2e8e5',
+              200: '#eaddd7',
+              300: '#e0a96d',
+              700: '#8c4826',
+              800: '#78350f',
+              900: '#451a03',
+              950: '#2b1104',
+            },
+            gold: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Custom CSS -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased selection:bg-amber-900 selection:text-white">
+
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="bg-brand-950 text-amber-200 text-xs py-2 px-4 border-b border-amber-900/40">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left">
+      <div class="flex items-center gap-2">
+        <span class="bg-amber-700 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">Xưởng Tự Làm</span>
+        <span>🎉 Khai trương ưu đãi: Giảm 10% mã <strong>TUYETNHUNG</strong> • Miễn phí vận chuyển từ 2 đôi</span>
+      </div>
+      <div class="flex items-center gap-4 text-stone-300">
+        <span class="hidden md:inline">🕒 Mở cửa: 08:00 - 21:30 hàng ngày</span>
+        <a href="tel:0348789257" class="text-amber-400 font-bold hover:underline flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 4V3z"/></svg>
+          Hotline: 0348.789.257
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN HEADER -->
+  <header class="bg-white border-b border-stone-200 sticky top-0 z-40 shadow-sm backdrop-blur-md bg-white/95">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20 gap-4">
+        
+        <!-- LOGO BRAND -->
+        <a href="#" class="flex items-center gap-3 group flex-shrink-0">
+          <div class="w-12 h-12 rounded-xl bg-brand-900 text-amber-400 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-amber-600/30">
+            <!-- Icon thợ da thủ công -->
+            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 18h16a1 1 0 0 0 1-1v-4a6 6 0 0 0-6-6h-2a6 6 0 0 0-6 6v4a1 1 0 0 0 1 1Z"/>
+              <path d="M12 7v5"/>
+              <path d="M10 12h4"/>
+              <path d="M7 18v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-2"/>
+            </svg>
+          </div>
+          <div>
+            <span class="block text-xl sm:text-2xl font-black text-brand-950 tracking-tight font-serif-heading">
+              TUYẾT NHUNG
+            </span>
+            <span class="block text-[11px] sm:text-xs text-amber-800 font-semibold tracking-wide uppercase">
+              Dép Nam Da Bò Thủ Công
+            </span>
+          </div>
+        </a>
+
+        <!-- SEARCH BAR -->
+        <div class="hidden md:flex flex-1 max-w-md mx-6">
+          <div class="relative w-full">
+            <input 
+              id="search-input"
+              type="text" 
+              placeholder="Tìm dép quai ngang, xỏ ngón, da sáp, sandal..."
+              oninput="handleSearch(this.value)"
+              class="w-full pl-10 pr-4 py-2.5 rounded-full border border-stone-300 text-sm focus:outline-none focus:border-amber-800 focus:ring-1 focus:ring-amber-800 bg-stone-50"
+            />
+            <div class="absolute left-3.5 top-3 text-stone-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT ACTIONS: HOTLINE & CART -->
+        <div class="flex items-center gap-3">
+          
+          <!-- Hotline Desktop -->
+          <a href="https://zalo.me/0348789257" target="_blank" class="hidden lg:flex items-center gap-2.5 px-4 py-2 rounded-xl bg-amber-50 text-amber-900 border border-amber-200/80 hover:bg-amber-100 transition-colors">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <div class="text-left text-xs">
+              <span class="text-stone-500 block text-[10px]">Tư vấn Zalo 24/7</span>
+              <strong class="text-amber-950 font-bold">0348.789.257</strong>
+            </div>
+          </a>
+
+          <!-- Nút Giỏ Hàng -->
+          <button 
+            onclick="openCartDrawer()"
+            class="relative p-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-brand-900 text-white font-bold text-sm flex items-center gap-2 hover:bg-brand-800 transition-colors shadow-sm"
+          >
+            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span class="hidden sm:inline">Giỏ Hàng</span>
+            <span 
+              id="cart-badge" 
+              class="absolute -top-1.5 -right-1.5 bg-amber-500 text-brand-950 text-xs font-black w-5 h-5 rounded-full flex items-center justify-center shadow"
+              style="display: none;"
+            >
+              0
+            </span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- NAVIGATION LINKS -->
+      <nav class="hidden md:flex items-center gap-6 py-3 border-t border-stone-100 text-xs sm:text-sm font-semibold text-stone-700">
+        <a href="#product-section" class="hover:text-amber-800 transition-colors text-amber-900 font-bold">Tất Cả Sản Phẩm</a>
+        <a href="#product-section" onclick="filterCategory('quai-ngang')" class="hover:text-amber-800 transition-colors">Dép Quai Ngang</a>
+        <a href="#product-section" onclick="filterCategory('xongon')" class="hover:text-amber-800 transition-colors">Dép Kẹp (Xỏ Ngón)</a>
+        <a href="#product-section" onclick="filterCategory('sandal')" class="hover:text-amber-800 transition-colors">Sandal / Quai Hậu</a>
+        <a href="#product-section" onclick="filterCategory('suc-da')" class="hover:text-amber-800 transition-colors">Dép Sục Da</a>
+        <a href="#size-guide" onclick="openSizeGuideModal()" class="hover:text-amber-800 transition-colors flex items-center gap-1 text-amber-700">
+          <span>📏 Bảng Đo Size</span>
+        </a>
+        <a href="#story-section" class="hover:text-amber-800 transition-colors">Về Xưởng Tuyết Nhung</a>
+        <a href="#commitment-section" class="hover:text-amber-800 transition-colors">Chính Sách Bảo Hành</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="relative bg-leather-gradient text-white py-14 sm:py-20 overflow-hidden">
+    <!-- Texture & Decorative elements -->
+    <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:24px_24px]"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        <!-- Text Content -->
+        <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-semibold">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            Xưởng Dép Da Thủ Công Gia Truyền Tuyết Nhung
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl lg:text-5xl font-black font-serif-heading tracking-tight leading-tight text-stone-100">
+            Từng Đường Kim Mũi Chỉ <br />
+            <span class="text-gold-gradient">Tôn Vinh Bước Chân Phái Mạnh</span>
+          </h1>
+
+          <p class="text-stone-300 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
+            Chúng tôi tự hào trực tiếp thuộc da, cắt rập và may thủ công từng đôi dép da nam. 
+            Sử dụng <strong>100% da bò thật nguyên tấm</strong>, khâu viền chỉ dù số 8 không bung keo, 
+            đế cao su đúc nguyên khối siêu êm và chống trượt.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+            <a href="#product-section" class="w-full sm:w-auto px-7 py-3.5 rounded-xl btn-gold-accent font-bold text-sm tracking-wide flex items-center justify-center gap-2">
+              <span>Xem Bộ Sưu Tập Dép</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+            <a href="https://zalo.me/0348789257" target="_blank" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all">
+              <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/></svg>
+              <span>Tư Vấn Zalo Đo Chân</span>
+            </a>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-stone-800 text-stone-300 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="text-amber-400 font-bold text-base">✓</span>
+              <span>100% Da Bò Thật</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-amber-400 font-bold text-base">✓</span>
+              <span>Khâu Chỉ Tay Thủ Công</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-amber-400 font-bold text-base">✓</span>
+              <span>Đổi Size Tại Nhà</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-amber-400 font-bold text-base">✓</span>
+              <span>Bảo Hành 12 Tháng</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured Banner Visual -->
+        <div class="lg:col-span-5 relative">
+          <div class="relative mx-auto max-w-sm rounded-3xl p-3 bg-gradient-to-tr from-amber-900/60 to-amber-600/30 border border-amber-500/30 shadow-2xl backdrop-blur-sm">
+            <div class="rounded-2xl overflow-hidden aspect-[4/5] bg-stone-900 relative">
+              <img 
+                src="https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80" 
+                alt="Dép nam da bò thủ công Tuyết Nhung" 
+                class="w-full h-full object-cover object-center"
+              />
+              <div class="absolute bottom-0 inset-x-0 p-5 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                <span class="text-amber-400 text-xs font-bold uppercase tracking-wider">Mẫu Tiêu Biểu Bán Chạy</span>
+                <p class="text-lg font-bold text-white">Dép Quai Ngang Da Bò Sáp Cổ Điển</p>
+                <div class="flex items-baseline gap-2 mt-1">
+                  <span class="text-xl font-extrabold text-amber-300">380.000đ</span>
+                  <span class="text-xs text-stone-400 line-through">480.000đ</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating Badge -->
+            <div class="absolute -top-4 -right-4 bg-amber-600 text-white text-xs font-extrabold p-3 rounded-2xl shadow-xl border border-amber-400/50 flex flex-col items-center">
+              <span>XƯỞNG</span>
+              <span class="text-base text-amber-200">GỐC</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- STORE HIGHLIGHTS STRIP -->
+  <section class="bg-amber-100/60 border-y border-amber-200 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-stone-800">
+        
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-amber-900 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+            <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-stone-900">Cam Kết Da Thật</h4>
+            <p class="text-xs text-stone-600">Đền 200% nếu phát hiện giả da simili</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-amber-900 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+            <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-stone-900">May Tay Thủ Công</h4>
+            <p class="text-xs text-stone-600">Khâu viền tỉ mỉ, chịu nước siêu tốt</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-amber-900 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+            <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-stone-900">Đổi Size Miễn Phí</h4>
+            <p class="text-xs text-stone-600">Hỗ trợ đổi trong 7 ngày nếu không vừa</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-amber-900 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+            <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-stone-900">Giao Hàng COD</h4>
+            <p class="text-xs text-stone-600">Kiểm tra và đi thử dép trước khi trả tiền</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT SHOWCASE SECTION -->
+  <section id="product-section" class="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Section Title -->
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <span class="text-xs font-extrabold text-amber-800 tracking-wider uppercase bg-amber-100 px-3 py-1 rounded-full">
+        Danh Mục Sản Phẩm Tự Làm
+      </span>
+      <h2 class="text-2xl sm:text-4xl font-black text-brand-950 font-serif-heading mt-3">
+        Dép Nam Thủ Công Tuyết Nhung
+      </h2>
+      <p class="text-stone-600 text-sm mt-2">
+        Mỗi đôi dép là tâm huyết của người thợ lành nghề, mang lại cảm giác thoải mái, đĩnh đạc và phong độ cho phái mạnh.
+      </p>
+    </div>
+
+    <!-- Category Filters & Sort Controls -->
+    <div class="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8">
+      
+      <!-- Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto w-full lg:w-auto pb-2 lg:pb-0" id="category-pills">
+        <!-- Javascript renders categories here -->
+      </div>
+
+      <!-- Controls: Sắp xếp & Số lượng -->
+      <div class="flex items-center justify-between lg:justify-end gap-3 w-full lg:w-auto text-xs">
+        <span class="text-stone-500 font-medium" id="product-count">Đang tải...</span>
+        
+        <div class="flex items-center gap-2">
+          <label class="text-stone-600 font-medium">Sắp xếp:</label>
+          <select 
+            onchange="handleSort(this.value)"
+            class="bg-white border border-stone-300 rounded-lg px-3 py-2 text-stone-700 font-medium focus:outline-none focus:border-amber-800"
+          >
+            <option value="default">Nổi bật nhất</option>
+            <option value="price-asc">Giá: Thấp đến Cao</option>
+            <option value="price-desc">Giá: Cao đến Thấp</option>
+            <option value="rating">Được đánh giá cao</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PRODUCT GRID -->
+    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Javascript will populate products here -->
+    </div>
+
+  </section>
+
+  <!-- SIZE GUIDE SECTION -->
+  <section id="size-guide" class="py-14 bg-stone-100 border-t border-stone-200">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-stone-200">
+        
+        <div class="text-center max-w-xl mx-auto mb-8">
+          <span class="text-xs font-bold text-amber-800 uppercase tracking-widest bg-amber-100 px-3 py-1 rounded-full">Chuẩn Form Chân Nam Việt</span>
+          <h3 class="text-2xl sm:text-3xl font-black text-stone-900 font-serif-heading mt-2">Hướng Dẫn Chọn Size Dép Chuẩn Xác</h3>
+          <p class="text-xs sm:text-sm text-stone-600 mt-1">Đo chiều dài từ gót đến đầu ngón chân dài nhất để chọn size vừa vặn nhất</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+          
+          <!-- Size Calculator Tool -->
+          <div class="md:col-span-5 bg-amber-50/70 p-6 rounded-2xl border border-amber-200">
+            <h4 class="font-bold text-stone-900 text-sm mb-3 flex items-center gap-2">
+              <svg class="w-5 h-5 text-amber-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              Công Cụ Tra Nhanh Size Dép
+            </h4>
+            <p class="text-xs text-stone-600 mb-4">Nhập chiều dài bàn chân của bạn (đơn vị Centimet):</p>
+            
+            <div class="flex gap-2 mb-4">
+              <input 
+                id="foot-length-input"
+                type="number" 
+                step="0.5" 
+                min="22" 
+                max="30" 
+                placeholder="VD: 25.5" 
+                class="flex-1 px-4 py-2.5 rounded-xl border border-stone-300 text-sm font-bold focus:outline-none focus:border-amber-800"
+              />
+              <button 
+                onclick="calculateFootSize()"
+                class="px-5 py-2.5 btn-leather-primary text-xs font-bold rounded-xl"
+              >
+                Tính Size
+              </button>
+            </div>
+
+            <div id="size-calc-result">
+              <p class="text-xs text-stone-500 italic">Mẹo: Bạn nên đo chân vào buổi chiều tối khi chân giãn nở tự nhiên nhất.</p>
+            </div>
+          </div>
+
+          <!-- Size Table -->
+          <div class="md:col-span-7 overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-amber-900 text-white font-bold">
+                  <th class="p-3 rounded-tl-xl">Size Dép</th>
+                  <th class="p-3">Chiều Dài Chân (cm)</th>
+                  <th class="p-3 rounded-tr-xl">Đặc Điểm Phù Hợp</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-200">
+                <tr class="hover:bg-amber-50/50">
+                  <td class="p-3 font-extrabold text-amber-950">Size 38</td>
+                  <td class="p-3">23.5 - 24.0 cm</td>
+                  <td class="p-3 text-stone-600">Bàn chân thon gọn, thanh mảnh</td>
+                </tr>
+                <tr class="hover:bg-amber-50/50">
+                  <td class="p-3 font-extrabold text-amber-950">Size 39</td>
+                  <td class="p-3">24.0 - 24.5 cm</td>
+                  <td class="p-3 text-stone-600">Chân tiêu chuẩn nhỏ</td>
+                </tr>
+                <tr class="hover:bg-amber-50/50 bg-amber-50/30">
+                  <td class="p-3 font-extrabold text-amber-950">Size 40</td>
+                  <td class="p-3">24.5 - 25.0 cm</td>
+                  <td class="p-3 text-stone-600">Cỡ thông dụng nam giới VN</td>
+                </tr>
+                <tr class="hover:bg-amber-50/50 bg-amber-50/30">
+                  <td class="p-3 font-extrabold text-amber-950">Size 41</td>
+                  <td class="p-3">25.0 - 25.5 cm</td>
+                  <td class="p-3 text-stone-600">Cỡ thông dụng bán chạy nhất</td>
+                </tr>
+                <tr class="hover:bg-amber-50/50">
+                  <td class="p-3 font-extrabold text-amber-950">Size 42</td>
+                  <td class="p-3">25.5 - 26.0 cm</td>
+                  <td class="p-3 text-stone-600">Chân đầy đặn hoặc mu bàn chân dày</td>
+                </tr>
+                <tr class="hover:bg-amber-50/50">
+                  <td class="p-3 font-extrabold text-amber-950">Size 43 - 44</td>
+                  <td class="p-3">26.5 - 27.5 cm</td>
+                  <td class="p-3 text-stone-600">Bàn chân to, béo hoặc cao to</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BRAND STORY / CRAFT WORKSHOP -->
+  <section id="story-section" class="py-16 sm:py-24 bg-stone-900 text-stone-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        
+        <!-- Story image collage -->
+        <div class="grid grid-cols-2 gap-4">
+          <img 
+            src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80" 
+            alt="Nghề làm da thủ công" 
+            class="rounded-2xl w-full h-64 object-cover border border-stone-700 shadow-lg"
+          />
+          <img 
+            src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80" 
+            alt="Khâu dép da nam thủ công" 
+            class="rounded-2xl w-full h-64 object-cover border border-stone-700 shadow-lg mt-8"
+          />
+        </div>
+
+        <!-- Story text -->
+        <div class="space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold border border-amber-500/20">
+            CÂU CHUYỆN LÀM NGHỀ
+          </div>
+          
+          <h3 class="text-3xl sm:text-4xl font-black font-serif-heading text-white">
+            Xưởng Dép Nam Tuyết Nhung: <br />
+            <span class="text-gold-gradient">Gìn Giữ Giá Trị Da Thủ Công Việt</span>
+          </h3>
+
+          <p class="text-stone-300 text-sm leading-relaxed">
+            Khác biệt với những đôi dép nhựa đúc công nghiệp tràn lan trên thị trường, từng đôi dép tại xưởng <strong>Tuyết Nhung</strong> được tạo nên từ đôi bàn tay của những người thợ cắt da, mài đế và khâu từng đường chỉ dù chắc nịch.
+          </p>
+
+          <p class="text-stone-300 text-sm leading-relaxed">
+            Chúng tôi kiên định sử dụng <strong>da bò thật tự nhiên</strong>: da sáp ngựa điên (Crazy horse), da bò Mill hạt và da Veg-tan thảo mộc. Càng đi lâu, lớp da càng tiếp xúc với nhiệt cơ thể để trở nên mềm mại và nhuốm màu thời gian bóng bẩy, độc nhất vô nhị.
+          </p>
+
+          <div class="grid grid-cols-3 gap-4 pt-4 border-t border-stone-800 text-center">
+            <div>
+              <span class="block text-2xl font-black text-amber-400">100%</span>
+              <span class="text-xs text-stone-400">Da bò thật nguyên tấm</span>
+            </div>
+            <div>
+              <span class="block text-2xl font-black text-amber-400">12</span>
+              <span class="text-xs text-stone-400">Tháng bảo hành chỉ keo</span>
+            </div>
+            <div>
+              <span class="block text-2xl font-black text-amber-400">15.000+</span>
+              <span class="text-xs text-stone-400">Đôi dép giao đến anh em</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMER FEEDBACKS / REVIEWS -->
+  <section class="py-14 sm:py-20 bg-stone-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-xl mx-auto mb-12">
+        <span class="text-xs font-bold text-amber-800 uppercase tracking-widest bg-amber-100 px-3 py-1 rounded-full">Phản Hồi Thực Tế</span>
+        <h3 class="text-2xl sm:text-3xl font-black text-stone-900 font-serif-heading mt-2">Khách Hàng Nói Gì Về Dép Tuyết Nhung?</h3>
+        <p class="text-xs sm:text-sm text-stone-500 mt-1">Hơn 98% quý khách hàng hài lòng về chất lượng da và độ êm chân</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Review 1 -->
+        <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex text-amber-500 mb-3">★★★★★</div>
+            <p class="text-xs sm:text-sm text-stone-700 italic mb-4">
+              "Dép da sáp TN01 đi rất thích. Ban đầu thấy da dày dặn tưởng bị cứng nhưng xỏ vào đi tầm 2 ngày là mềm nhũn, ôm sát chân. Đường chỉ may quanh đế rất dày và chắc, đi trời mưa không bị bong tróc như dép mua ngoài chợ."
+            </p>
+          </div>
+          <div class="flex items-center gap-3 pt-3 border-t border-stone-100">
+            <div class="w-10 h-10 rounded-full bg-amber-900 text-amber-200 font-bold flex items-center justify-center text-xs">
+              TA
+            </div>
+            <div>
+              <h5 class="font-bold text-xs text-stone-900">Anh Tuấn Anh (Hà Nội)</h5>
+              <span class="text-[10px] text-emerald-600 font-semibold">✓ Đã mua Dép Quai Ngang TN01</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review 2 -->
+        <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex text-amber-500 mb-3">★★★★★</div>
+            <p class="text-xs sm:text-sm text-stone-700 italic mb-4">
+              "Xưởng tư vấn size chuẩn lắm. Bàn chân mình bè ngang nên được xưởng khuyên tăng lên 1 size (size 42), đi vừa in không bị chật mu bàn chân. Giao hàng COD cho kiểm tra thoải mái rồi mới trả tiền."
+            </p>
+          </div>
+          <div class="flex items-center gap-3 pt-3 border-t border-stone-100">
+            <div class="w-10 h-10 rounded-full bg-amber-900 text-amber-200 font-bold flex items-center justify-center text-xs">
+              MH
+            </div>
+            <div>
+              <h5 class="font-bold text-xs text-stone-900">Anh Minh Hoàng (TP.HCM)</h5>
+              <span class="text-[10px] text-emerald-600 font-semibold">✓ Đã mua Dép Kẹp TN02 & TN03</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review 3 -->
+        <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex text-amber-500 mb-3">★★★★★</div>
+            <p class="text-xs sm:text-sm text-stone-700 italic mb-4">
+              "Đôi dép sục da TN05 mang đi làm công sở phối quần âu rất lịch sự mà lại không bị bí mồ hôi chân như đi giày tây bít. Da bò thật ngửi mùi là biết ngay, bảo hành 1 năm rất yên tâm."
+            </p>
+          </div>
+          <div class="flex items-center gap-3 pt-3 border-t border-stone-100">
+            <div class="w-10 h-10 rounded-full bg-amber-900 text-amber-200 font-bold flex items-center justify-center text-xs">
+              ĐQ
+            </div>
+            <div>
+              <h5 class="font-bold text-xs text-stone-900">Anh Đặng Quốc (Đà Nẵng)</h5>
+              <span class="text-[10px] text-emerald-600 font-semibold">✓ Đã mua Dép Sục Da TN05</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- STORE COMMITMENTS / POLICIES -->
+  <section id="commitment-section" class="py-12 bg-amber-50/60 border-y border-amber-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <h3 class="text-xl sm:text-2xl font-black text-brand-950 font-serif-heading">Quyền Lợi Khách Hàng Khi Mua Tại Xưởng Tuyết Nhung</h3>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-xs text-stone-700">
+        <div class="p-4 bg-white rounded-xl border border-amber-200 shadow-xs">
+          <span class="text-amber-800 font-bold text-sm block mb-1">🛡️ Bảo Hành 12 Tháng</span>
+          <p>Bảo hành miễn phí toàn bộ lỗi bung keo, đứt chỉ khâu, lỗi phụ kiện khóa đồng suốt 12 tháng.</p>
+        </div>
+        <div class="p-4 bg-white rounded-xl border border-amber-200 shadow-xs">
+          <span class="text-amber-800 font-bold text-sm block mb-1">🔄 Đổi Size Tận Nhà</span>
+          <p>Nếu mang không vừa size hoặc muốn đổi màu, xưởng hỗ trợ shipper giao đôi mới tới tận cửa đổi cho bạn.</p>
+        </div>
+        <div class="p-4 bg-white rounded-xl border border-amber-200 shadow-xs">
+          <span class="text-amber-800 font-bold text-sm block mb-1">📦 Kiểm Hàng Trước (COD)</span>
+          <p>Mở hộp kiểm tra da thật, đi thử êm chân rồi mới thanh toán tiền cho bưu tá.</p>
+        </div>
+        <div class="p-4 bg-white rounded-xl border border-amber-200 shadow-xs">
+          <span class="text-amber-800 font-bold text-sm block mb-1">🎁 Quà Tặng Kèm</span>
+          <p>Tặng kèm xi dưỡng bóng da bò hoặc lót đệm gót cho mỗi đơn hàng đặt trong tuần này.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-brand-950 text-stone-300 pt-14 pb-8 border-t border-amber-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 mb-12">
+        
+        <!-- Col 1: Brand Info -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-amber-800 text-amber-300 flex items-center justify-center font-serif-heading font-black text-lg shadow-md border border-amber-600/30">
+              TN
+            </div>
+            <div>
+              <span class="block text-lg font-black text-white font-serif-heading tracking-wide">DÉP NAM TUYẾT NHUNG</span>
+              <span class="block text-[11px] text-amber-400 font-semibold uppercase tracking-wider">Giày Dép Da Thủ Công Gia Truyền</span>
+            </div>
+          </div>
+          <p class="text-xs text-stone-400 leading-relaxed">
+            Chuyên chế tác các sản phẩm dép nam, sandal da bò nguyên tấm tự làm thủ công. Uy tín, chất lượng bền bỉ đồng hành cùng từng bước chân đàn ông Việt.
+          </p>
+          <div class="flex items-center gap-2.5 pt-1">
+            <a href="https://zalo.me/0348789257" target="_blank" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all hover:scale-105">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/></svg>
+              <span>Chat Zalo</span>
+            </a>
+            <a href="tel:0348789257" class="px-3.5 py-2 rounded-xl bg-amber-800 hover:bg-amber-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all hover:scale-105">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 4V3z"/></svg>
+              <span>Hotline</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2: Thông tin xưởng sản xuất (Thiết kế lại gọn gàng, không vỡ dòng) -->
+        <div>
+          <h4 class="text-white font-bold text-sm mb-4 border-l-2 border-amber-500 pl-2.5 uppercase tracking-wider">
+            THÔNG TIN XƯỞNG SẢN XUẤT
+          </h4>
+          <div class="space-y-3.5 text-xs text-stone-300">
+            
+            <!-- Địa chỉ xưởng -->
+            <div class="flex items-start gap-3">
+              <div class="w-7 h-7 rounded-lg bg-amber-900/60 border border-amber-700/50 flex items-center justify-center text-amber-400 flex-shrink-0 mt-0.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              </div>
+              <div class="min-w-0">
+                <span class="block text-[11px] font-bold text-amber-400 uppercase tracking-wider mb-0.5">Địa chỉ xưởng:</span>
+                <span class="text-stone-300 leading-snug block">1005C Hà Huy Giáp, Phường An Phú Đông, Thành phố Hồ Chí Minh</span>
+              </div>
+            </div>
+
+            <!-- Hotline / Zalo -->
+            <div class="flex items-start gap-3">
+              <div class="w-7 h-7 rounded-lg bg-amber-900/60 border border-amber-700/50 flex items-center justify-center text-amber-400 flex-shrink-0 mt-0.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+              </div>
+              <div class="min-w-0">
+                <span class="block text-[11px] font-bold text-amber-400 uppercase tracking-wider mb-0.5">Hotline & Zalo:</span>
+                <a href="tel:0348789257" class="text-white font-extrabold text-sm hover:text-amber-300 transition-colors">0348.789.257</a>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="flex items-start gap-3">
+              <div class="w-7 h-7 rounded-lg bg-amber-900/60 border border-amber-700/50 flex items-center justify-center text-amber-400 flex-shrink-0 mt-0.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              </div>
+              <div class="min-w-0">
+                <span class="block text-[11px] font-bold text-amber-400 uppercase tracking-wider mb-0.5">Email liên hệ:</span>
+                <span class="text-stone-300">depnamtuyetnhung@gmail.com</span>
+              </div>
+            </div>
+
+            <!-- Giờ làm việc -->
+            <div class="flex items-start gap-3">
+              <div class="w-7 h-7 rounded-lg bg-amber-900/60 border border-amber-700/50 flex items-center justify-center text-amber-400 flex-shrink-0 mt-0.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div class="min-w-0">
+                <span class="block text-[11px] font-bold text-amber-400 uppercase tracking-wider mb-0.5">Giờ làm việc:</span>
+                <span class="text-stone-300">08:00 - 21:30 (Cả Thứ 7 & Chủ Nhật)</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Col 3: Dòng sản phẩm -->
+        <div>
+          <h4 class="text-white font-bold text-sm mb-4 border-l-2 border-amber-500 pl-2.5 uppercase tracking-wider">
+            BỘ SƯU TẬP DÉP NAM
+          </h4>
+          <ul class="space-y-2.5 text-xs text-stone-400">
+            <li><a href="#product-section" onclick="filterCategory('quai-ngang')" class="hover:text-amber-400 flex items-center gap-2 transition-colors"><span class="text-amber-600">›</span> Dép Quai Ngang Da Bò Sáp</a></li>
+            <li><a href="#product-section" onclick="filterCategory('xongon')" class="hover:text-amber-400 flex items-center gap-2 transition-colors"><span class="text-amber-600">›</span> Dép Kẹp Xỏ Ngón Da Hạt Mill</a></li>
+            <li><a href="#product-section" onclick="filterCategory('quai-ngang')" class="hover:text-amber-400 flex items-center gap-2 transition-colors"><span class="text-amber-600">›</span> Dép Quai Chéo Da Pullup</a></li>
+            <li><a href="#product-section" onclick="filterCategory('sandal')" class="hover:text-amber-400 flex items-center gap-2 transition-colors"><span class="text-amber-600">›</span> Dép Sandal / Quai Hậu Khâu Viền</a></li>
+            <li><a href="#product-section" onclick="filterCategory('suc-da')" class="hover:text-amber-400 flex items-center gap-2 transition-colors"><span class="text-amber-600">›</span> Dép Sục Da Nam Bịt Mũi</a></li>
+            <li><a href="#size-guide" onclick="openSizeGuideModal()" class="hover:text-amber-400 flex items-center gap-2 transition-colors"><span class="text-amber-600">›</span> Bảng Hướng Dẫn Đo Size Chân</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Hỗ trợ & Chính sách -->
+        <div>
+          <h4 class="text-white font-bold text-sm mb-4 border-l-2 border-amber-500 pl-2.5 uppercase tracking-wider">
+            HỖ TRỢ KHÁCH HÀNG
+          </h4>
+          <ul class="space-y-2.5 text-xs text-stone-400">
+            <li><a href="#commitment-section" class="hover:text-amber-400 flex items-center gap-2 transition-colors"><span class="text-amber-600">›</span> Chính sách bảo hành 12 tháng</a></li>
+            <li><a href="#commitment-section" class="hover:text-amber-400 flex items-center gap-2 transition-colors"><span class="text-amber-600">›</span> Quy định đổi trả & đổi size tận nhà</a></li>
+            <li><a href="#commitment-section" class="hover:text-amber-400 flex items-center gap-2 transition-colors"><span class="text-amber-600">›</span> Phương thức thanh toán COD</a></li>
+            <li><a href="https://zalo.me/0348789257" target="_blank" class="hover:text-amber-400 flex items-center gap-2 transition-colors"><span class="text-amber-600">›</span> Đặt làm theo yêu cầu / sỉ xưởng</a></li>
+          </ul>
+          
+          <div class="mt-5 p-3.5 bg-stone-900/90 rounded-2xl border border-stone-800">
+            <span class="text-[11px] text-amber-400 block font-semibold mb-1.5">Ưu đãi hôm nay:</span>
+            <div class="flex items-center justify-between bg-black/60 px-3 py-2 rounded-xl border border-amber-900/60">
+              <span class="font-mono text-xs font-bold text-white tracking-widest">TUYETNHUNG</span>
+              <span class="text-[11px] text-amber-400 font-extrabold">-10%</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Copyright -->
+      <div class="pt-8 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-3">
+        <p>© 2026 Xưởng Dép Nam Tuyết Nhung. Toàn bộ sản phẩm được may thủ công.</p>
+        <p class="flex items-center gap-3">
+          <span>Tôn vinh bước chân phái mạnh Việt.</span>
+          <span class="text-stone-700">•</span>
+          <a href="admin.html" target="_blank" class="text-amber-400/80 hover:text-amber-300 font-semibold underline flex items-center gap-1">⚙️ Quản Lý Sản Phẩm</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= MODALS & DRAWERS ================= -->
+
+  <!-- 1. CART DRAWER -->
+  <div id="cart-drawer" class="fixed inset-0 z-50 hidden">
+    <!-- Backdrop overlay -->
+    <div id="cart-overlay" onclick="closeCartDrawer()" class="cart-drawer-overlay absolute inset-0 bg-black/60 opacity-0 transition-opacity"></div>
+    
+    <!-- Drawer Container -->
+    <div id="cart-drawer-content" class="cart-drawer-content absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col translate-x-full transition-transform">
+      
+      <!-- Drawer Header -->
+      <div class="p-4 sm:p-5 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+          <h3 class="font-bold text-stone-900 text-base">Giỏ Hàng Của Bạn</h3>
+        </div>
+        <button onclick="closeCartDrawer()" class="p-2 text-stone-400 hover:text-stone-700 rounded-lg">✕</button>
+      </div>
+
+      <!-- Cart Items List -->
+      <div class="p-4 sm:p-5 flex-1 overflow-y-auto space-y-3" id="cart-items-container">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Coupon & Subtotal Footer -->
+      <div class="p-4 sm:p-5 border-t border-stone-200 bg-stone-50 space-y-3">
+        
+        <!-- Coupon input -->
+        <div class="flex gap-2">
+          <input 
+            id="coupon-code" 
+            type="text" 
+            placeholder="Mã ưu đãi (VD: TUYETNHUNG)" 
+            class="flex-1 px-3 py-2 text-xs rounded-lg border border-stone-300 uppercase font-mono font-bold focus:outline-none focus:border-amber-800"
+          />
+          <button 
+            onclick="applyCoupon()" 
+            class="px-4 py-2 bg-stone-800 hover:bg-stone-900 text-white font-bold text-xs rounded-lg transition-colors"
+          >
+            Áp Dụng
+          </button>
+        </div>
+
+        <!-- Totals -->
+        <div class="space-y-1.5 text-xs text-stone-600">
+          <div class="flex justify-between">
+            <span>Tạm tính:</span>
+            <span class="font-bold text-stone-900" id="cart-subtotal">0đ</span>
+          </div>
+          <div id="cart-discount-row" class="flex justify-between text-emerald-700 hidden">
+            <span>Giảm giá:</span>
+            <span class="font-bold" id="cart-discount-amount">0đ</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Phí giao hàng:</span>
+            <span class="font-bold text-stone-900">Miễn phí toàn quốc</span>
+          </div>
+          <div class="flex justify-between text-sm sm:text-base font-extrabold text-amber-950 pt-2 border-t border-stone-200">
+            <span>Tổng thanh toán:</span>
+            <span id="cart-final-total" class="text-amber-900">0đ</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-2 pt-2">
+          <button 
+            onclick="openCheckoutModal()"
+            class="w-full py-3.5 btn-leather-primary font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md"
+          >
+            Tiến Hành Đặt Hàng (COD)
+          </button>
+          <button 
+            onclick="closeCartDrawer()"
+            class="w-full py-2.5 text-stone-600 hover:text-stone-900 text-xs font-semibold"
+          >
+            Tiếp tục chọn thêm sản phẩm khác
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. QUICK VIEW MODAL -->
+  <div id="quick-view-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 overflow-y-auto">
+    <div class="relative bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-8">
+      <button onclick="closeQuickView()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center font-bold">
+        ✕
+      </button>
+      <div id="quick-view-content">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. CHECKOUT MODAL (COD & VIETQR) -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 overflow-y-auto">
+    <div class="relative bg-white rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden my-8 p-6 sm:p-8">
+      
+      <button onclick="closeCheckoutModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700 font-bold text-lg">✕</button>
+
+      <div class="mb-5">
+        <span class="text-[11px] font-bold text-amber-800 uppercase tracking-widest bg-amber-100 px-2.5 py-0.5 rounded">Thanh Toán An Toàn</span>
+        <h3 class="text-xl sm:text-2xl font-black text-stone-900 font-serif-heading mt-1">Thông Tin Giao Hàng & Đặt Dép</h3>
+        <p class="text-xs text-stone-500">Được kiểm tra và đi thử dép trước khi thanh toán</p>
+      </div>
+
+      <!-- Order items summary accordion -->
+      <div class="mb-5 bg-stone-50 p-3.5 rounded-xl border border-stone-200 max-h-40 overflow-y-auto" id="checkout-order-summary">
+        <!-- JS inserts items here -->
+      </div>
+
+      <!-- Form đặt hàng -->
+      <form onsubmit="submitOrder(event)" class="space-y-3.5 text-xs">
+        
+        <div>
+          <label class="block font-bold text-stone-700 mb-1">Họ và Tên khách hàng *</label>
+          <input 
+            type="text" 
+            id="customer-name" 
+            required 
+            placeholder="VD: Nguyễn Văn Hùng" 
+            class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:border-amber-800 font-medium"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Số điện thoại nhận hàng *</label>
+            <input 
+              type="tel" 
+              id="customer-phone" 
+              required 
+              placeholder="VD: 0912345678" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:border-amber-800 font-medium"
+            />
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Thời gian nhận tiện nhất</label>
+            <select class="w-full px-3 py-2.5 rounded-xl border border-stone-300 text-xs focus:outline-none focus:border-amber-800 font-medium bg-white">
+              <option>Bất cứ lúc nào trong ngày</option>
+              <option>Chỉ giao giờ hành chính</option>
+              <option>Chỉ giao buổi tối hoặc cuối tuần</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-700 mb-1">Địa chỉ nhận hàng (Số nhà, đường, phường/xã, quận/huyện, tỉnh/TP) *</label>
+          <textarea 
+            id="customer-address" 
+            required 
+            rows="2" 
+            placeholder="VD: Số 45 ngõ 12, Phố Láng Hạ, Đống Đa, Hà Nội"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs focus:outline-none focus:border-amber-800 font-medium"
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-700 mb-1">Ghi chú thêm cho thợ may (độ dày mu chân, yêu cầu thêm)</label>
+          <input 
+            type="text" 
+            id="customer-note" 
+            placeholder="VD: Chân mình hơi bè ngang, thợ nới quai rộng giúp 1 chút nhé" 
+            class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-xs focus:outline-none focus:border-amber-800"
+          />
+        </div>
+
+        <!-- Phương thức thanh toán -->
+        <div class="pt-2">
+          <label class="block font-bold text-stone-700 mb-2">Chọn phương thức thanh toán:</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center gap-2 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-700 transition-colors bg-stone-50 has-[:checked]:border-amber-900 has-[:checked]:bg-amber-50">
+              <input type="radio" name="payment_method" value="COD" checked onchange="handlePaymentMethodChange('COD')" class="text-amber-900 focus:ring-amber-800" />
+              <div>
+                <span class="font-bold text-stone-900 block">Thanh toán COD</span>
+                <span class="text-[10px] text-stone-500">Nhận hàng rồi trả tiền</span>
+              </div>
+            </label>
+
+            <label class="flex items-center gap-2 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-700 transition-colors bg-stone-50 has-[:checked]:border-amber-900 has-[:checked]:bg-amber-50">
+              <input type="radio" name="payment_method" value="banking" onchange="handlePaymentMethodChange('banking')" class="text-amber-900 focus:ring-amber-800" />
+              <div>
+                <span class="font-bold text-stone-900 block">Quét mã VietQR</span>
+                <span class="text-[10px] text-stone-500">Chuyển khoản qua App</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Box hiển thị VietQR -->
+        <div id="bank-qr-box" class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-center hidden">
+          <p class="font-bold text-stone-900 text-xs mb-2">Quét mã VietQR để chuyển khoản thanh toán:</p>
+          <div class="w-48 h-48 mx-auto bg-white p-2 rounded-xl border shadow-sm mb-2">
+            <img id="vietqr-image" src="" alt="Mã VietQR Chuyển Khoản" class="w-full h-full object-contain" />
+          </div>
+          <p class="text-[11px] text-stone-600">Nội dung CK: <strong class="text-amber-900 font-mono font-bold">DEP NAM TUYET NHUNG</strong></p>
+          <p class="text-[10px] text-stone-400 mt-1">Chủ TK: NGUYEN THI TUYET NHUNG - Vietcombank</p>
+        </div>
+
+        <!-- Box ghi chú COD -->
+        <div id="cod-notice-box" class="p-3 bg-emerald-50 text-emerald-900 rounded-xl border border-emerald-200 text-xs flex items-center gap-2">
+          <span class="text-base font-bold">✓</span>
+          <span>Bưu tá sẽ cho bạn mở hộp xem dép và xỏ thử vừa chân trước khi thanh toán.</span>
+        </div>
+
+        <!-- Tổng tiền & Nút chốt đơn -->
+        <div class="pt-3 border-t border-stone-200 flex items-center justify-between">
+          <div>
+            <span class="text-stone-500 block text-xs">Tổng cần thanh toán:</span>
+            <span class="text-xl font-black text-amber-950" id="checkout-final-amount">0đ</span>
+          </div>
+
+          <div class="flex gap-2">
+            <button 
+              type="button" 
+              onclick="sendOrderToZalo()"
+              class="px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-colors"
+              title="Gửi chi tiết đơn sang Zalo Xưởng để xác nhận ngay"
+            >
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/></svg>
+              Chốt Qua Zalo
+            </button>
+            <button 
+              type="submit" 
+              class="px-5 py-3 rounded-xl btn-leather-primary font-bold text-xs shadow-md"
+            >
+              Xác Nhận Đặt Hàng
+            </button>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- 4. ORDER SUCCESS CELEBRATION MODAL -->
+  <div id="success-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 text-center shadow-2xl border border-amber-200">
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-black">
+        ✓
+      </div>
+      <h3 class="text-2xl font-black text-stone-900 font-serif-heading mb-1">Đặt Hàng Thành Công!</h3>
+      <p class="text-xs text-stone-500 mb-4">Cảm ơn bạn đã tin tưởng xưởng dép thủ công Tuyết Nhung</p>
+
+      <div id="success-order-details">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <a href="https://zalo.me/0348789257" target="_blank" class="w-full py-3 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-blue-700">
+          <span>Nhắn Tin Zalo Xưởng Để Ưu Tiên Gửi Sớm</span>
+        </a>
+        <button onclick="closeSuccessModal()" class="w-full py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50">
+          Tiếp Tục Xem Thêm Sản Phẩm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. SIZE GUIDE MODAL (Stand-alone popup) -->
+  <div id="size-guide-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+      <button onclick="closeSizeGuideModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 font-bold">✕</button>
+      <h3 class="text-xl font-black text-stone-900 font-serif-heading mb-2">Bảng Hướng Dẫn Đo Size Chân</h3>
+      <p class="text-xs text-stone-500 mb-4">Các bước đo chân chuẩn xác tại nhà:</p>
+      
+      <ol class="space-y-2 text-xs text-stone-700 list-decimal list-inside mb-4 bg-stone-50 p-4 rounded-xl">
+        <li>Đặt một tờ giấy trắng lên sàn nhà phẳng, sát cạnh tường.</li>
+        <li>Đặt bàn chân lên tờ giấy, gót chân chạm nhẹ vào tường.</li>
+        <li>Dùng bút chì đánh dấu điểm xa nhất của ngón chân dài nhất.</li>
+        <li>Dùng thước kẻ đo khoảng cách từ mép tường đến điểm đã đánh dấu.</li>
+      </ol>
+
+      <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-950 font-medium mb-4">
+        💡 <strong>Lời khuyên của thợ da Tuyết Nhung:</strong> Dép quai ngang và dép kẹp da thật sẽ giãn nhẹ 2-3mm sau 3 ngày đi. Nếu bạn thích đi thoải mái rộng rãi, hãy chọn tăng 1 size.
+      </div>
+
+      <button onclick="closeSizeGuideModal()" class="w-full py-2.5 btn-leather-primary text-xs font-bold rounded-xl">
+        Đã Hiểu, Quay Lại Chọn Dép
+      </button>
+    </div>
+  </div>
+
+  <!-- FLOATING QUICK CONTACT (ZALO & HOTLINE) -->
+  <div class="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
+    <!-- Nút Gọi Hotline Rung Lắc -->
+    <a 
+      href="tel:0348789257" 
+      class="pulse-hotline w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-transform" 
+      title="Gọi Hotline 0348.789.257"
+    >
+      <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 4V3z"/></svg>
+    </a>
+
+    <!-- Nút Chat Zalo Nhấp Nháy -->
+    <a 
+      href="https://zalo.me/0348789257" 
+      target="_blank" 
+      class="pulse-zalo w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shadow-2xl hover:scale-110 transition-transform" 
+      title="Chat Zalo cùng Tuyết Nhung"
+    >
+      Zalo
+    </a>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS CONTAINER -->
+  <div id="toast-container"></div>
+
+  <!-- SCRIPTS -->
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/app.js"></script>
+
+</body>
+</html>

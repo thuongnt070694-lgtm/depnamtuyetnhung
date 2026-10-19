@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Trị Sản Phẩm - Dép Nam Tuyết Nhung</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased p-4 sm:p-8">
+
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- HEADER QUẢN TRỊ -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-900 uppercase">Trang Quản Trị</span>
+          <h1 class="text-2xl font-black text-stone-900 font-serif-heading">Cập Nhật Sản Phẩm & Đa Ảnh</h1>
+        </div>
+        <p class="text-xs text-stone-500">Thêm nhiều góc ảnh (mặt trên, đế, góc nghiêng, trên chân), sửa tên và đổi giá bán dễ dàng</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="index.html" target="_blank" class="px-4 py-2.5 rounded-xl border border-amber-900 text-amber-900 font-bold text-xs hover:bg-amber-50 flex items-center gap-1.5 transition-colors">
+          <span>👁️ Xem Trang Cửa Hàng</span>
+        </a>
+        <button onclick="openProductModal()" class="px-5 py-2.5 rounded-xl btn-leather-primary font-bold text-xs flex items-center gap-1.5 shadow-sm">
+          <span>+ Thêm Mẫu Dép Mới</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- BẢNG DANH SÁCH SẢN PHẨM -->
+    <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden mb-6">
+      
+      <div class="p-4 border-b border-stone-100 flex items-center justify-between bg-stone-50">
+        <h3 class="font-bold text-stone-800 text-sm" id="table-title">Danh Sách Dép Nam Đang Bán</h3>
+        <button onclick="resetToDefaultData()" class="text-xs text-stone-500 hover:text-red-600 underline">
+          Khôi phục danh sách mẫu gốc
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-stone-50 text-stone-500 border-b border-stone-200 font-semibold uppercase">
+              <th class="p-3.5 w-24 text-center">Hình Ảnh</th>
+              <th class="p-3.5">Tên Sản Phẩm & Mã</th>
+              <th class="p-3.5">Danh Mục</th>
+              <th class="p-3.5">Giá Bán Thực Tế</th>
+              <th class="p-3.5">Giá Gốc</th>
+              <th class="p-3.5">Chất Liệu Da</th>
+              <th class="p-3.5 text-center w-28">Hành Động</th>
+            </tr>
+          </thead>
+          <tbody id="admin-product-tbody" class="divide-y divide-stone-100 font-medium">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- HƯỚNG DẪN LƯU VĨNH VIỄN -->
+    <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-5 text-xs text-stone-700 space-y-2">
+      <h4 class="font-bold text-amber-950 text-sm flex items-center gap-2">
+        <span>💡 Mẹo Thêm Nhiều Ảnh:</span>
+      </h4>
+      <p>• Khi bấm nút <strong>"✏️ Sửa"</strong>, bạn có thể chọn cùng lúc <strong>nhiều file ảnh</strong> từ điện thoại/máy tính (góc chụp mặt quai dép, đế chống trượt, ảnh đi thử trên chân...).</p>
+      <p>• Bạn có thể bấm <strong>"Đặt làm ảnh chính"</strong> để chọn tấm ảnh đẹp nhất làm ảnh đại diện hiển thị ngoài trang chủ.</p>
+      <p>• Bấm <strong>"Lưu Thay Đổi"</strong> để cập nhật ngay. Để lưu vĩnh viễn dữ liệu vào mã nguồn, bấm nút bên dưới để tải file <strong>products.js</strong> và chép đè vào thư mục <code class="bg-white px-1.5 py-0.5 rounded border border-amber-200 font-bold">assets/js/products.js</code>:</p>
+      <div class="pt-2">
+        <button onclick="exportProductsFile()" class="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-lg transition-colors flex items-center gap-2">
+          <span>📥 Tải File products.js Mới Để Lưu Cố Định</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL THÊM / CHỈNH SỬA SẢN PHẨM (HỖ TRỢ NHIỀU ẢNH) -->
+  <div id="product-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl relative my-8 max-h-[90vh] overflow-y-auto">
+      
+      <button onclick="closeProductModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700 font-bold text-lg">✕</button>
+
+      <h3 class="text-xl font-black text-stone-900 font-serif-heading mb-1" id="modal-heading">Chỉnh Sửa Mẫu Dép</h3>
+      <p class="text-xs text-stone-500 mb-5">Cập nhật thông tin chi tiết và thêm nhiều hình ảnh trực quan</p>
+
+      <form onsubmit="saveProduct(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="edit-product-id" value="">
+
+        <!-- Tên sản phẩm -->
+        <div>
+          <label class="block font-bold text-stone-700 mb-1">Tên Dép Nam *</label>
+          <input 
+            type="text" 
+            id="edit-name" 
+            required 
+            placeholder="VD: Dép Quai Ngang Da Bò Sáp Cổ Điển - TN01" 
+            class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm font-semibold focus:outline-none focus:border-amber-800"
+          />
+        </div>
+
+        <!-- Danh mục & Tag nổi bật -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Danh Mục Dép</label>
+            <select id="edit-category" class="w-full px-3 py-2.5 rounded-xl border border-stone-300 font-medium focus:outline-none focus:border-amber-800 bg-white">
+              <option value="quai-ngang">Dép Quai Ngang</option>
+              <option value="xongon">Dép Kẹp (Xỏ Ngón)</option>
+              <option value="sandal">Sandal / Quai Hậu</option>
+              <option value="suc-da">Dép Sục Da Nam</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Huy Hiệu (Tag nổi bật)</label>
+            <input 
+              type="text" 
+              id="edit-tag" 
+              placeholder="VD: Bán Chạy Nhất, Mẫu Mới, Da Sáp Ngựa Điên..." 
+              class="w-full px-3 py-2.5 rounded-xl border border-stone-300 font-medium focus:outline-none focus:border-amber-800"
+            />
+          </div>
+        </div>
+
+        <!-- Giá bán & Giá gốc -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-amber-50/60 rounded-xl border border-amber-200">
+          <div>
+            <label class="block font-bold text-amber-950 mb-1">Giá Bán Thực Tế (VNĐ) *</label>
+            <input 
+              type="number" 
+              id="edit-price" 
+              required 
+              step="1000"
+              placeholder="VD: 380000" 
+              class="w-full px-3 py-2.5 rounded-xl border border-amber-300 font-bold text-sm text-amber-950 focus:outline-none focus:border-amber-800"
+            />
+            <span class="text-[10px] text-stone-500 mt-0.5 block">Nhập số liền, không chấm phẩy (VD: 380000)</span>
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Giá Gốc Niêm Yết (VNĐ)</label>
+            <input 
+              type="number" 
+              id="edit-original-price" 
+              step="1000"
+              placeholder="VD: 480000" 
+              class="w-full px-3 py-2.5 rounded-xl border border-stone-300 font-bold text-sm text-stone-600 focus:outline-none focus:border-amber-800"
+            />
+            <span class="text-[10px] text-stone-500 mt-0.5 block">Giá cao hơn để gạch ngang tạo khuyến mãi</span>
+          </div>
+        </div>
+
+        <!-- BỘ SƯU TẬP NHIỀU ẢNH SẢN PHẨM -->
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <label class="block font-bold text-stone-800 text-sm">Bộ Sưu Tập Hình Ảnh Sản Phẩm *</label>
+              <span class="text-[11px] text-stone-500" id="img-count-badge">Đang có 0 ảnh (khách hàng sẽ xem được tất cả các góc ảnh này)</span>
+            </div>
+            
+            <!-- Nút chọn nhiều file từ máy tính -->
+            <label class="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs rounded-xl cursor-pointer flex items-center gap-1.5 shadow-sm transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>+ Chọn Nhiều Ảnh Từ Máy</span>
+              <input type="file" multiple accept="image/*" class="hidden" onchange="handleMultipleFilesSelect(event)">
+            </label>
+          </div>
+
+          <!-- Nhập thêm link mạng hoặc đường dẫn local -->
+          <div class="flex gap-2">
+            <input 
+              type="text" 
+              id="add-custom-img-url" 
+              placeholder="Hoặc dán link ảnh/đường dẫn (VD: assets/images/dep-goc-nghieng.jpg)" 
+              class="flex-1 px-3 py-2 rounded-xl border border-stone-300 text-xs font-medium focus:outline-none focus:border-amber-800"
+            />
+            <button 
+              type="button" 
+              onclick="addImageFromUrl()" 
+              class="px-4 py-2 bg-stone-800 hover:bg-stone-900 text-white font-bold text-xs rounded-xl transition-colors"
+            >
+              Thêm Link
+            </button>
+          </div>
+
+          <!-- Danh sách ảnh xem trước và quản lý -->
+          <div id="gallery-preview-container" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 pt-2">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Chất liệu da & Loại đế -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Chất liệu da</label>
+            <input 
+              type="text" 
+              id="edit-leather" 
+              placeholder="VD: Da bò sáp Crazy Horse (càng đi càng bóng đẹp)..." 
+              class="w-full px-3 py-2 rounded-xl border border-stone-300 focus:outline-none focus:border-amber-800 font-medium"
+            />
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Loại đế dép</label>
+            <input 
+              type="text" 
+              id="edit-sole" 
+              placeholder="VD: Đế cao su đúc nguyên khối chống mòn..." 
+              class="w-full px-3 py-2 rounded-xl border border-stone-300 focus:outline-none focus:border-amber-800 font-medium"
+            />
+          </div>
+        </div>
+
+        <!-- Mô tả -->
+        <div>
+          <label class="block font-bold text-stone-700 mb-1">Mô tả sản phẩm</label>
+          <textarea 
+            id="edit-description" 
+            rows="2" 
+            placeholder="Mô tả cảm giác đi êm chân, độ bền chỉ khâu..." 
+            class="w-full px-3.5 py-2 rounded-xl border border-stone-300 focus:outline-none focus:border-amber-800"
+          ></textarea>
+        </div>
+
+        <!-- Nút hành động -->
+        <div class="pt-4 border-t border-stone-200 flex justify-end gap-3">
+          <button type="button" onclick="closeProductModal()" class="px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold hover:bg-stone-50">
+            Hủy Bỏ
+          </button>
+          <button type="submit" class="px-7 py-2.5 rounded-xl btn-leather-primary font-bold shadow-md">
+            Lưu Thay Đổi
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2"></div>
+
+  <!-- SCRIPTS -->
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script>
+    let productsList = [];
+    let currentEditingImages = []; // Danh sách nhiều ảnh của sản phẩm đang sửa
+
+    // Tải danh sách khi mở trang
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadProductsData();
+    });
+
+    async function loadProductsData() {
+      if (typeof loadProductsFromStorage === 'function') {
+        productsList = await loadProductsFromStorage();
+      } else {
+        const custom = localStorage.getItem('tuyetnhung_custom_products');
+        if (custom) {
+          try {
+            productsList = JSON.parse(custom);
+          } catch(e) {
+            productsList = [...PRODUCTS_DATA];
+          }
+        } else {
+          productsList = [...PRODUCTS_DATA];
+        }
+      }
+      renderAdminTable();
+    }
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    }
+
+    // Render bảng sản phẩm
+    function renderAdminTable() {
+      const tbody = document.getElementById('admin-product-tbody');
+      const title = document.getElementById('table-title');
+      if (!tbody) return;
+
+      title.innerText = `Danh Sách Dép Nam Đang Bán (${productsList.length} mẫu)`;
+
+      tbody.innerHTML = productsList.map((p, index) => {
+        const images = Array.isArray(p.images) && p.images.length > 0 ? p.images : ['assets/images/dep-tn01.jpg'];
+        const mainImage = images[0];
+
+        return `
+          <tr class="hover:bg-amber-50/40 transition-colors">
+            <td class="p-3 text-center">
+              <div class="relative w-14 h-14 mx-auto rounded-xl overflow-hidden border border-stone-200 bg-stone-100 group">
+                <img src="${mainImage}" alt="${p.name}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=100&q=80'" />
+                <span class="absolute bottom-0 inset-x-0 bg-black/70 text-white text-[9px] font-bold py-0.5">
+                  📸 ${images.length} ảnh
+                </span>
+              </div>
+            </td>
+            <td class="p-3 font-bold text-stone-900">
+              <div class="line-clamp-1">${p.name}</div>
+              <div class="text-[10px] text-stone-400 font-normal">Mã: TN-${p.id.toString().padStart(3, '0')} ${p.tag ? `• <span class="text-amber-800 font-semibold">${p.tag}</span>` : ''}</div>
+            </td>
+            <td class="p-3 text-stone-600 font-semibold">${p.categoryName || p.category}</td>
+            <td class="p-3 font-extrabold text-amber-950">${formatCurrency(p.price)}</td>
+            <td class="p-3 text-stone-400 line-through">${formatCurrency(p.originalPrice || p.price)}</td>
+            <td class="p-3 text-stone-500 line-clamp-1 max-w-xs">${p.leatherType || 'Da bò thật'}</td>
+            <td class="p-3 text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button onclick="editProduct(${p.id})" class="px-2.5 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold transition-colors">
+                  ✏️ Sửa
+                </button>
+                <button onclick="deleteProduct(${p.id})" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold transition-colors">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Mở modal thêm/sửa sản phẩm
+    function openProductModal(productId = null) {
+      const modal = document.getElementById('product-modal');
+      const heading = document.getElementById('modal-heading');
+
+      if (productId) {
+        heading.innerText = 'Chỉnh Sửa Mẫu Dép & Thêm Nhiều Ảnh';
+        const p = productsList.find(item => item.id === productId);
+        if (p) {
+          document.getElementById('edit-product-id').value = p.id;
+          document.getElementById('edit-name').value = p.name;
+          document.getElementById('edit-category').value = p.category;
+          document.getElementById('edit-tag').value = p.tag || '';
+          document.getElementById('edit-price').value = p.price;
+          document.getElementById('edit-original-price').value = p.originalPrice || p.price;
+          document.getElementById('edit-leather').value = p.leatherType || '';
+          document.getElementById('edit-sole').value = p.soleType || '';
+          document.getElementById('edit-description').value = p.description || '';
+
+          // Nạp danh sách nhiều ảnh hiện tại
+          currentEditingImages = Array.isArray(p.images) && p.images.length > 0 ? [...p.images] : ['https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80'];
+        }
+      } else {
+        heading.innerText = 'Thêm Mẫu Dép Mới';
+        document.getElementById('edit-product-id').value = '';
+        document.getElementById('edit-name').value = '';
+        document.getElementById('edit-category').value = 'quai-ngang';
+        document.getElementById('edit-tag').value = 'Mẫu Mới';
+        document.getElementById('edit-price').value = '';
+        document.getElementById('edit-original-price').value = '';
+        document.getElementById('edit-leather').value = 'Da bò sáp tự nhiên 100%';
+        document.getElementById('edit-sole').value = 'Đế cao su đúc nguyên khối chống mòn';
+        document.getElementById('edit-description').value = 'Mẫu dép da nam may tay thủ công tỉ mỉ tại xưởng Tuyết Nhung.';
+
+        currentEditingImages = [];
+      }
+
+      renderGalleryPreview();
+      modal.classList.remove('hidden');
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal').classList.add('hidden');
+    }
+
+    // Render danh sách ảnh xem trước trong modal
+    function renderGalleryPreview() {
+      const container = document.getElementById('gallery-preview-container');
+      const badge = document.getElementById('img-count-badge');
+      if (!container) return;
+
+      badge.innerText = `Đang có ${currentEditingImages.length} ảnh (${currentEditingImages.length === 0 ? 'chưa có ảnh nào' : 'ảnh đầu tiên là ảnh đại diện'})`;
+
+      if (currentEditingImages.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-6 text-center text-stone-400 bg-white rounded-xl border border-dashed border-stone-300">
+            <p class="font-medium">Chưa có ảnh nào.</p>
+            <p class="text-[11px] mt-1">Bấm <strong>"+ Chọn Nhiều Ảnh Từ Máy"</strong> hoặc dán link ảnh ở trên.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = currentEditingImages.map((img, idx) => `
+        <div class="relative group aspect-square rounded-xl overflow-hidden border-2 ${idx === 0 ? 'border-amber-800 ring-2 ring-amber-600/30' : 'border-stone-200'} bg-white shadow-xs">
+          <img src="${img}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=200&q=80'" />
+          
+          <!-- Badge Ảnh Chính -->
+          ${idx === 0 ? `
+            <span class="absolute top-1.5 left-1.5 bg-amber-900 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+              ★ ẢNH CHÍNH
+            </span>
+          ` : `
+            <span class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+              Góc ${idx + 1}
+            </span>
+          `}
+
+          <!-- Menu nút bấm khi rê chuột vào ảnh -->
+          <div class="absolute inset-0 bg-stone-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-2">
+            ${idx !== 0 ? `
+              <button 
+                type="button" 
+                onclick="setPrimaryImage(${idx})" 
+                class="w-full py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] rounded shadow transition-colors"
+                title="Đặt ảnh này làm ảnh đại diện ngoài trang chủ"
+              >
+                Làm ảnh chính
+              </button>
+            ` : ''}
+            <button 
+              type="button" 
+              onclick="removeImage(${idx})" 
+              class="w-full py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] rounded shadow transition-colors"
+              title="Xóa ảnh này"
+            >
+              🗑️ Xóa ảnh
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Chọn nhiều file ảnh từ máy tính (Tự động nén tối ưu hóa và chống tràn bộ nhớ)
+    async function handleMultipleFilesSelect(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      showToast(`Đang tối ưu dung lượng ${files.length} ảnh...`, 'info');
+
+      for (const file of Array.from(files)) {
+        try {
+          if (typeof compressImageFile === 'function') {
+            const compressed = await compressImageFile(file, 1000, 1000, 0.82);
+            currentEditingImages.push(compressed);
+          } else {
+            const dataUrl = await new Promise((res, rej) => {
+              const r = new FileReader();
+              r.onload = e => res(e.target.result);
+              r.onerror = rej;
+              r.readAsDataURL(file);
+            });
+            currentEditingImages.push(dataUrl);
+          }
+        } catch (err) {
+          console.warn('Lỗi xử lý file:', err);
+        }
+      }
+
+      renderGalleryPreview();
+      showToast(`Đã thêm ${files.length} ảnh vào bộ sưu tập!`, 'success');
+      event.target.value = ''; // reset input
+    }
+
+    // Thêm ảnh từ ô nhập URL hoặc đường dẫn file
+    function addImageFromUrl() {
+      const input = document.getElementById('add-custom-img-url');
+      if (!input) return;
+      const url = input.value.trim();
+      if (!url) {
+        showToast('Vui lòng nhập đường dẫn hoặc link ảnh!', 'error');
+        return;
+      }
+
+      currentEditingImages.push(url);
+      renderGalleryPreview();
+      input.value = '';
+      showToast('Đã thêm 1 ảnh mới vào bộ sưu tập!', 'success');
+    }
+
+    // Đặt ảnh được chọn làm ảnh đại diện (đưa lên vị trí đầu tiên)
+    function setPrimaryImage(index) {
+      if (index <= 0 || index >= currentEditingImages.length) return;
+      const target = currentEditingImages.splice(index, 1)[0];
+      currentEditingImages.unshift(target);
+      renderGalleryPreview();
+      showToast('Đã đổi ảnh đại diện chính của sản phẩm!', 'success');
+    }
+
+    // Xóa bớt ảnh
+    function removeImage(index) {
+      if (index < 0 || index >= currentEditingImages.length) return;
+      currentEditingImages.splice(index, 1);
+      renderGalleryPreview();
+      showToast('Đã xóa 1 ảnh!', 'info');
+    }
+
+    // Sửa sản phẩm
+    function editProduct(id) {
+      openProductModal(id);
+    }
+
+    // Xóa sản phẩm
+    async function deleteProduct(id) {
+      const p = productsList.find(item => item.id === id);
+      if (!p) return;
+      if (confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${p.name}" không?`)) {
+        productsList = productsList.filter(item => item.id !== id);
+        await saveProductsData();
+        renderAdminTable();
+        showToast(`Đã xóa sản phẩm "${p.name}"!`, 'info');
+      }
+    }
+
+    // Lưu sản phẩm từ Modal
+    async function saveProduct(event) {
+      event.preventDefault();
+
+      if (currentEditingImages.length === 0) {
+        showToast('Vui lòng thêm ít nhất 1 ảnh cho sản phẩm!', 'error');
+        return;
+      }
+
+      const idVal = document.getElementById('edit-product-id').value;
+      const name = document.getElementById('edit-name').value.trim();
+      const category = document.getElementById('edit-category').value;
+      const tag = document.getElementById('edit-tag').value.trim();
+      const price = parseInt(document.getElementById('edit-price').value);
+      const originalPrice = parseInt(document.getElementById('edit-original-price').value) || Math.round(price * 1.25);
+      const leatherType = document.getElementById('edit-leather').value.trim();
+      const soleType = document.getElementById('edit-sole').value.trim();
+      const description = document.getElementById('edit-description').value.trim();
+
+      const categoryNames = {
+        'quai-ngang': 'Dép Quai Ngang',
+        'xongon': 'Dép Kẹp (Xỏ Ngón)',
+        'sandal': 'Sandal / Quai Hậu',
+        'suc-da': 'Dép Sục Da Nam'
+      };
+
+      if (idVal) {
+        // Cập nhật sản phẩm có sẵn
+        const id = parseInt(idVal);
+        const index = productsList.findIndex(p => p.id === id);
+        if (index > -1) {
+          productsList[index] = {
+            ...productsList[index],
+            name,
+            category,
+            categoryName: categoryNames[category] || category,
+            tag,
+            price,
+            originalPrice,
+            images: [...currentEditingImages],
+            leatherType,
+            soleType,
+            description
+          };
+          showToast(`Đã lưu "${name}" với ${currentEditingImages.length} hình ảnh!`, 'success');
+        }
+      } else {
+        // Thêm sản phẩm mới
+        const newId = productsList.length > 0 ? Math.max(...productsList.map(p => p.id)) + 1 : 1;
+        const newProduct = {
+          id: newId,
+          name,
+          category,
+          categoryName: categoryNames[category] || category,
+          tag,
+          price,
+          originalPrice,
+          rating: 5,
+          reviewsCount: 1,
+          images: [...currentEditingImages],
+          leatherType,
+          soleType,
+          stitching: "Khâu viền chỉ dù số 8 thủ công",
+          sizes: [38, 39, 40, 41, 42, 43, 44],
+          colors: ["Nâu Bò", "Đen"],
+          description
+        };
+        productsList.unshift(newProduct);
+        showToast(`Đã thêm mẫu dép mới "${name}" thành công!`, 'success');
+      }
+
+      await saveProductsData();
+      renderAdminTable();
+      closeProductModal();
+    }
+
+    // Lưu dữ liệu vào cả IndexedDB lẫn LocalStorage
+    async function saveProductsData() {
+      if (typeof saveProductsToStorage === 'function') {
+        await saveProductsToStorage(productsList);
+      } else {
+        try {
+          localStorage.setItem('tuyetnhung_custom_products', JSON.stringify(productsList));
+        } catch(e) {
+          console.warn('LocalStorage đầy:', e);
+        }
+      }
+    }
+
+    // Khôi phục gốc
+    async function resetToDefaultData() {
+      if (confirm("Bạn có chắc muốn khôi phục về danh sách 8 sản phẩm mẫu gốc không?")) {
+        localStorage.removeItem('tuyetnhung_custom_products');
+        try {
+          const db = await openDatabase();
+          if (db) {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).clear();
+          }
+        } catch(e) {}
+        await loadProductsData();
+        showToast("Đã khôi phục về danh sách mẫu ban đầu!", "info");
+      }
+    }
+
+    // Xuất file products.js
+    function exportProductsFile() {
+      const code = `/**
+ * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Đã cập nhật nhiều hình ảnh)
+ */
+const PRODUCTS_DATA = ${JSON.stringify(productsList, null, 2)};
+
+const CATEGORIES = ${JSON.stringify(CATEGORIES, null, 2)};
+
+const STORE_INFO = ${JSON.stringify(STORE_INFO, null, 2)};
+`;
+      const blob = new Blob([code], { type: 'application/javascript;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'products.js';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Đã tải xuống file products.js! Hãy chép file này vào thư mục assets/js/", "success");
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgColors = {
+        success: 'bg-emerald-800 text-white',
+        error: 'bg-rose-800 text-white',
+        info: 'bg-stone-900 text-white'
+      };
+      toast.className = `px-4 py-3 rounded-xl shadow-xl text-xs font-semibold ${bgColors[type] || bgColors.info}`;
+      toast.innerText = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 3500);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+THƯ MỤC LƯU ẢNH SẢN PHẨM CỬA HÀNG TUYẾT NHUNG
+==================================================
+
+1. Bạn có thể chép các file ảnh chụp dép từ điện thoại hoặc máy ảnh vào thư mục này:
+   Ví dụ:
+   - dep-quai-ngang-1.jpg
+   - dep-quai-ngang-2.jpg
+   - dep-kep-da.jpg
+   - sandal-nam.jpg
+
+2. Sau khi chép ảnh vào đây, trong file "assets/js/products.js", bạn chỉ cần điền đường dẫn:
+   "assets/images/ten-file-anh.jpg"
+
+Ví dụ:
+   images: [
+     "assets/images/dep-quai-ngang-1.jpg",
+     "assets/images/dep-quai-ngang-2.jpg"
+   ]
