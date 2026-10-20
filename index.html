@@ -438,19 +438,23 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         
         <!-- Story image collage -->
-        <div class="grid grid-cols-2 gap-4">
-          <img 
-            id="story-img-1"
-            src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80" 
-            alt="Nghề làm da thủ công" 
-            class="rounded-2xl w-full h-64 sm:h-72 xl:h-80 3xl:h-96 object-cover border border-stone-700 shadow-lg"
-          />
-          <img 
-            id="story-img-2"
-            src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80" 
-            alt="Khâu dép da nam thủ công" 
-            class="rounded-2xl w-full h-64 sm:h-72 xl:h-80 3xl:h-96 object-cover border border-stone-700 shadow-lg mt-8"
-          />
+        <div class="grid grid-cols-2 gap-4 items-start">
+          <div id="story-box-1" class="aspect-[4/5] rounded-2xl overflow-hidden bg-stone-900 border border-stone-700 shadow-lg flex items-center justify-center transition-all w-full">
+            <img 
+              id="story-img-1"
+              src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80" 
+              alt="Nghề làm da thủ công" 
+              class="w-full h-full object-contain object-center transition-all"
+            />
+          </div>
+          <div id="story-box-2" class="aspect-[4/5] rounded-2xl overflow-hidden bg-stone-900 border border-stone-700 shadow-lg flex items-center justify-center transition-all w-full mt-8">
+            <img 
+              id="story-img-2"
+              src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80" 
+              alt="Khâu dép da nam thủ công" 
+              class="w-full h-full object-contain object-center transition-all"
+            />
+          </div>
         </div>
 
         <!-- Story text -->

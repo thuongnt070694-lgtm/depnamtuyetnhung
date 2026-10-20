@@ -292,11 +292,17 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
           
           <!-- Ảnh 1 (Bên trái) -->
-          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
-            <span class="font-bold text-stone-800 block text-sm">📸 Tấm ảnh 1 (Bên trái):</span>
-            <div class="w-full h-48 rounded-xl overflow-hidden bg-stone-900 border">
-              <img id="story1-preview-img" src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover" />
+          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3.5">
+            <div class="flex items-center justify-between border-b border-stone-200/80 pb-2">
+              <span class="font-bold text-stone-800 text-sm">📸 Tấm ảnh 1 (Bên trái):</span>
+              <span class="text-[10px] text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded-full">Xem trước trực tiếp</span>
             </div>
+
+            <!-- Khung xem trước trực tiếp tấm 1 -->
+            <div id="story1-preview-box" class="aspect-[4/5] max-h-72 rounded-xl overflow-hidden bg-stone-900 border border-stone-300 transition-all flex items-center justify-center mx-auto w-full shadow-inner">
+              <img id="story1-preview-img" src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-contain object-center transition-all" />
+            </div>
+
             <div class="flex gap-2">
               <input 
                 type="text" 
@@ -311,14 +317,69 @@
                 <input type="file" accept="image/*" class="hidden" onchange="handleStoryFileSelect(1, event)" />
               </label>
             </div>
+
+            <!-- TÙY CHỌN KÍCH THƯỚC VÀ GÓC NHÌN CHO ẢNH 1 -->
+            <div class="p-3 bg-white rounded-xl border border-stone-200 space-y-2.5">
+              <div class="border-b border-stone-100 pb-1.5 flex items-center justify-between">
+                <span class="font-bold text-stone-800 text-[11px]">📐 Tùy Chỉnh Kích Thước & Góc Nhìn Ảnh 1:</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <!-- 1. Kiểu hiển thị ảnh -->
+                <div>
+                  <label class="block font-bold text-stone-600 text-[10px] mb-1">1. Kiểu hiển thị:</label>
+                  <select id="story1-img-fit" onchange="updateStoryViewSettings(1)" class="w-full p-1.5 rounded-lg border border-stone-300 text-[11px] font-semibold bg-white focus:outline-none focus:border-amber-800">
+                    <option value="contain">🔍 Vừa vặn (Không cắt)</option>
+                    <option value="cover">🖼️ Phủ kín khung</option>
+                  </select>
+                </div>
+
+                <!-- 2. Tỷ lệ khung ảnh -->
+                <div>
+                  <label class="block font-bold text-stone-600 text-[10px] mb-1">2. Tỷ lệ khung:</label>
+                  <select id="story1-img-ratio" onchange="updateStoryViewSettings(1)" class="w-full p-1.5 rounded-lg border border-stone-300 text-[11px] font-semibold bg-white focus:outline-none focus:border-amber-800">
+                    <option value="4/5">Đứng chuẩn (4:5)</option>
+                    <option value="1/1">Vuông (1:1)</option>
+                    <option value="4/3">Chữ nhật ngang (4:3)</option>
+                    <option value="auto">Tự động (Theo ảnh)</option>
+                  </select>
+                </div>
+
+                <!-- 3. Căn chỉnh vị trí -->
+                <div>
+                  <label class="block font-bold text-stone-600 text-[10px] mb-1">3. Căn góc nhìn:</label>
+                  <select id="story1-img-position" onchange="updateStoryViewSettings(1)" class="w-full p-1.5 rounded-lg border border-stone-300 text-[11px] font-semibold bg-white focus:outline-none focus:border-amber-800">
+                    <option value="center">⏺️ Căn giữa</option>
+                    <option value="top">⬆️ Căn đỉnh</option>
+                    <option value="bottom">⬇️ Căn đáy</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Màu nền đệm -->
+              <div class="flex items-center justify-between pt-1 border-t border-stone-100 text-[10px]">
+                <span class="text-stone-500 font-medium">Màu nền khung ảnh (khi ảnh nhỏ):</span>
+                <div class="flex items-center gap-1.5" id="story1-bg-color-picker">
+                  <button type="button" onclick="setStoryBgColor(1, 'dark')" id="bg-btn-story1-dark" class="px-2 py-0.5 rounded-lg text-[10px] font-bold border-2 border-stone-900 bg-stone-900 text-white shadow-2xs">Đen</button>
+                  <button type="button" onclick="setStoryBgColor(1, 'white')" id="bg-btn-story1-white" class="px-2 py-0.5 rounded-lg text-[10px] font-bold border border-stone-300 bg-white text-stone-800 shadow-2xs">Trắng</button>
+                  <button type="button" onclick="setStoryBgColor(1, 'amber')" id="bg-btn-story1-amber" class="px-2 py-0.5 rounded-lg text-[10px] font-bold border border-amber-900 bg-amber-950 text-amber-200 shadow-2xs">Nâu</button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Ảnh 2 (Bên phải) -->
-          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
-            <span class="font-bold text-stone-800 block text-sm">📸 Tấm ảnh 2 (Bên phải - lệch xuống):</span>
-            <div class="w-full h-48 rounded-xl overflow-hidden bg-stone-900 border">
-              <img id="story2-preview-img" src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover" />
+          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3.5">
+            <div class="flex items-center justify-between border-b border-stone-200/80 pb-2">
+              <span class="font-bold text-stone-800 text-sm">📸 Tấm ảnh 2 (Bên phải - lệch xuống):</span>
+              <span class="text-[10px] text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded-full">Xem trước trực tiếp</span>
             </div>
+
+            <!-- Khung xem trước trực tiếp tấm 2 -->
+            <div id="story2-preview-box" class="aspect-[4/5] max-h-72 rounded-xl overflow-hidden bg-stone-900 border border-stone-300 transition-all flex items-center justify-center mx-auto w-full shadow-inner">
+              <img id="story2-preview-img" src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-contain object-center transition-all" />
+            </div>
+
             <div class="flex gap-2">
               <input 
                 type="text" 
@@ -332,6 +393,55 @@
                 <span>Chọn ảnh</span>
                 <input type="file" accept="image/*" class="hidden" onchange="handleStoryFileSelect(2, event)" />
               </label>
+            </div>
+
+            <!-- TÙY CHỌN KÍCH THƯỚC VÀ GÓC NHÌN CHO ẢNH 2 -->
+            <div class="p-3 bg-white rounded-xl border border-stone-200 space-y-2.5">
+              <div class="border-b border-stone-100 pb-1.5 flex items-center justify-between">
+                <span class="font-bold text-stone-800 text-[11px]">📐 Tùy Chỉnh Kích Thước & Góc Nhìn Ảnh 2:</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <!-- 1. Kiểu hiển thị ảnh -->
+                <div>
+                  <label class="block font-bold text-stone-600 text-[10px] mb-1">1. Kiểu hiển thị:</label>
+                  <select id="story2-img-fit" onchange="updateStoryViewSettings(2)" class="w-full p-1.5 rounded-lg border border-stone-300 text-[11px] font-semibold bg-white focus:outline-none focus:border-amber-800">
+                    <option value="contain">🔍 Vừa vặn (Không cắt)</option>
+                    <option value="cover">🖼️ Phủ kín khung</option>
+                  </select>
+                </div>
+
+                <!-- 2. Tỷ lệ khung ảnh -->
+                <div>
+                  <label class="block font-bold text-stone-600 text-[10px] mb-1">2. Tỷ lệ khung:</label>
+                  <select id="story2-img-ratio" onchange="updateStoryViewSettings(2)" class="w-full p-1.5 rounded-lg border border-stone-300 text-[11px] font-semibold bg-white focus:outline-none focus:border-amber-800">
+                    <option value="4/5">Đứng chuẩn (4:5)</option>
+                    <option value="1/1">Vuông (1:1)</option>
+                    <option value="4/3">Chữ nhật ngang (4:3)</option>
+                    <option value="auto">Tự động (Theo ảnh)</option>
+                  </select>
+                </div>
+
+                <!-- 3. Căn chỉnh vị trí -->
+                <div>
+                  <label class="block font-bold text-stone-600 text-[10px] mb-1">3. Căn góc nhìn:</label>
+                  <select id="story2-img-position" onchange="updateStoryViewSettings(2)" class="w-full p-1.5 rounded-lg border border-stone-300 text-[11px] font-semibold bg-white focus:outline-none focus:border-amber-800">
+                    <option value="center">⏺️ Căn giữa</option>
+                    <option value="top">⬆️ Căn đỉnh</option>
+                    <option value="bottom">⬇️ Căn đáy</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Màu nền đệm -->
+              <div class="flex items-center justify-between pt-1 border-t border-stone-100 text-[10px]">
+                <span class="text-stone-500 font-medium">Màu nền khung ảnh (khi ảnh nhỏ):</span>
+                <div class="flex items-center gap-1.5" id="story2-bg-color-picker">
+                  <button type="button" onclick="setStoryBgColor(2, 'dark')" id="bg-btn-story2-dark" class="px-2 py-0.5 rounded-lg text-[10px] font-bold border-2 border-stone-900 bg-stone-900 text-white shadow-2xs">Đen</button>
+                  <button type="button" onclick="setStoryBgColor(2, 'white')" id="bg-btn-story2-white" class="px-2 py-0.5 rounded-lg text-[10px] font-bold border border-stone-300 bg-white text-stone-800 shadow-2xs">Trắng</button>
+                  <button type="button" onclick="setStoryBgColor(2, 'amber')" id="bg-btn-story2-amber" class="px-2 py-0.5 rounded-lg text-[10px] font-bold border border-amber-900 bg-amber-950 text-amber-200 shadow-2xs">Nâu</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -777,9 +887,19 @@
       heroImagePosition: "center",
       heroImageBg: "dark",
       storyImage1: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80",
-      storyImage2: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80"
+      storyImage1Fit: "contain",
+      storyImage1Ratio: "4/5",
+      storyImage1Position: "center",
+      storyImage1Bg: "dark",
+      storyImage2: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80",
+      storyImage2Fit: "contain",
+      storyImage2Ratio: "4/5",
+      storyImage2Position: "center",
+      storyImage2Bg: "dark"
     };
     let currentBannerBg = 'dark';
+    let currentStory1Bg = 'dark';
+    let currentStory2Bg = 'dark';
 
     function setBannerBgColor(color) {
       currentBannerBg = color;
@@ -838,6 +958,77 @@
       } else if (currentBannerBg === 'white') {
         box.classList.add('bg-white');
       } else if (currentBannerBg === 'amber') {
+        box.classList.add('bg-[#24150e]');
+      }
+
+      // Cập nhật object-fit và object-position cho ảnh
+      img.classList.remove('object-contain', 'object-cover', 'object-center', 'object-top', 'object-bottom');
+      img.classList.add(`object-${fit}`);
+      img.classList.add(`object-${pos}`);
+    }
+
+    function setStoryBgColor(index, color) {
+      if (index === 1) {
+        currentStory1Bg = color;
+      } else {
+        currentStory2Bg = color;
+      }
+      const darkBtn = document.getElementById(`bg-btn-story${index}-dark`);
+      const whiteBtn = document.getElementById(`bg-btn-story${index}-white`);
+      const amberBtn = document.getElementById(`bg-btn-story${index}-amber`);
+
+      if (darkBtn) {
+        darkBtn.className = color === 'dark'
+          ? 'px-2 py-0.5 rounded-lg text-[10px] font-bold border-2 border-amber-500 bg-stone-900 text-white shadow-2xs ring-1 ring-amber-500'
+          : 'px-2 py-0.5 rounded-lg text-[10px] font-bold border border-stone-700 bg-stone-900 text-stone-300 shadow-2xs';
+      }
+      if (whiteBtn) {
+        whiteBtn.className = color === 'white'
+          ? 'px-2 py-0.5 rounded-lg text-[10px] font-bold border-2 border-amber-600 bg-white text-stone-900 shadow-2xs ring-1 ring-amber-500'
+          : 'px-2 py-0.5 rounded-lg text-[10px] font-bold border border-stone-300 bg-white text-stone-800 shadow-2xs';
+      }
+      if (amberBtn) {
+        amberBtn.className = color === 'amber'
+          ? 'px-2 py-0.5 rounded-lg text-[10px] font-bold border-2 border-amber-400 bg-amber-950 text-amber-200 shadow-2xs ring-1 ring-amber-400'
+          : 'px-2 py-0.5 rounded-lg text-[10px] font-bold border border-amber-900 bg-amber-950 text-amber-200 shadow-2xs';
+      }
+
+      updateStoryViewSettings(index);
+    }
+
+    function updateStoryViewSettings(index) {
+      const box = document.getElementById(`story${index}-preview-box`);
+      const img = document.getElementById(`story${index}-preview-img`);
+      const fitSelect = document.getElementById(`story${index}-img-fit`);
+      const ratioSelect = document.getElementById(`story${index}-img-ratio`);
+      const posSelect = document.getElementById(`story${index}-img-position`);
+
+      if (!box || !img) return;
+
+      const fit = fitSelect ? fitSelect.value : 'contain';
+      const ratio = ratioSelect ? ratioSelect.value : '4/5';
+      const pos = posSelect ? posSelect.value : 'center';
+      const bg = index === 1 ? currentStory1Bg : currentStory2Bg;
+
+      // Cập nhật ratio cho khung box
+      box.classList.remove('aspect-[4/5]', 'aspect-square', 'aspect-[4/3]', 'aspect-auto', 'min-h-[220px]');
+      if (ratio === '4/5') {
+        box.classList.add('aspect-[4/5]');
+      } else if (ratio === '1/1') {
+        box.classList.add('aspect-square');
+      } else if (ratio === '4/3') {
+        box.classList.add('aspect-[4/3]');
+      } else if (ratio === 'auto') {
+        box.classList.add('aspect-auto', 'min-h-[220px]');
+      }
+
+      // Cập nhật màu nền cho khung box
+      box.classList.remove('bg-stone-900', 'bg-white', 'bg-[#24150e]');
+      if (bg === 'dark') {
+        box.classList.add('bg-stone-900');
+      } else if (bg === 'white') {
+        box.classList.add('bg-white');
+      } else if (bg === 'amber') {
         box.classList.add('bg-[#24150e]');
       }
 
@@ -1385,6 +1576,32 @@
       }
       setBannerBgColor(homepageConfig.heroImageBg || 'dark');
       updateBannerViewSettings();
+
+      // Điền các tùy chọn tỉ lệ & góc nhìn ảnh Story 1
+      if (document.getElementById('story1-img-fit')) {
+        document.getElementById('story1-img-fit').value = homepageConfig.story1Fit || homepageConfig.storyImage1Fit || 'contain';
+      }
+      if (document.getElementById('story1-img-ratio')) {
+        document.getElementById('story1-img-ratio').value = homepageConfig.story1Ratio || homepageConfig.storyImage1Ratio || '4/5';
+      }
+      if (document.getElementById('story1-img-position')) {
+        document.getElementById('story1-img-position').value = homepageConfig.story1Position || homepageConfig.storyImage1Position || 'center';
+      }
+      setStoryBgColor(1, homepageConfig.story1Bg || homepageConfig.storyImage1Bg || 'dark');
+      updateStoryViewSettings(1);
+
+      // Điền các tùy chọn tỉ lệ & góc nhìn ảnh Story 2
+      if (document.getElementById('story2-img-fit')) {
+        document.getElementById('story2-img-fit').value = homepageConfig.story2Fit || homepageConfig.storyImage2Fit || 'contain';
+      }
+      if (document.getElementById('story2-img-ratio')) {
+        document.getElementById('story2-img-ratio').value = homepageConfig.story2Ratio || homepageConfig.storyImage2Ratio || '4/5';
+      }
+      if (document.getElementById('story2-img-position')) {
+        document.getElementById('story2-img-position').value = homepageConfig.story2Position || homepageConfig.storyImage2Position || 'center';
+      }
+      setStoryBgColor(2, homepageConfig.story2Bg || homepageConfig.storyImage2Bg || 'dark');
+      updateStoryViewSettings(2);
     }
 
     // Đổ danh sách dép vào dropdown chọn nhanh cho Banner
@@ -1500,6 +1717,30 @@
         homepageConfig.heroImagePosition = document.getElementById('banner-img-position').value;
       }
       homepageConfig.heroImageBg = currentBannerBg || 'dark';
+
+      // Lưu tùy chọn ảnh Story 1
+      if (document.getElementById('story1-img-fit')) {
+        homepageConfig.story1Fit = homepageConfig.storyImage1Fit = document.getElementById('story1-img-fit').value;
+      }
+      if (document.getElementById('story1-img-ratio')) {
+        homepageConfig.story1Ratio = homepageConfig.storyImage1Ratio = document.getElementById('story1-img-ratio').value;
+      }
+      if (document.getElementById('story1-img-position')) {
+        homepageConfig.story1Position = homepageConfig.storyImage1Position = document.getElementById('story1-img-position').value;
+      }
+      homepageConfig.story1Bg = homepageConfig.storyImage1Bg = currentStory1Bg || 'dark';
+
+      // Lưu tùy chọn ảnh Story 2
+      if (document.getElementById('story2-img-fit')) {
+        homepageConfig.story2Fit = homepageConfig.storyImage2Fit = document.getElementById('story2-img-fit').value;
+      }
+      if (document.getElementById('story2-img-ratio')) {
+        homepageConfig.story2Ratio = homepageConfig.storyImage2Ratio = document.getElementById('story2-img-ratio').value;
+      }
+      if (document.getElementById('story2-img-position')) {
+        homepageConfig.story2Position = homepageConfig.storyImage2Position = document.getElementById('story2-img-position').value;
+      }
+      homepageConfig.story2Bg = homepageConfig.storyImage2Bg = currentStory2Bg || 'dark';
 
       if (typeof saveHomepageConfig === 'function') {
         await saveHomepageConfig(homepageConfig);
@@ -1935,6 +2176,30 @@ const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
           homepageConfig.heroImagePosition = document.getElementById('banner-img-position').value;
         }
         homepageConfig.heroImageBg = currentBannerBg || 'dark';
+
+        // Tùy chọn ảnh Story 1
+        if (document.getElementById('story1-img-fit')) {
+          homepageConfig.story1Fit = homepageConfig.storyImage1Fit = document.getElementById('story1-img-fit').value;
+        }
+        if (document.getElementById('story1-img-ratio')) {
+          homepageConfig.story1Ratio = homepageConfig.storyImage1Ratio = document.getElementById('story1-img-ratio').value;
+        }
+        if (document.getElementById('story1-img-position')) {
+          homepageConfig.story1Position = homepageConfig.storyImage1Position = document.getElementById('story1-img-position').value;
+        }
+        homepageConfig.story1Bg = homepageConfig.storyImage1Bg = currentStory1Bg || 'dark';
+
+        // Tùy chọn ảnh Story 2
+        if (document.getElementById('story2-img-fit')) {
+          homepageConfig.story2Fit = homepageConfig.storyImage2Fit = document.getElementById('story2-img-fit').value;
+        }
+        if (document.getElementById('story2-img-ratio')) {
+          homepageConfig.story2Ratio = homepageConfig.storyImage2Ratio = document.getElementById('story2-img-ratio').value;
+        }
+        if (document.getElementById('story2-img-position')) {
+          homepageConfig.story2Position = homepageConfig.storyImage2Position = document.getElementById('story2-img-position').value;
+        }
+        homepageConfig.story2Bg = homepageConfig.storyImage2Bg = currentStory2Bg || 'dark';
       }
 
       // Nếu chưa có ảnh banner hoặc vẫn là ảnh giày sneaker unsplash cũ, tự động chọn ảnh dép da thật TN01

@@ -51,6 +51,8 @@ async function applyHomepageConfig() {
   const heroName = document.getElementById('hero-featured-name');
   const heroPrice = document.getElementById('hero-featured-price');
   const heroOrigPrice = document.getElementById('hero-featured-original-price');
+  const storyBox1 = document.getElementById('story-box-1');
+  const storyBox2 = document.getElementById('story-box-2');
   const story1 = document.getElementById('story-img-1');
   const story2 = document.getElementById('story-img-2');
 
@@ -70,7 +72,7 @@ async function applyHomepageConfig() {
     if (heroOrigPrice) heroOrigPrice.innerText = formatCurrency(p1.originalPrice || p1.price);
   }
 
-  // Áp dụng tỉ lệ (Ratio), góc nhìn (Position), kiểu hiển thị (Fit) và màu nền (Bg)
+  // Áp dụng tỉ lệ (Ratio), góc nhìn (Position), kiểu hiển thị (Fit) và màu nền (Bg) cho Banner
   if (heroBox && heroImg && config) {
     const fit = config.heroImageFit || 'contain';
     const ratio = config.heroImageRatio || '4/5';
@@ -108,6 +110,70 @@ async function applyHomepageConfig() {
   if (config) {
     if (story1 && config.storyImage1) story1.src = config.storyImage1;
     if (story2 && config.storyImage2) story2.src = config.storyImage2;
+
+    // Áp dụng tỉ lệ, kiểu hiển thị, góc nhìn và màu nền cho Tấm ảnh 1
+    if (storyBox1 && story1) {
+      const fit1 = config.story1Fit || config.storyImage1Fit || 'contain';
+      const ratio1 = config.story1Ratio || config.storyImage1Ratio || '4/5';
+      const pos1 = config.story1Position || config.storyImage1Position || 'center';
+      const bg1 = config.story1Bg || config.storyImage1Bg || 'dark';
+
+      storyBox1.classList.remove('aspect-[4/5]', 'aspect-square', 'aspect-[4/3]', 'aspect-auto', 'min-h-[260px]', 'h-64', 'sm:h-72', 'xl:h-80', '3xl:h-96');
+      if (ratio1 === '4/5') {
+        storyBox1.classList.add('aspect-[4/5]');
+      } else if (ratio1 === '1/1') {
+        storyBox1.classList.add('aspect-square');
+      } else if (ratio1 === '4/3') {
+        storyBox1.classList.add('aspect-[4/3]');
+      } else if (ratio1 === 'auto') {
+        storyBox1.classList.add('aspect-auto', 'min-h-[260px]');
+      }
+
+      storyBox1.classList.remove('bg-stone-900', 'bg-white', 'bg-[#24150e]');
+      if (bg1 === 'white') {
+        storyBox1.classList.add('bg-white');
+      } else if (bg1 === 'amber') {
+        storyBox1.classList.add('bg-[#24150e]');
+      } else {
+        storyBox1.classList.add('bg-stone-900');
+      }
+
+      story1.classList.remove('object-contain', 'object-cover', 'object-center', 'object-top', 'object-bottom');
+      story1.classList.add(`object-${fit1}`);
+      story1.classList.add(`object-${pos1}`);
+    }
+
+    // Áp dụng tỉ lệ, kiểu hiển thị, góc nhìn và màu nền cho Tấm ảnh 2
+    if (storyBox2 && story2) {
+      const fit2 = config.story2Fit || config.storyImage2Fit || 'contain';
+      const ratio2 = config.story2Ratio || config.storyImage2Ratio || '4/5';
+      const pos2 = config.story2Position || config.storyImage2Position || 'center';
+      const bg2 = config.story2Bg || config.storyImage2Bg || 'dark';
+
+      storyBox2.classList.remove('aspect-[4/5]', 'aspect-square', 'aspect-[4/3]', 'aspect-auto', 'min-h-[260px]', 'h-64', 'sm:h-72', 'xl:h-80', '3xl:h-96');
+      if (ratio2 === '4/5') {
+        storyBox2.classList.add('aspect-[4/5]');
+      } else if (ratio2 === '1/1') {
+        storyBox2.classList.add('aspect-square');
+      } else if (ratio2 === '4/3') {
+        storyBox2.classList.add('aspect-[4/3]');
+      } else if (ratio2 === 'auto') {
+        storyBox2.classList.add('aspect-auto', 'min-h-[260px]');
+      }
+
+      storyBox2.classList.remove('bg-stone-900', 'bg-white', 'bg-[#24150e]');
+      if (bg2 === 'white') {
+        storyBox2.classList.add('bg-white');
+      } else if (bg2 === 'amber') {
+        storyBox2.classList.add('bg-[#24150e]');
+      } else {
+        storyBox2.classList.add('bg-stone-900');
+      }
+
+      story2.classList.remove('object-contain', 'object-cover', 'object-center', 'object-top', 'object-bottom');
+      story2.classList.add(`object-${fit2}`);
+      story2.classList.add(`object-${pos2}`);
+    }
   }
 }
 
