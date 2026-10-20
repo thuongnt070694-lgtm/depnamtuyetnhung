@@ -36,6 +36,51 @@ window.addEventListener('storage', async () => {
   await applyHomepageConfig();
 });
 
+// Hàm áp dụng tỷ lệ khung ảnh linh hoạt & chuẩn 100% bằng CSS aspect-ratio
+function applyBoxAspect(box, img, ratio) {
+  if (!box) return;
+  box.classList.remove('aspect-[4/5]', 'aspect-square', 'aspect-[4/3]', 'aspect-[16/9]', 'aspect-[3/2]', 'aspect-[3/4]', 'aspect-[9/16]', 'aspect-auto', 'min-h-[220px]', 'min-h-[260px]', 'min-h-[300px]');
+
+  const r = (ratio || 'auto').toString().trim();
+
+  if (r === 'auto') {
+    const updateAuto = () => {
+      if (img && img.naturalWidth && img.naturalHeight) {
+        box.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
+      } else {
+        box.style.aspectRatio = 'auto';
+      }
+    };
+    if (img) {
+      if (img.complete && img.naturalWidth) {
+        updateAuto();
+      } else {
+        img.addEventListener('load', updateAuto);
+      }
+    }
+  } else if (r === '1/1' || r === '1:1') {
+    box.style.aspectRatio = '1 / 1';
+  } else if (r === '16/9' || r === '16:9') {
+    box.style.aspectRatio = '16 / 9';
+  } else if (r === '4/3' || r === '4:3') {
+    box.style.aspectRatio = '4 / 3';
+  } else if (r === '3/2' || r === '3:2') {
+    box.style.aspectRatio = '3 / 2';
+  } else if (r === '4/5' || r === '4:5') {
+    box.style.aspectRatio = '4 / 5';
+  } else if (r === '3/4' || r === '3:4') {
+    box.style.aspectRatio = '3 / 4';
+  } else if (r === '9/16' || r === '9:16') {
+    box.style.aspectRatio = '9 / 16';
+  } else if (r.includes('/')) {
+    box.style.aspectRatio = r.replace('/', ' / ');
+  } else if (r.includes(':')) {
+    box.style.aspectRatio = r.replace(':', ' / ');
+  } else {
+    box.style.aspectRatio = r;
+  }
+}
+
 // Tải và áp dụng cấu hình ảnh Banner & Xưởng da
 async function applyHomepageConfig() {
   let config = null;
@@ -79,17 +124,7 @@ async function applyHomepageConfig() {
     const pos = config.heroImagePosition || 'center';
     const bg = config.heroImageBg || 'dark';
 
-    // Tỉ lệ khung ảnh
-    heroBox.classList.remove('aspect-[4/5]', 'aspect-square', 'aspect-[4/3]', 'aspect-auto', 'min-h-[300px]');
-    if (ratio === '4/5') {
-      heroBox.classList.add('aspect-[4/5]');
-    } else if (ratio === '1/1') {
-      heroBox.classList.add('aspect-square');
-    } else if (ratio === '4/3') {
-      heroBox.classList.add('aspect-[4/3]');
-    } else if (ratio === 'auto') {
-      heroBox.classList.add('aspect-auto', 'min-h-[300px]');
-    }
+    applyBoxAspect(heroBox, heroImg, ratio);
 
     // Màu nền khung
     heroBox.classList.remove('bg-stone-900', 'bg-white', 'bg-[#24150e]');
@@ -114,20 +149,11 @@ async function applyHomepageConfig() {
     // Áp dụng tỉ lệ, kiểu hiển thị, góc nhìn và màu nền cho Tấm ảnh 1
     if (storyBox1 && story1) {
       const fit1 = config.story1Fit || config.storyImage1Fit || 'contain';
-      const ratio1 = config.story1Ratio || config.storyImage1Ratio || '4/5';
+      const ratio1 = config.story1Ratio || config.storyImage1Ratio || 'auto';
       const pos1 = config.story1Position || config.storyImage1Position || 'center';
       const bg1 = config.story1Bg || config.storyImage1Bg || 'dark';
 
-      storyBox1.classList.remove('aspect-[4/5]', 'aspect-square', 'aspect-[4/3]', 'aspect-auto', 'min-h-[260px]', 'h-64', 'sm:h-72', 'xl:h-80', '3xl:h-96');
-      if (ratio1 === '4/5') {
-        storyBox1.classList.add('aspect-[4/5]');
-      } else if (ratio1 === '1/1') {
-        storyBox1.classList.add('aspect-square');
-      } else if (ratio1 === '4/3') {
-        storyBox1.classList.add('aspect-[4/3]');
-      } else if (ratio1 === 'auto') {
-        storyBox1.classList.add('aspect-auto', 'min-h-[260px]');
-      }
+      applyBoxAspect(storyBox1, story1, ratio1);
 
       storyBox1.classList.remove('bg-stone-900', 'bg-white', 'bg-[#24150e]');
       if (bg1 === 'white') {
@@ -146,20 +172,11 @@ async function applyHomepageConfig() {
     // Áp dụng tỉ lệ, kiểu hiển thị, góc nhìn và màu nền cho Tấm ảnh 2
     if (storyBox2 && story2) {
       const fit2 = config.story2Fit || config.storyImage2Fit || 'contain';
-      const ratio2 = config.story2Ratio || config.storyImage2Ratio || '4/5';
+      const ratio2 = config.story2Ratio || config.storyImage2Ratio || 'auto';
       const pos2 = config.story2Position || config.storyImage2Position || 'center';
       const bg2 = config.story2Bg || config.storyImage2Bg || 'dark';
 
-      storyBox2.classList.remove('aspect-[4/5]', 'aspect-square', 'aspect-[4/3]', 'aspect-auto', 'min-h-[260px]', 'h-64', 'sm:h-72', 'xl:h-80', '3xl:h-96');
-      if (ratio2 === '4/5') {
-        storyBox2.classList.add('aspect-[4/5]');
-      } else if (ratio2 === '1/1') {
-        storyBox2.classList.add('aspect-square');
-      } else if (ratio2 === '4/3') {
-        storyBox2.classList.add('aspect-[4/3]');
-      } else if (ratio2 === 'auto') {
-        storyBox2.classList.add('aspect-auto', 'min-h-[260px]');
-      }
+      applyBoxAspect(storyBox2, story2, ratio2);
 
       storyBox2.classList.remove('bg-stone-900', 'bg-white', 'bg-[#24150e]');
       if (bg2 === 'white') {
@@ -942,7 +959,6 @@ function closeCheckoutModal() {
 function updateQrCode(amount) {
   const qrImg = document.getElementById('vietqr-image');
   if (!qrImg) return;
-  // Tạo VietQR từ hệ thống mở VietQR (Vietcombank mẫu)
   // Cú pháp: https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png?amount=<AMOUNT>&addInfo=<INFO>
   const bankId = "VCB";
   const accountNo = "9988776655";
