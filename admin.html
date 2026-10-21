@@ -77,7 +77,7 @@
         onclick="switchTab('banners')" 
         class="px-5 py-3 rounded-xl text-xs font-bold transition-all bg-white text-stone-700 border border-stone-200 hover:border-amber-700 hover:text-amber-900 flex items-center gap-2 shadow-xs"
       >
-        <span>🖼️ Chỉnh Sửa Ảnh Banner & Xưởng Da</span>
+        <span>🖼️ Banner, Xưởng Da & Chatbot</span>
         <span class="bg-amber-100 text-amber-900 text-[10px] px-2 py-0.5 rounded-full font-black">Hot</span>
       </button>
     </div>
@@ -460,14 +460,90 @@
         </div>
       </div>
 
-      <!-- NÚT LƯU TOÀN BỘ CÀI ĐẶT BANNER -->
+      <!-- PHẦN 3: CÀI ĐẶT TRỢ LÝ ẢO CHATBOT TƯ VẤN 24/7 -->
+      <div class="bg-white p-6 sm:p-7 rounded-3xl border border-stone-200 shadow-sm space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-stone-100 pb-4 gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-stone-900 via-amber-900 to-amber-700 text-white flex items-center justify-center font-black text-lg shadow-md border border-amber-300/40">
+              🤖
+            </div>
+            <div>
+              <h3 class="text-base font-black text-stone-900 font-serif-heading">PHẦN 3: CÀI ĐẶT TRỢ LÝ ẢO CHATBOT TƯ VẤN 24/7</h3>
+              <p class="text-xs text-stone-500">Tự động trả lời khách: tính size chân theo cm, tìm mẫu dép da, tư vấn bảo hành và tra cứu đơn</p>
+            </div>
+          </div>
+          
+          <!-- Bật / Tắt Chatbot -->
+          <div class="flex items-center gap-2">
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="chatbot-enabled" onchange="updateChatbotStatusLabel()" class="sr-only peer" checked>
+              <div class="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              <span class="ml-2.5 text-xs font-bold text-emerald-700" id="chatbot-status-label">Đang Bật</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+          <!-- Tên hiển thị của Chatbot -->
+          <div>
+            <label class="block font-bold text-stone-700 mb-1.5">Tên Hiển Thị Của Trợ Lý Ảo</label>
+            <input 
+              type="text" 
+              id="chatbot-name" 
+              placeholder="VD: Trợ Lý Ảo Tuyết Nhung" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-semibold focus:outline-none focus:border-amber-800"
+            />
+          </div>
+
+          <!-- Dòng trạng thái hoạt động -->
+          <div>
+            <label class="block font-bold text-stone-700 mb-1.5">Dòng Trạng Thái Hoạt Động (Phụ đề)</label>
+            <input 
+              type="text" 
+              id="chatbot-subtitle" 
+              placeholder="VD: 🟢 Trực tuyến 24/7 • Tư vấn tức thì" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-semibold focus:outline-none focus:border-amber-800"
+            />
+          </div>
+
+          <!-- Lời chào mừng ban đầu -->
+          <div class="md:col-span-2">
+            <label class="block font-bold text-stone-700 mb-1.5">Lời Chào Mừng Ban Đầu Của Trợ Lý (Greeting Message)</label>
+            <textarea 
+              id="chatbot-greeting" 
+              rows="3" 
+              placeholder="Nhập lời chào mừng khách khi mở khung chat..." 
+              class="w-full p-3 rounded-xl border border-stone-300 text-xs font-medium focus:outline-none focus:border-amber-800"
+            ></textarea>
+            <p class="text-[11px] text-stone-400 mt-1">Lời chào này sẽ xuất hiện đầu tiên khi khách mở khung chat hoặc hiện bong bóng gợi ý sau 6 giây.</p>
+          </div>
+
+          <!-- Tùy chọn âm thanh thông báo -->
+          <div class="flex items-center gap-3">
+            <input type="checkbox" id="chatbot-sound" class="w-4 h-4 text-amber-900 rounded border-stone-300 focus:ring-amber-800" checked>
+            <label for="chatbot-sound" class="font-bold text-stone-700 cursor-pointer">
+              Bật âm thanh báo tin nhắn (tiếng chuông nhẹ nhàng không cần tải file ngoài)
+            </label>
+          </div>
+
+          <!-- Hướng dẫn các câu hỏi mẫu bot hỗ trợ -->
+          <div class="p-3 bg-amber-50/70 rounded-xl border border-amber-200/80 text-[11px] text-stone-600 flex items-start gap-2">
+            <span class="text-base">💡</span>
+            <div>
+              <strong class="text-amber-950">Chatbot đã học sẵn:</strong> Tính size chân (vd: "chân 25cm", "26cm size mấy"), tìm dép ("quai ngang", "xỏ ngón", "sandal", "sục da", "da bò sáp", "bán chạy"), chính sách bảo hành 12 tháng da &amp; chỉ trọn đời, miễn phí ship 2 đôi, đổi size tại nhà và tra cứu đơn theo số điện thoại!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NÚT LƯU TOÀN BỘ CÀI ĐẶT BANNER & CHATBOT -->
       <div class="flex justify-end gap-3 pt-2">
         <button 
           onclick="saveAllHomepageSettings()" 
           class="px-8 py-3.5 rounded-xl btn-leather-primary font-bold text-sm shadow-xl flex items-center gap-2 hover:scale-105 transition-all"
         >
           <svg class="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-          <span>💾 Lưu Cài Đặt Ảnh Banner & Trang Chủ</span>
+          <span>💾 Lưu Cài Đặt Banner, Xưởng Da & Chatbot</span>
         </button>
       </div>
 
@@ -907,7 +983,12 @@
       storyImage2Fit: "contain",
       storyImage2Ratio: "4/5",
       storyImage2Position: "center",
-      storyImage2Bg: "dark"
+      storyImage2Bg: "dark",
+      chatbotEnabled: true,
+      chatbotName: "Trợ Lý Ảo Tuyết Nhung",
+      chatbotSubtitle: "🟢 Trực tuyến 24/7 • Tư vấn tức thì",
+      chatbotGreeting: "Dạ xin chào anh/chị! 👋 Em là Trợ lý ảo của Xưởng Dép Nam Tuyết Nhung.\n\nEm có thể hỗ trợ anh/chị đo và tính size chuẩn, tìm các mẫu dép da bò thật ưng ý, hoặc giải đáp chính sách bảo hành & giao hàng tận nhà ạ!",
+      chatbotSound: true
     };
     let currentBannerBg = 'dark';
     let currentStory1Bg = 'dark';
@@ -1660,6 +1741,33 @@
       }
       setStoryBgColor(2, homepageConfig.story2Bg || homepageConfig.storyImage2Bg || 'dark');
       updateStoryViewSettings(2);
+
+      // Điền cấu hình Trợ lý ảo Chatbot
+      if (document.getElementById('chatbot-enabled')) {
+        document.getElementById('chatbot-enabled').checked = homepageConfig.chatbotEnabled !== false;
+        updateChatbotStatusLabel();
+      }
+      if (document.getElementById('chatbot-name')) {
+        document.getElementById('chatbot-name').value = homepageConfig.chatbotName || 'Trợ Lý Ảo Tuyết Nhung';
+      }
+      if (document.getElementById('chatbot-subtitle')) {
+        document.getElementById('chatbot-subtitle').value = homepageConfig.chatbotSubtitle || '🟢 Trực tuyến 24/7 • Tư vấn tức thì';
+      }
+      if (document.getElementById('chatbot-greeting')) {
+        document.getElementById('chatbot-greeting').value = homepageConfig.chatbotGreeting || 'Dạ xin chào anh/chị! 👋 Em là Trợ lý ảo của Xưởng Dép Nam Tuyết Nhung.\n\nEm có thể hỗ trợ anh/chị đo và tính size chuẩn, tìm các mẫu dép da bò thật ưng ý, hoặc giải đáp chính sách bảo hành & giao hàng tận nhà ạ!';
+      }
+      if (document.getElementById('chatbot-sound')) {
+        document.getElementById('chatbot-sound').checked = homepageConfig.chatbotSound !== false;
+      }
+    }
+
+    function updateChatbotStatusLabel() {
+      const cb = document.getElementById('chatbot-enabled');
+      const label = document.getElementById('chatbot-status-label');
+      if (cb && label) {
+        label.innerText = cb.checked ? 'Đang Bật' : 'Đã Tắt';
+        label.className = cb.checked ? 'ml-2.5 text-xs font-bold text-emerald-700' : 'ml-2.5 text-xs font-bold text-stone-400';
+      }
     }
 
     // Đổ danh sách dép vào dropdown chọn nhanh cho Banner
@@ -1810,13 +1918,30 @@
       }
       homepageConfig.story2Bg = homepageConfig.storyImage2Bg = currentStory2Bg || 'dark';
 
+      // Lưu cài đặt Chatbot
+      if (document.getElementById('chatbot-enabled')) {
+        homepageConfig.chatbotEnabled = document.getElementById('chatbot-enabled').checked;
+      }
+      if (document.getElementById('chatbot-name')) {
+        homepageConfig.chatbotName = document.getElementById('chatbot-name').value.trim() || 'Trợ Lý Ảo Tuyết Nhung';
+      }
+      if (document.getElementById('chatbot-subtitle')) {
+        homepageConfig.chatbotSubtitle = document.getElementById('chatbot-subtitle').value.trim() || '🟢 Trực tuyến 24/7 • Tư vấn tức thì';
+      }
+      if (document.getElementById('chatbot-greeting')) {
+        homepageConfig.chatbotGreeting = document.getElementById('chatbot-greeting').value.trim();
+      }
+      if (document.getElementById('chatbot-sound')) {
+        homepageConfig.chatbotSound = document.getElementById('chatbot-sound').checked;
+      }
+
       if (typeof saveHomepageConfig === 'function') {
         await saveHomepageConfig(homepageConfig);
       } else {
         localStorage.setItem('tuyetnhung_homepage_config', JSON.stringify(homepageConfig));
       }
 
-      showToast('🎉 Đã lưu cài đặt Banner và 2 ảnh Xưởng da thành công! (Mở trang chủ F5 để xem)', 'success');
+      showToast('🎉 Đã lưu cài đặt Banner, Xưởng da và Trợ lý ảo Chatbot thành công! (Mở trang chủ F5 để xem)', 'success');
     }
 
     // ================= MODAL PRODUCT EDITING =================
@@ -2268,6 +2393,23 @@ const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
           homepageConfig.story2Position = homepageConfig.storyImage2Position = document.getElementById('story2-img-position').value;
         }
         homepageConfig.story2Bg = homepageConfig.storyImage2Bg = currentStory2Bg || 'dark';
+
+      // Lưu cài đặt Chatbot
+      if (document.getElementById('chatbot-enabled')) {
+        homepageConfig.chatbotEnabled = document.getElementById('chatbot-enabled').checked;
+      }
+      if (document.getElementById('chatbot-name')) {
+        homepageConfig.chatbotName = document.getElementById('chatbot-name').value.trim() || 'Trợ Lý Ảo Tuyết Nhung';
+      }
+      if (document.getElementById('chatbot-subtitle')) {
+        homepageConfig.chatbotSubtitle = document.getElementById('chatbot-subtitle').value.trim() || '🟢 Trực tuyến 24/7 • Tư vấn tức thì';
+      }
+      if (document.getElementById('chatbot-greeting')) {
+        homepageConfig.chatbotGreeting = document.getElementById('chatbot-greeting').value.trim();
+      }
+      if (document.getElementById('chatbot-sound')) {
+        homepageConfig.chatbotSound = document.getElementById('chatbot-sound').checked;
+      }
       }
 
       // Nếu chưa có ảnh banner hoặc vẫn là ảnh giày sneaker unsplash cũ, tự động chọn ảnh dép da thật TN01
