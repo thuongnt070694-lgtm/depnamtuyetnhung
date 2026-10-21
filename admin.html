@@ -8,6 +8,63 @@
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
     @media print {
+      body > *:not(#print-order-modal) {
+        display: none !important;
+      }
+      #print-order-modal {
+        display: block !important;
+        position: static !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        overflow: visible !important;
+      }
+      #print-order-modal > div {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: transparent !important;
+      }
+      #print-order-modal button,
+      #print-order-modal .border-b,
+      #printable-slip-area > div:first-child:not(#print-packing-slip-sheet) {
+        display: none !important;
+      }
+      #printable-slip-area {
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+      }
+      #print-packing-slip-sheet {
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 14px !important;
+        border: 2px solid #1c1917 !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      @page {
+        size: auto;
+        margin: 8mm;
+      }
+    }
+  </style>
+  <!-- old style wrapper below -->
+  <template id="disabled-old-styles">
+  <style>
+    @media print {
       body * {
         visibility: hidden !important;
       }
@@ -34,6 +91,7 @@
       }
     }
   </style>
+  </template>
 </head>
 <body class="bg-stone-100 text-stone-800 antialiased p-2 sm:p-6 lg:p-8">
 
@@ -2823,8 +2881,74 @@ function doGet(e) {
       const printSheet = document.getElementById('print-packing-slip-sheet');
       if (!printSheet) return;
 
-      // Kiểm tra và in trực tiếp an toàn, không sợ bị trình duyệt chặn popup
-      let isPopupHandled = false;
+      // Dùng iframe ẩn chuyên dụng để in: Không bao giờ bị chặn popup và CHẮC CHẮN CHỈ IN ĐÚNG 1 TỜ DUY NHẤT
+      let printFrame = document.getElementById('hidden-packing-slip-iframe');
+      if (!printFrame) {
+        printFrame = document.createElement('iframe');
+        printFrame.id = 'hidden-packing-slip-iframe';
+        printFrame.style.position = 'fixed';
+        printFrame.style.right = '0';
+        printFrame.style.bottom = '0';
+        printFrame.style.width = '0';
+        printFrame.style.height = '0';
+        printFrame.style.border = '0';
+        document.body.appendChild(printFrame);
+      }
+
+      const frameDoc = printFrame.contentWindow.document;
+      frameDoc.open();
+      frameDoc.write(`<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Phiếu Đóng Hàng #${currentPrintOrderId || ''}</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <style>
+    @page {
+      size: auto;
+      margin: 8mm;
+    }
+    html, body {
+      background: #ffffff !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      height: auto !important;
+      overflow: visible !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    #print-packing-slip-sheet {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 auto !important;
+      border: 2px solid #292524 !important;
+      box-shadow: none !important;
+      background: #ffffff !important;
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+  </style>
+  </template>
+</head>
+<body class="bg-white p-2 text-stone-900">
+  ${printSheet.outerHTML}
+</body>
+</html>`);
+      frameDoc.close();
+
+      setTimeout(() => {
+        try {
+          printFrame.contentWindow.focus();
+          printFrame.contentWindow.print();
+        } catch (e) {
+          // legacy unused print
+        }
+      }, 300);
+      return;
+      function _legacyPrintPopup() {
       try {
         const printWindow = window.open('', '_blank', 'width=750,height=850');
         if (printWindow && printWindow.document) {
@@ -2837,7 +2961,8 @@ function doGet(e) {
           printWindow.document.open();
           printWindow.document.write('<!DOCTYPE html><html><head><title>Phiếu Đóng Hàng #' + (currentPrintOrderId || '') + '</title>' +
             stylesHtml +
-            '<style>@media print { @page { size: auto; margin: 10mm; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; } } body { background: #fff !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; } #print-packing-slip-sheet { border: 2px solid #292524 !important; box-shadow: none !important; width: 100% !important; margin: 0 auto; }</style></head><body class="bg-white p-4 font-sans text-stone-900">' +
+            '<style>@media print { @page { size: auto; margin: 10mm; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; } } body { background: #fff !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; } #print-packing-slip-sheet { border: 2px solid #292524 !important; box-shadow: none !important; width: 100% !important; margin: 0 auto; }</style>  </template>
+</head><body class="bg-white p-4 font-sans text-stone-900">' +
             printSheet.outerHTML +
             '</body></html>');
           printWindow.document.close();
@@ -2855,8 +2980,8 @@ function doGet(e) {
         isPopupHandled = false;
       }
 
-      if (!isPopupHandled) {
-        window.print();
+      // legacy unused
+        // legacy unused print
       }
       return;
     }
@@ -2868,6 +2993,63 @@ function doGet(e) {
         <head>
           <title>Phiếu Đóng Hàng #${currentPrintOrderId || ''}</title>
           <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    @media print {
+      body > *:not(#print-order-modal) {
+        display: none !important;
+      }
+      #print-order-modal {
+        display: block !important;
+        position: static !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        overflow: visible !important;
+      }
+      #print-order-modal > div {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: transparent !important;
+      }
+      #print-order-modal button,
+      #print-order-modal .border-b,
+      #printable-slip-area > div:first-child:not(#print-packing-slip-sheet) {
+        display: none !important;
+      }
+      #printable-slip-area {
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+      }
+      #print-packing-slip-sheet {
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 14px !important;
+        border: 2px solid #1c1917 !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      @page {
+        size: auto;
+        margin: 8mm;
+      }
+    }
+  </style>
+  <!-- old style wrapper below -->
+  <template id="disabled-old-styles">
   <style>
     @media print {
       body * {
@@ -2901,7 +3083,8 @@ function doGet(e) {
               body { margin: 0; padding: 15px; }
             }
           </style>
-        </head>
+          </template>
+</head>
         <body class="bg-white p-4 font-sans text-stone-900">
           ${printSheet.outerHTML}
 
