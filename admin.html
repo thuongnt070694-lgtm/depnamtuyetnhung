@@ -627,6 +627,8 @@
           >
             <option value="all">🔍 Tất cả trạng thái đơn</option>
             <option value="Chờ xác nhận">⏳ Chờ xác nhận (Mới)</option>
+            <option value="Chờ kiểm tra tiền">💳 Chờ kiểm tra chuyển khoản</option>
+            <option value="Đã thanh toán">✅ Đã nhận tiền chuyển khoản</option>
             <option value="Đã đóng hàng">📦 Đã đóng hàng</option>
             <option value="Đang giao">🚚 Đang giao hàng</option>
             <option value="Đã giao">✅ Đã giao thành công</option>
@@ -2127,7 +2129,13 @@ function doGet(e) {
       let filtered = [...ordersList];
 
       if (statusFilter !== 'all') {
-        filtered = filtered.filter(o => (o.status || 'Chờ xác nhận').includes(statusFilter));
+        if (statusFilter === 'Chờ kiểm tra tiền') {
+          filtered = filtered.filter(o => (o.paymentMethod === 'banking' || (o.paymentText && o.paymentText.includes('Chuyển khoản'))) && !o.isPaid && o.paymentStatus !== 'Đã thanh toán');
+        } else if (statusFilter === 'Đã thanh toán') {
+          filtered = filtered.filter(o => o.isPaid || o.paymentStatus === 'Đã thanh toán');
+        } else {
+          filtered = filtered.filter(o => (o.status || 'Chờ xác nhận').includes(statusFilter));
+        }
       }
 
       if (searchKeyword) {
@@ -2165,6 +2173,8 @@ function doGet(e) {
         const status = order.status || 'Chờ xác nhận';
         const total = formatCurrency(order.finalTotal || 0);
         const paymentText = order.paymentText || (order.paymentMethod === 'banking' ? 'Chuyển khoản VietQR' : 'COD (Thu tiền khi nhận)');
+        const isBanking = order.paymentMethod === 'banking' || (order.paymentText && order.paymentText.includes('Chuyển khoản'));
+        const isPaid = order.isPaid === true || order.paymentStatus === 'Đã thanh toán';
 
         // Format danh sách sản phẩm
         let itemsHtml = '';
@@ -2226,7 +2236,24 @@ function doGet(e) {
             <!-- Tổng tiền & Hình thức -->
             <td class="p-3.5 align-top">
               <div class="font-black text-amber-950 text-xs">${total}</div>
-              <span class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${order.paymentMethod === 'banking' ? 'bg-purple-100 text-purple-900 border border-purple-200' : 'bg-stone-100 text-stone-700 border border-stone-200'}">
+              <div class="mt-1">
+                ${isBanking ? `
+                  <span class="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isPaid ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-900 border border-amber-300'}">
+                    ${isPaid ? '✅ Đã nhận tiền (0đ)' : '⏳ Chờ kiểm tra tiền'}
+                  </span>
+                  <div class="flex items-center gap-1 mt-1">
+                    ${!isPaid ? `
+                      <button type="button" onclick="confirmOrderPayment('${orderId}')" class="px-2 py-0.5 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[10px] shadow-2xs whitespace-nowrap" title="Bấm xác nhận khi thấy app ACB báo nhận tiền">✓ Đã nhận</button>
+                    ` : ''}
+                    <button type="button" onclick="changeOrderToCod('${orderId}')" class="px-1.5 py-0.5 rounded bg-stone-100 hover:bg-stone-200 text-stone-600 font-semibold text-[10px] border border-stone-200 whitespace-nowrap" title="Chuyển sang thu COD khi nhận hàng">Đổi COD</button>
+                  </div>
+                ` : `
+                  <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-200">
+                    COD (Thu tiền khi nhận)
+                  </span>
+                `}
+              </div>
+              <span class="hidden">
                 ${paymentText}
               </span>
             </td>
@@ -2279,6 +2306,43 @@ function doGet(e) {
       }).join('');
     }
 
+    // Xác nhận đã nhận tiền chuyển khoản (Duyệt 0đ)
+    function confirmOrderPayment(orderId) {
+      const order = ordersList.find(o => o.orderId === orderId);
+      if (!order) return;
+
+      order.isPaid = true;
+      order.paymentStatus = 'Đã thanh toán';
+      order.paymentText = 'Chuyển khoản VietQR (Đã nhận tiền)';
+      saveOrdersData();
+      renderOrdersTable();
+      showToast(`Đã duyệt đơn #${orderId}: Đã nhận đủ tiền chuyển khoản!`, 'success');
+
+      const modal = document.getElementById('print-order-modal');
+      if (modal && !modal.classList.contains('hidden') && currentPrintOrderId === orderId) {
+        openPrintOrderModal(orderId);
+      }
+    }
+
+    // Đổi hình thức thanh toán sang COD (Thu tiền khi nhận hàng)
+    function changeOrderToCod(orderId) {
+      const order = ordersList.find(o => o.orderId === orderId);
+      if (!order) return;
+
+      order.isPaid = false;
+      order.paymentMethod = 'COD';
+      order.paymentStatus = 'Thu tiền COD';
+      order.paymentText = 'COD (Thu tiền khi nhận)';
+      saveOrdersData();
+      renderOrdersTable();
+      showToast(`Đã chuyển đơn #${orderId} sang thu COD khi nhận: ${formatCurrency(order.finalTotal)}!`, 'info');
+
+      const modal = document.getElementById('print-order-modal');
+      if (modal && !modal.classList.contains('hidden') && currentPrintOrderId === orderId) {
+        openPrintOrderModal(orderId);
+      }
+    }
+
     // Đổi trạng thái đơn hàng
     function updateOrderStatus(orderId, newStatus) {
       const order = ordersList.find(o => o.orderId === orderId);
@@ -2310,7 +2374,7 @@ function doGet(e) {
       showToast('Đã dọn sạch lịch sử đơn hàng!', 'info');
     }
 
-    // Nhắn Zalo khách hàng xác nhận đơn
+    // Nhắn Zalo khách hàng thông báo theo trạng thái đơn
     function openZaloCustomerChat(orderId) {
       const order = ordersList.find(o => o.orderId === orderId);
       if (!order) return;
@@ -2322,13 +2386,46 @@ function doGet(e) {
         itemsStr = order.itemsText || 'Dép da nam thủ công';
       }
 
-      const msg = `Dạ chào anh/chị ${order.name}! Xưởng Dép Nam Tuyết Nhung đã nhận được đơn hàng #${order.orderId} của anh/chị:\n` +
-        `• Mẫu dép: ${itemsStr}\n` +
-        `• Tổng thanh toán: ${formatCurrency(order.finalTotal)}\n` +
-        `• Địa chỉ giao: ${order.address}\n\n` +
-        `Xưởng đang tiến hành kiểm tra đóng gói và gửi shipper cho anh/chị nhé. Khi nhận hàng anh/chị được kiểm tra và xỏ thử dép vừa chân mới thanh toán ạ! Cảm ơn anh/chị đã ủng hộ xưởng.`;
+      const isPaid = order.isPaid === true || order.paymentStatus === 'Đã thanh toán';
+      const status = order.status || 'Chờ xác nhận';
+      const paymentInfo = isPaid 
+        ? 'Đã thanh toán Chuyển khoản (0đ khi nhận)' 
+        : `Thu hộ COD: ${formatCurrency(order.finalTotal)}`;
 
-      const zaloUrl = `https://zalo.me/${order.phone}?text=${encodeURIComponent(msg)}`;
+      let msg = '';
+      if (status.includes('đóng')) {
+        msg = `Dạ chào anh/chị ${order.name}! Xưởng Dép Nam Tuyết Nhung xin thông báo đơn hàng #${order.orderId} của anh/chị đã được KIỂM TRA & ĐÓNG GÓI XONG:\n` +
+          `• Sản phẩm: ${itemsStr}\n` +
+          `• Thanh toán: ${paymentInfo}\n` +
+          `• Nơi nhận: ${order.address}\n\n` +
+          `Xưởng đang tiến hành bàn giao đơn cho bên vận chuyển để giao đến anh/chị trong 1-3 ngày tới. Cảm ơn anh/chị đã ủng hộ xưởng!`;
+      } else if (status.includes('Đang giao')) {
+        msg = `Dạ chào anh/chị ${order.name}! Xưởng Dép Nam Tuyết Nhung thông báo đơn hàng #${order.orderId} (${itemsStr}) ĐANG TRÊN ĐƯỜNG GIAO ĐẾN ANH/CHỊ.\n` +
+          `• Số tiền cần thanh toán khi nhận: ${isPaid ? '0đ (Đã thanh toán ACB)' : formatCurrency(order.finalTotal)}\n` +
+          `• Địa chỉ nhận: ${order.address}\n\n` +
+          `Anh/chị chú ý điện thoại để shipper liên hệ giao hàng nhé. Khi nhận, anh/chị ĐƯỢC MỞ HỘP KIỂM TRA VÀ ĐI THỬ VỪA CHÂN mới thanh toán ạ!`;
+      } else if (status.includes('Đã giao')) {
+        msg = `Dạ chào anh/chị ${order.name}! Xưởng Dép Nam Tuyết Nhung thấy đơn hàng #${order.orderId} đã được giao thành công đến anh/chị.\n\n` +
+          `Dép đi có êm và vừa vặn chân không ạ? Xưởng Tuyết Nhung bảo hành chính hãng 12 tháng da & đế. Nếu có bất kỳ điều gì cần hỗ trợ đổi size hay tư vấn, anh/chị cứ nhắn lại xưởng nhé! Chúc anh/chị luôn hài lòng cùng đôi dép mới ạ!`;
+      } else if (isPaid) {
+        msg = `Dạ chào anh/chị ${order.name}! Xưởng Dép Nam Tuyết Nhung đã nhận được khoản thanh toán chuyển khoản cho đơn hàng #${order.orderId} (${itemsStr}) qua ACB.\n` +
+          `• Trạng thái: ĐÃ THANH TOÁN THÀNH CÔNG (0đ khi nhận hàng)\n` +
+          `• Địa chỉ: ${order.address}\n\n` +
+          `Xưởng đang tiến hành đóng gói dép chuẩn size để gửi đi sớm nhất cho anh/chị nhé. Cảm ơn anh/chị rất nhiều!`;
+      } else {
+        msg = `Dạ chào anh/chị ${order.name}! Xưởng Dép Nam Tuyết Nhung đã nhận được đơn hàng #${order.orderId} của anh/chị:\n` +
+          `• Mẫu dép: ${itemsStr}\n` +
+          `• Tổng thanh toán: ${formatCurrency(order.finalTotal)}\n` +
+          `• Địa chỉ giao: ${order.address}\n\n` +
+          `Xưởng đang tiến hành kiểm tra đóng gói và gửi shipper cho anh/chị nhé. Khi nhận hàng anh/chị được kiểm tra và xỏ thử dép vừa chân mới thanh toán ạ! Cảm ơn anh/chị đã ủng hộ xưởng.`;
+      }
+
+
+
+
+
+      let phoneClean = String(order.phone || '').trim().replace(/[^0-9]/g, '');
+      const zaloUrl = `https://zalo.me/${phoneClean}?text=${encodeURIComponent(msg)}`;
       window.open(zaloUrl, '_blank');
     }
 
@@ -2341,6 +2438,63 @@ function doGet(e) {
       const modal = document.getElementById('print-order-modal');
       const printableArea = document.getElementById('printable-slip-area');
       if (!modal || !printableArea) return;
+
+      const isBanking = order.paymentMethod === 'banking' || (order.paymentText && order.paymentText.includes('Chuyển khoản'));
+      const isPaid = order.isPaid === true || order.paymentStatus === 'Đã thanh toán';
+
+      let paymentNoticeBar = '';
+      if (isBanking) {
+        if (isPaid) {
+          paymentNoticeBar = `
+            <div class="mb-3 p-3 bg-emerald-50 rounded-xl border border-emerald-300 text-xs flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-base text-emerald-700 font-bold">✓</span>
+                <div>
+                  <strong class="text-emerald-950 font-bold block">ĐÃ XÁC NHẬN NHẬN TIỀN (IN 0Đ)</strong>
+                  <span class="text-[11px] text-emerald-800">Khách đã chuyển khoản. Bưu tá giao dép không thu tiền.</span>
+                </div>
+              </div>
+              <button type="button" onclick="changeOrderToCod('${order.orderId}')" class="px-3 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 font-bold text-[11px] shadow-2xs">
+                Đổi Sang Thu COD
+              </button>
+            </div>
+          `;
+        } else {
+          paymentNoticeBar = `
+            <div class="mb-3 p-3.5 bg-amber-50 rounded-xl border-2 border-amber-400 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <strong class="text-amber-950 font-black flex items-center gap-1.5 text-xs">
+                  <span>⏳ ĐƠN NÀY CHỌN CHUYỂN KHOẢN NHƯNG CHƯA XÁC NHẬN TIỀN!</span>
+                </strong>
+                <p class="text-[11px] text-stone-600 mt-0.5">Kiểm tra app ACB STK <strong>20000987</strong> có tin nhắn nhận tiền nội dung <strong>TT ${order.orderId}</strong> chưa.</p>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <button type="button" onclick="confirmOrderPayment('${order.orderId}')" class="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center gap-1.5 hover:scale-105 transition-all">
+                  <span>✓ Đã Thấy Tiền Về (Duyệt 0đ)</span>
+                </button>
+                <button type="button" onclick="changeOrderToCod('${order.orderId}')" class="px-3 py-2 bg-amber-900 hover:bg-amber-950 text-white font-bold text-xs rounded-xl shadow-xs">
+                  <span>💵 Chưa Chuyển (Đổi Thu COD)</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      let codDisplay = '';
+      let paymentTextDisplay = '';
+      if (isBanking) {
+        if (isPaid) {
+          paymentTextDisplay = 'Chuyển khoản VietQR (Đã nhận tiền)';
+          codDisplay = '<span class="text-emerald-700 font-black">0 đ (Đã thanh toán)</span>';
+        } else {
+          paymentTextDisplay = '<span class="text-rose-700 font-bold">Chuyển khoản (CHƯA XÁC NHẬN TIỀN)</span>';
+          codDisplay = `<span class="text-rose-700 font-black">${formatCurrency(order.finalTotal)}</span><br/><span class="text-[9px] text-rose-600 font-bold uppercase">(Thu COD phòng khách chưa chuyển)</span>`;
+        }
+      } else {
+        paymentTextDisplay = 'COD (Thu tiền khi nhận hàng)';
+        codDisplay = `<span class="text-amber-950 font-black">${formatCurrency(order.finalTotal)}</span>`;
+      }
 
       let itemsRows = '';
       if (Array.isArray(order.items) && order.items.length > 0) {
@@ -2366,6 +2520,7 @@ function doGet(e) {
       }
 
       printableArea.innerHTML = `
+        ${paymentNoticeBar}
         <div id="print-packing-slip-sheet" class="bg-white p-5 rounded-xl border border-stone-300 shadow-sm space-y-4">
           <!-- Header phiếu in -->
           <div class="flex items-center justify-between border-b-2 border-stone-800 pb-3">
@@ -2411,11 +2566,11 @@ function doGet(e) {
           <div class="p-3 bg-amber-50 rounded-xl border-2 border-amber-800/80 flex items-center justify-between">
             <div>
               <span class="text-[10px] text-stone-600 uppercase font-bold block">Hình thức thanh toán:</span>
-              <span class="text-xs font-bold text-stone-800">${order.paymentText || (order.paymentMethod === 'banking' ? 'Đã Chuyển Khoản VietQR' : 'Thu tiền COD')}</span>
+              <span class="text-xs font-bold text-stone-800">${paymentTextDisplay}</span>
             </div>
             <div class="text-right">
               <span class="text-[10px] text-amber-900 uppercase font-black block">TIỀN THU HỘ (COD):</span>
-              <span class="text-lg font-black text-amber-950">${order.paymentMethod === 'banking' ? '0 đ (Đã thanh toán)' : formatCurrency(order.finalTotal)}</span>
+              <span class="text-lg font-black text-amber-950">${codDisplay}</span>
             </div>
           </div>
 

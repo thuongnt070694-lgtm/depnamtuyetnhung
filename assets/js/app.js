@@ -1092,6 +1092,8 @@ function submitOrder(event) {
     address,
     note,
     paymentMethod,
+    paymentStatus: paymentMethod === 'banking' ? 'Chờ kiểm tra tiền' : 'Thu tiền COD',
+    isPaid: false,
     items: [...cart],
     finalTotal,
     createdAt: new Date().toLocaleString('vi-VN'),
@@ -1179,6 +1181,8 @@ function sendOrderToZalo() {
     address,
     note,
     paymentMethod,
+    paymentStatus: paymentMethod === 'banking' ? 'Chờ kiểm tra tiền' : 'Thu tiền COD',
+    isPaid: false,
     paymentText: paymentMethod === 'banking' ? 'Chuyển khoản VietQR' : 'COD (Nhận hàng thanh toán)',
     items: [...cart],
     finalTotal,
@@ -1243,7 +1247,9 @@ async function sendOrderToGoogleSheets(order) {
 }
 
 // Hiển thị modal đặt hàng thành công
+let lastSubmittedOrder = null;
 function showSuccessModal(order) {
+  lastSubmittedOrder = order;
   const modal = document.getElementById('success-modal');
   const details = document.getElementById('success-order-details');
   if (!modal || !details) return;
@@ -1265,6 +1271,12 @@ function showSuccessModal(order) {
       <p><span class="font-semibold text-stone-700">Khách hàng:</span> ${order.name} - ${order.phone}</p>
       <p><span class="font-semibold text-stone-700">Địa chỉ giao:</span> ${order.address}</p>
       <p><span class="font-semibold text-stone-700">Hình thức:</span> ${order.paymentMethod === 'banking' ? 'Chuyển khoản (Nội dung CK: <strong class="text-amber-900 font-mono font-bold">TT ' + order.orderId + '</strong>)' : 'Thanh toán COD khi nhận hàng'}</p>
+      ${order.paymentMethod === 'banking' ? `
+        <div class="p-2 bg-amber-100/70 rounded-lg border border-amber-300 text-[11px] text-amber-950">
+          <span class="font-bold">⏳ Trạng thái: Chờ kiểm tra tiền vào tài khoản ACB</span>
+          <p class="text-stone-600 mt-0.5">Xưởng sẽ đối chiếu biến động số dư theo nội dung <strong>TT ${order.orderId}</strong> và đóng hàng gửi cho anh/chị ngay nhé!</p>
+        </div>
+      ` : ''}
       <p><span class="font-semibold text-stone-700">Tổng tiền:</span> <span class="text-amber-900 font-extrabold text-sm">${formatCurrency(order.finalTotal)}</span></p>
     </div>
     <div class="p-3 bg-blue-50 rounded-xl border border-blue-200 text-blue-950 text-xs mb-4 text-left flex items-start gap-2.5">
@@ -1371,6 +1383,7 @@ function setupEventListeners() {
   currentCheckoutOrderId = null;
       closeSizeGuideModal();
       closeSuccessModal();
+      closeOrderTrackingModal();
     }
   });
 }
@@ -1382,3 +1395,301 @@ window.openCartDrawer = openCartDrawer;
 window.closeCartDrawer = closeCartDrawer;
 window.openCheckoutModal = openCheckoutModal;
 window.closeCheckoutModal = closeCheckoutModal;
+
+// ============================================
+// HỆ THỐNG TRA CỨU TIẾN ĐỘ ĐƠN HÀNG (ORDER TRACKING)
+// ============================================
+
+function openOrderTrackingModal(prefillQuery = '') {
+  const modal = document.getElementById('order-tracking-modal');
+  const input = document.getElementById('tracking-query-input');
+  if (!modal) return;
+
+  modal.classList.remove('hidden');
+
+  let query = prefillQuery;
+  if (!query) {
+    try {
+      const orders = JSON.parse(localStorage.getItem('tuyetnhung_orders')) || [];
+      if (orders.length > 0) {
+        query = orders[orders.length - 1].phone || orders[orders.length - 1].orderId;
+      }
+    } catch(e) {}
+  }
+
+  if (input) {
+    if (query) input.value = query;
+    setTimeout(() => input.focus(), 100);
+  }
+
+  if (query) {
+    searchOrderTracking(query);
+  }
+}
+
+function closeOrderTrackingModal() {
+  const modal = document.getElementById('order-tracking-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function openOrderTrackingModalFromSuccess() {
+  closeSuccessModal();
+  const orderId = lastSubmittedOrder ? lastSubmittedOrder.orderId : '';
+  openOrderTrackingModal(orderId);
+}
+
+function handleOrderTrackingSearch() {
+  const input = document.getElementById('tracking-query-input');
+  const query = input ? input.value.trim() : '';
+  searchOrderTracking(query);
+}
+
+function searchOrderTracking(query) {
+  const container = document.getElementById('order-tracking-result');
+  if (!container) return;
+
+  const rawQuery = (query || '').trim();
+  if (!rawQuery) {
+    container.innerHTML = `
+      <div class="p-6 bg-stone-50 rounded-2xl border border-dashed border-stone-300 text-center text-stone-500 text-xs">
+        <span class="text-2xl block mb-2">🔎</span>
+        Vui lòng nhập Số điện thoại hoặc Mã đơn hàng của bạn để tra cứu tiến độ.
+      </div>
+    `;
+    return;
+  }
+
+  let orders = [];
+  try {
+    orders = JSON.parse(localStorage.getItem('tuyetnhung_orders')) || [];
+  } catch(e) {
+    orders = [];
+  }
+
+  const cleanQuery = rawQuery.toLowerCase().replace(/#/g, '');
+  const cleanPhoneDigits = rawQuery.replace(/[^0-9]/g, '');
+
+  const matchedOrders = orders.filter(o => {
+    const id = String(o.orderId || '').toLowerCase().replace(/#/g, '');
+    const phone = String(o.phone || '').replace(/[^0-9]/g, '');
+    
+    if (id === cleanQuery || id.includes(cleanQuery)) return true;
+    if (cleanPhoneDigits && cleanPhoneDigits.length >= 4 && phone.includes(cleanPhoneDigits)) return true;
+    return false;
+  });
+
+  if (matchedOrders.length === 0) {
+    const zaloPhone = (typeof STORE_INFO !== 'undefined' && STORE_INFO.zalo) ? STORE_INFO.zalo : '0962860721';
+    const zaloHelpUrl = `https://zalo.me/${zaloPhone}?text=${encodeURIComponent('Dạ chào xưởng Tuyết Nhung, tôi muốn kiểm tra tình trạng đơn hàng thông tin: ' + rawQuery)}`;
+
+    container.innerHTML = `
+      <div class="p-6 bg-amber-50/70 rounded-2xl border border-amber-200 text-center space-y-3">
+        <div class="w-12 h-12 bg-amber-100 text-amber-900 rounded-full flex items-center justify-center text-xl mx-auto font-black">
+          ❓
+        </div>
+        <div>
+          <h4 class="font-bold text-amber-950 text-sm">Chưa tìm thấy đơn hàng "${rawQuery}" trên trình duyệt này</h4>
+          <p class="text-xs text-stone-600 mt-1 max-w-sm mx-auto">
+            Nếu anh/chị vừa đặt hàng qua Zalo hoặc Hotline, thợ xưởng đã tiếp nhận và đang tiến hành xử lý. Anh/chị có thể liên hệ trực tiếp để xưởng tra cứu nhanh nhé:
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2 justify-center pt-2">
+          <a href="${zaloHelpUrl}" target="_blank" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
+            <span>💬 Nhắn Zalo Xưởng Tra Cứu</span>
+          </a>
+          <a href="tel:0962860721" class="px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
+            <span>📞 Gọi Hotline: 0962.860.721</span>
+          </a>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Sắp xếp đơn mới nhất lên đầu
+  const displayList = [...matchedOrders].reverse();
+
+  const ordersHtml = displayList.map((order) => {
+    const isPaid = order.isPaid === true || order.paymentStatus === 'Đã thanh toán';
+    const status = order.status || 'Chờ xác nhận';
+    const isBanking = order.paymentMethod === 'banking' || (order.paymentText && order.paymentText.includes('Chuyển khoản'));
+
+    // Xác định bước tiến trình (1: Tiếp nhận, 2: Thanh toán, 3: Đóng gói, 4: Đang giao, 5: Đã giao)
+    let step = 1;
+    if (status.includes('Đã giao')) {
+      step = 5;
+    } else if (status.includes('Đang giao')) {
+      step = 4;
+    } else if (status.includes('đóng')) {
+      step = 3;
+    } else if (isPaid) {
+      step = 2;
+    } else {
+      step = 1;
+    }
+
+    const stepsData = [
+      {
+        num: 1,
+        title: 'Đã Tiếp Nhận',
+        desc: order.createdAt || 'Hệ thống đã nhận',
+        icon: '📝',
+        isDone: step >= 1
+      },
+      {
+        num: 2,
+        title: isPaid ? 'Đã Thanh Toán' : (isBanking ? 'Chờ Chuyển Tiền' : 'Thu COD'),
+        desc: isPaid ? 'Đã nhận qua ACB' : (isBanking ? 'Chờ đối chiếu STK' : 'Trả tiền khi nhận'),
+        icon: isPaid ? '✓' : (isBanking ? '⏳' : '💵'),
+        isDone: isPaid || !isBanking || step >= 3,
+        isWarning: isBanking && !isPaid && step < 3
+      },
+      {
+        num: 3,
+        title: 'Đã Đóng Gói',
+        desc: step >= 3 ? 'Đã kiểm tra & đóng hộp' : 'Đang xếp hàng',
+        icon: '📦',
+        isDone: step >= 3
+      },
+      {
+        num: 4,
+        title: 'Đang Giao',
+        desc: step >= 4 ? 'Shipper đang giao tới' : 'Chờ bưu tá nhận',
+        icon: '🚚',
+        isDone: step >= 4
+      },
+      {
+        num: 5,
+        title: 'Thành Công',
+        desc: step >= 5 ? 'Đã nhận (BH 12T)' : 'Được thử vừa chân',
+        icon: '⭐',
+        isDone: step >= 5
+      }
+    ];
+
+    let itemsHtml = '';
+    if (Array.isArray(order.items) && order.items.length > 0) {
+      itemsHtml = order.items.map(i => `
+        <div class="flex items-center justify-between py-2 border-b border-stone-100 last:border-0 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-800 flex-shrink-0"></span>
+            <div>
+              <span class="font-bold text-stone-900">${i.name}</span>
+              <div class="text-[11px] text-stone-500">Size: <strong class="text-amber-900">${i.size}</strong>${i.color ? ` • Màu: ${i.color}` : ''} • SL: x${i.quantity}</div>
+            </div>
+          </div>
+          <span class="font-extrabold text-amber-950 font-mono text-xs">${formatCurrency((i.price || 0) * (i.quantity || 1))}</span>
+        </div>
+      `).join('');
+    } else {
+      itemsHtml = `<div class="text-xs text-stone-600 py-1">${order.itemsText || 'Dép da nam Tuyết Nhung'}</div>`;
+    }
+
+    const zaloMsg = `Dạ chào xưởng Tuyết Nhung, tôi đang tra cứu tiến độ đơn hàng #${order.orderId} của tôi (${order.name} - ${order.phone}). Nhờ xưởng hỗ trợ thông tin giúp tôi nhé!`;
+    const zaloUrl = `https://zalo.me/0962860721?text=${encodeURIComponent(zaloMsg)}`;
+
+    return `
+      <div class="bg-white rounded-2xl border-2 border-amber-800/20 p-4 sm:p-5 shadow-sm space-y-4 mb-3">
+        <!-- Header đơn hàng -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono font-black text-amber-950 text-base">#${order.orderId}</span>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                step === 5 ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
+                step === 4 ? 'bg-blue-100 text-blue-800 border border-blue-300' :
+                step === 3 ? 'bg-purple-100 text-purple-800 border border-purple-300' :
+                'bg-amber-100 text-amber-900 border border-amber-300'
+              }">
+                ${status}
+              </span>
+            </div>
+            <span class="text-[11px] text-stone-400 block mt-0.5">Đặt lúc: ${order.createdAt || 'Gần đây'}</span>
+          </div>
+
+          <div class="text-right">
+            <span class="text-[10px] text-stone-500 uppercase font-bold block">Tổng Thanh Toán:</span>
+            <span class="text-base font-black text-amber-900">${formatCurrency(order.finalTotal || 0)}</span>
+          </div>
+        </div>
+
+        <!-- Thanh tiến trình 5 bước trực quan -->
+        <div class="py-2">
+          <div class="text-xs font-black text-stone-900 mb-3 flex items-center justify-between">
+            <span>Tiến Độ Đơn Hàng:</span>
+            <span class="text-[11px] text-amber-900 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Giai đoạn ${step}/5</span>
+          </div>
+          
+          <div class="relative grid grid-cols-5 gap-1 sm:gap-2">
+            ${stepsData.map((s) => `
+              <div class="flex flex-col items-center text-center">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-2xs ${
+                  s.isDone 
+                    ? 'bg-amber-900 text-white ring-2 ring-amber-700/40 scale-105' 
+                    : (s.isWarning ? 'bg-amber-100 text-amber-900 border-2 border-dashed border-amber-400' : 'bg-stone-100 text-stone-400 border border-stone-200')
+                }">
+                  ${s.icon}
+                </div>
+                <span class="text-[10px] sm:text-[11px] font-bold mt-1.5 leading-tight ${s.isDone ? 'text-stone-900' : 'text-stone-400'}">
+                  ${s.title}
+                </span>
+                <span class="hidden sm:block text-[9px] text-stone-400 leading-tight mt-0.5">
+                  ${s.desc}
+                </span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Chi tiết sản phẩm -->
+        <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-2">
+          <span class="text-[10px] font-black uppercase tracking-wider text-stone-500 block">Sản phẩm trong đơn:</span>
+          ${itemsHtml}
+        </div>
+
+        <!-- Địa chỉ & Thanh toán -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200/80">
+            <span class="text-[10px] uppercase font-bold text-stone-500 block">Người nhận hàng:</span>
+            <strong class="text-stone-900 block mt-0.5">${order.name} - ${order.phone}</strong>
+            <p class="text-[11px] text-stone-600 mt-0.5">📍 ${order.address}</p>
+          </div>
+          <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200/80">
+            <span class="text-[10px] uppercase font-bold text-stone-500 block">Hình thức thanh toán:</span>
+            <strong class="text-stone-900 block mt-0.5">
+              ${isPaid ? '✅ Đã thanh toán (0đ khi nhận)' : (isBanking ? '⏳ Chuyển khoản VietQR' : '💵 Thu tiền mặt COD khi nhận')}
+            </strong>
+            <p class="text-[11px] text-stone-600 mt-0.5">
+              ${isPaid ? 'Bưu tá giao hàng không thu tiền (0đ)' : (isBanking ? 'Nội dung CK: TT ' + order.orderId : 'Được mở hộp xỏ thử dép vừa chân mới trả tiền')}
+            </p>
+          </div>
+        </div>
+
+        <!-- Nút hỗ trợ nhanh -->
+        <div class="flex items-center gap-2 pt-1">
+          <a href="${zaloUrl}" target="_blank" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors">
+            <span>💬 Nhắn Zalo Về Đơn Này</span>
+          </a>
+          <a href="tel:0962860721" class="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors border border-stone-200">
+            <span>📞 Gọi Xưởng</span>
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="text-xs text-stone-500 mb-2 flex items-center justify-between">
+      <span>Tìm thấy <strong>${matchedOrders.length}</strong> đơn hàng:</span>
+      <span class="text-[11px] text-stone-400">Từ khóa: "${rawQuery}"</span>
+    </div>
+    ${ordersHtml}
+  `;
+}
+
+// Xuất hàm ra window
+window.openOrderTrackingModal = openOrderTrackingModal;
+window.closeOrderTrackingModal = closeOrderTrackingModal;
+window.openOrderTrackingModalFromSuccess = openOrderTrackingModalFromSuccess;
+window.handleOrderTrackingSearch = handleOrderTrackingSearch;
+window.searchOrderTracking = searchOrderTracking;

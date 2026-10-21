@@ -110,6 +110,17 @@
             </div>
           </a>
 
+          <!-- Nút Tra Cứu Đơn -->
+          <button 
+            type="button"
+            onclick="openOrderTrackingModal()"
+            class="px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-colors shadow-2xs"
+            title="Tra cứu tiến độ & tình trạng đơn hàng"
+          >
+            <span class="text-sm">🔍</span>
+            <span class="hidden sm:inline">Tra Cứu Đơn</span>
+          </button>
+
           <!-- Nút Giỏ Hàng -->
           <button 
             onclick="openCartDrawer()"
@@ -141,6 +152,9 @@
         </a>
         <a href="#story-section" class="hover:text-amber-800 transition-colors">Về Xưởng Tuyết Nhung</a>
         <a href="#commitment-section" class="hover:text-amber-800 transition-colors">Chính Sách Bảo Hành</a>
+        <a href="javascript:void(0)" onclick="openOrderTrackingModal()" class="hover:text-amber-800 transition-colors flex items-center gap-1 font-bold text-amber-900 ml-auto bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">
+          <span>🔍 Tra Cứu Đơn</span>
+        </a>
       </nav>
 
     </div>
@@ -986,6 +1000,9 @@
         <a id="success-zalo-btn" href="https://zalo.me/0962860721" target="_blank" class="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-blue-700 shadow-md">
           <span>💬 Bấm Vào Đây Để Gửi Đơn Sang Zalo Xưởng (Nhận Hàng Nhanh)</span>
         </a>
+        <button id="success-track-btn" onclick="openOrderTrackingModalFromSuccess()" class="w-full py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors border border-amber-300">
+          <span>🔍 Theo Dõi Tiến Độ Đơn Hàng Này</span>
+        </button>
         <button onclick="closeSuccessModal()" class="w-full py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50">
           Tiếp Tục Xem Thêm Sản Phẩm
         </button>
@@ -1014,6 +1031,62 @@
       <button onclick="closeSizeGuideModal()" class="w-full py-2.5 btn-leather-primary text-xs font-bold rounded-xl">
         Đã Hiểu, Quay Lại Chọn Dép
       </button>
+    </div>
+  </div>
+
+  <!-- 6. ORDER TRACKING MODAL (TRA CỨU TIẾN ĐỘ ĐƠN HÀNG) -->
+  <div id="order-tracking-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-amber-200 relative max-h-[90vh] flex flex-col">
+      <button 
+        type="button" 
+        onclick="closeOrderTrackingModal()" 
+        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center font-bold text-sm transition-colors"
+        title="Đóng cửa sổ"
+      >
+        ✕
+      </button>
+
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center text-lg font-black flex-shrink-0">
+          📦
+        </div>
+        <div>
+          <h3 class="text-xl font-black text-stone-900 font-serif-heading">Tra Cứu Đơn Hàng</h3>
+          <p class="text-xs text-stone-500">Kiểm tra trạng thái đóng gói và tiến độ giao hàng</p>
+        </div>
+      </div>
+
+      <!-- Khung tìm kiếm -->
+      <form onsubmit="event.preventDefault(); handleOrderTrackingSearch();" class="mb-4">
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1">
+            <input 
+              id="tracking-query-input" 
+              type="text" 
+              placeholder="Nhập Số điện thoại (VD: 0962860721) hoặc Mã đơn..." 
+              class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-stone-300 text-xs sm:text-sm font-medium focus:outline-none focus:border-amber-800 focus:ring-1 focus:ring-amber-800 bg-stone-50"
+            />
+            <span class="absolute left-3 top-2.5 text-stone-400 text-sm">🔍</span>
+          </div>
+          <button 
+            type="submit" 
+            class="px-4 py-2.5 rounded-xl btn-leather-primary text-xs sm:text-sm font-bold shadow-sm whitespace-nowrap"
+          >
+            Tra Cứu
+          </button>
+        </div>
+        <p class="text-[11px] text-stone-400 mt-1.5 flex items-center gap-1">
+          <span>💡</span> Mẹo: Nhập số điện thoại để xem tất cả các đơn bạn đã đặt tại xưởng.
+        </p>
+      </form>
+
+      <!-- Vùng kết quả tra cứu (Cuộn mượt) -->
+      <div id="order-tracking-result" class="flex-1 overflow-y-auto pr-1 space-y-4">
+        <div class="p-6 bg-stone-50 rounded-2xl border border-dashed border-stone-300 text-center text-stone-500 text-xs">
+          <span class="text-2xl block mb-2">🔎</span>
+          Nhập số điện thoại hoặc mã đơn hàng của bạn phía trên để xem tiến độ giao hàng chi tiết.
+        </div>
+      </div>
     </div>
   </div>
 

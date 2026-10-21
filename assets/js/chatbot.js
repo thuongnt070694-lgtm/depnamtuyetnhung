@@ -777,7 +777,116 @@ function processUserQuery(query) {
   }
 
   // 6. TRA CỨU ĐƠN HÀNG GẦN NHẤT
-  if (q.includes('don hang') || q.includes('tra cuu') || q.includes('kiem tra don') || q.includes('don cua toi') || q.includes('tinh trang don')) {
+  if (q.includes('xem thanh tien trinh') || q.includes('tra cuu don tren website')) {
+    if (typeof window.openOrderTrackingModal === 'function') {
+      window.openOrderTrackingModal();
+      sendBotMessage('Dạ em đã mở cửa sổ <strong>Tra Cứu Tiến Độ Đơn Hàng</strong> trên màn hình rồi ạ! Anh/chị xem chi tiết trên đó nhé.');
+      return;
+    }
+  }
+
+  // Tra cứu đơn hàng thông minh
+  const isOrderQuery = q.includes('don hang') || q.includes('tra cuu') || q.includes('kiem tra don') || 
+                       q.includes('don cua toi') || q.includes('tinh trang don') || q.includes('dong hang') || 
+                       q.includes('giao hang') || q.includes('da giao') || q.includes('bao gio giao') || 
+                       q.includes('khi nao giao') || q.includes('van chuyen') || q.includes('tien do') ||
+                       /tn\s*[0-9]{4,8}/i.test(q) || /(84|0[35789])[0-9]{8}\b/.test(q.replace(/\s+/g, ''));
+
+  if (isOrderQuery) {
+    let orderHistory = [];
+    try {
+      orderHistory = JSON.parse(localStorage.getItem('tuyetnhung_orders')) || [];
+    } catch (e) {
+      orderHistory = [];
+    }
+
+    const cleanNoSpace = query.replace(/\s+/g, '');
+    const cleanDigits = query.replace(/[^0-9]/g, '');
+    const orderMatch = cleanNoSpace.match(/TN[0-9]{4,8}/i);
+
+    let targetOrder = null;
+    if (orderMatch) {
+      const targetId = orderMatch[0].toUpperCase();
+      targetOrder = orderHistory.find(o => String(o.orderId || '').toUpperCase() === targetId);
+    }
+    if (!targetOrder && cleanDigits.length >= 9) {
+      targetOrder = orderHistory.find(o => String(o.phone || '').replace(/[^0-9]/g, '').includes(cleanDigits));
+    }
+    if (!targetOrder && orderHistory.length > 0) {
+      targetOrder = orderHistory[orderHistory.length - 1];
+    }
+
+    if (targetOrder) {
+      const isPaid = targetOrder.isPaid === true || targetOrder.paymentStatus === 'Đã thanh toán';
+      const status = targetOrder.status || 'Chờ xác nhận';
+      const isBanking = targetOrder.paymentMethod === 'banking' || (targetOrder.paymentText && targetOrder.paymentText.includes('Chuyển khoản'));
+
+      let itemsText = '';
+      if (Array.isArray(targetOrder.items) && targetOrder.items.length > 0) {
+        itemsText = targetOrder.items.map(i => `• ${i.name} (Size ${i.size}${i.color ? `, ${i.color}` : ''}) x${i.quantity}`).join('<br/>');
+      } else {
+        itemsText = `• ${targetOrder.itemsText || 'Dép da nam Tuyết Nhung'}`;
+      }
+
+      let stageBadge = '';
+      let stageText = '';
+      if (status.includes('Đã giao')) {
+        stageBadge = '<span class="text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">✅ Đã giao thành công</span>';
+        stageText = '🎉 <strong>Đơn hàng đã được bưu tá phát thành công.</strong> Sản phẩm được xưởng Tuyết Nhung bảo hành 12 tháng da & đế.';
+      } else if (status.includes('Đang giao')) {
+        stageBadge = '<span class="text-blue-800 font-bold bg-blue-100 px-2 py-0.5 rounded-full border border-blue-300">🚚 Đang giao hàng</span>';
+        stageText = '📦 <strong>Shipper đang trên đường vận chuyển đơn tới anh/chị.</strong> Anh/chị chú ý điện thoại để nhận hàng và đi thử dép nhé.';
+      } else if (status.includes('đóng')) {
+        stageBadge = '<span class="text-purple-800 font-bold bg-purple-100 px-2 py-0.5 rounded-full border border-purple-300">📦 Đã đóng gói xong</span>';
+        stageText = '🔨 <strong>Thợ xưởng đã kiểm tra kỹ da & đóng hộp dép hoàn tất.</strong> Đơn đang chờ bàn giao cho bên bưu tá để xuất kho sớm nhất!';
+      } else if (isPaid) {
+        stageBadge = '<span class="text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">🟢 Đã nhận tiền ACB</span>';
+        stageText = '💳 <strong>Xưởng đã xác nhận nhận tiền chuyển khoản online (0đ khi nhận).</strong> Thợ đang tiến hành chuẩn bị size dép để đóng gói cho anh/chị nhé!';
+      } else {
+        stageBadge = '<span class="text-amber-900 font-bold bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">⏳ Đã tiếp nhận đơn</span>';
+        stageText = '📝 <strong>Xưởng đã tiếp nhận thông tin đơn hàng.</strong> Thợ đang kiểm tra số lượng và chuẩn bị dép để đóng gói gửi đi sớm nhất ạ!';
+      }
+
+      const paymentDetail = isPaid 
+        ? '<strong class="text-emerald-700">Đã thanh toán (0đ khi nhận hàng)</strong>' 
+        : (isBanking ? '<span class="text-amber-800">Chuyển khoản VietQR (Nội dung: <strong>TT ' + targetOrder.orderId + '</strong>)</span>' : '<span class="text-stone-700">Thu tiền COD khi nhận hàng</span>');
+
+      const reply = `
+        📦 <strong>TIẾN ĐỘ ĐƠN HÀNG #${targetOrder.orderId}:</strong><br/><br/>
+        • <strong>Trạng thái:</strong> ${stageBadge}<br/>
+        • <strong>Khách nhận:</strong> ${targetOrder.name} - ${targetOrder.phone}<br/>
+        • <strong>Địa chỉ giao:</strong> ${targetOrder.address}<br/>
+        • <strong>Sản phẩm:</strong><br/>${itemsText}<br/>
+        • <strong>Tổng tiền:</strong> <span class="font-extrabold text-amber-950 font-mono text-sm">${formatCurrency(targetOrder.finalTotal)}</span><br/>
+        • <strong>Thanh toán:</strong> ${paymentDetail}<br/><br/>
+        👉 <strong>Chi tiết tiến độ:</strong><br/>
+        ${stageText}<br/><br/>
+        <em>💡 Anh/chị có thể bấm nút tra cứu bên dưới để xem thanh tiến trình 5 bước hoặc nhắn Zalo xưởng hỗ trợ 24/7 nhé!</em>
+      `;
+
+      sendBotMessage(reply, [
+        '🔍 Xem thanh tiến trình chi tiết',
+        '💬 Chat Zalo về đơn này',
+        '👟 Xem thêm mẫu dép'
+      ]);
+      return;
+    } else {
+      const reply = `
+        Dạ hiện tại trên trình duyệt này chưa tìm thấy đơn hàng nào khớp với "<strong>${escapeHtml(query)}</strong>" ạ.<br/><br/>
+        • Nếu anh/chị vừa đặt trên web, vui lòng kiểm tra lại số điện thoại hoặc mã đơn (VD: <em>TN123456</em>).<br/>
+        • Hoặc anh/chị có thể bấm nút <strong>"🔍 Tra Cứu Đơn"</strong> trên thanh menu đầu trang web để tìm kiếm nhé!
+      `;
+      sendBotMessage(reply, [
+        '🔍 Tra cứu đơn trên website',
+        '💬 Nhắn Zalo xưởng tra cứu',
+        '📞 Gọi Hotline 0962.860.721',
+        '👟 Xem mẫu dép đang bán'
+      ]);
+      return;
+    }
+  }
+
+  if (false) {
     let orderHistory = [];
     try {
       orderHistory = JSON.parse(localStorage.getItem('tuyetnhung_orders')) || [];
