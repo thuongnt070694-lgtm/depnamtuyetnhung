@@ -26,13 +26,13 @@ git remote remove origin 2>nul
 git remote add origin https://github.com/thuongnt070694-lgtm/depnamtuyetnhung.git
 
 echo 5. Day du lieu len GitHub (git push)...
-git push -u origin main
+git push -u origin main --force
 
 if %errorlevel% neq 0 (
     echo.
     echo [CANH BAO] Neu GitHub co commit moi tren mang, dang thu pull rebase...
     git pull origin main --rebase
-    git push -u origin main
+    git push -u origin main --force
 )
 
 echo.
