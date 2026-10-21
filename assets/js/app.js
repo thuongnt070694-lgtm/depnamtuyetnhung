@@ -911,6 +911,8 @@ function closeQuickView() {
   if (modal) modal.classList.add('hidden');
 }
 
+let currentCheckoutOrderId = null;
+
 // Mở Modal Thanh Toán Đặt Hàng (Checkout)
 function openCheckoutModal() {
   if (cart.length === 0) {
@@ -944,7 +946,8 @@ function openCheckoutModal() {
   if (totalAmountEl) totalAmountEl.innerText = formatCurrency(finalTotal);
 
   // Tạo mã VietQR động nếu người dùng muốn chuyển khoản
-  updateQrCode(finalTotal);
+  currentCheckoutOrderId = 'TN' + Math.floor(100000 + Math.random() * 900000);
+  updateQrCode(finalTotal, currentCheckoutOrderId);
 
   modal.classList.remove('hidden');
 }
@@ -956,14 +959,18 @@ function closeCheckoutModal() {
 }
 
 // Cập nhật mã VietQR
-function updateQrCode(amount) {
+function updateQrCode(amount, orderId) {
   const qrImg = document.getElementById('vietqr-image');
   if (!qrImg) return;
   // Cú pháp: https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png?amount=<AMOUNT>&addInfo=<INFO>
-  const bankId = "VCB";
-  const accountNo = "9988776655";
-  const accountName = "NGUYEN THI TUYET NHUNG";
-  const memo = encodeURIComponent("DEP NAM TUYET NHUNG");
+  const bankId = (typeof STORE_INFO !== 'undefined' && STORE_INFO.bankId) ? STORE_INFO.bankId : "ACB";
+  const accountNo = (typeof STORE_INFO !== 'undefined' && STORE_INFO.bankAccount) ? STORE_INFO.bankAccount : "20000987";
+  const accountName = (typeof STORE_INFO !== 'undefined' && STORE_INFO.bankAccountName) ? STORE_INFO.bankAccountName : "NGUYEN THI HONG NHUNG";
+  const currentId = orderId || currentCheckoutOrderId || ('TN' + Math.floor(100000 + Math.random() * 900000));
+  const memoText = "TT " + currentId;
+  const memo = encodeURIComponent(memoText);
+  const memoEl = document.getElementById('qr-transfer-memo');
+  if (memoEl) memoEl.innerText = memoText;
   qrImg.src = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${memo}&accountName=${encodeURIComponent(accountName)}`;
 }
 
@@ -1004,7 +1011,7 @@ function submitOrder(event) {
     return;
   }
 
-  const orderId = 'TN' + Math.floor(100000 + Math.random() * 900000);
+  const orderId = currentCheckoutOrderId || ('TN' + Math.floor(100000 + Math.random() * 900000));
   const paymentText = paymentMethod === 'banking' ? 'Chuyển khoản VietQR' : 'COD (Nhận hàng thanh toán)';
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const discountVal = subtotal * appliedDiscount;
@@ -1031,7 +1038,7 @@ function submitOrder(event) {
       `🏠 Địa chỉ nhận: ${address}\n` +
       `📦 Danh sách dép:\n` + cart.map((item, i) => `${i + 1}. ${item.name} - Size ${item.size} - SL: ${item.quantity} đôi - ${formatCurrency(item.price * item.quantity)}`).join('\n') + `\n` +
       `💰 Tổng thanh toán: ${formatCurrency(finalTotal)}\n` +
-      `💳 Hình thức: ${paymentText}\n` +
+      `💳 Hình thức: ${paymentText}` + (paymentMethod === 'banking' ? ` (Nội dung CK: TT ${orderId})` : '') + `\n` +
       (note ? `📝 Ghi chú: ${note}\n` : '') +
       `--------------------------------\n` +
       `Nhờ xưởng kiểm tra size và đóng hàng gửi sớm giúp tôi nhé!`
@@ -1067,6 +1074,7 @@ function submitOrder(event) {
 
 // Chốt đơn qua Zalo trực tiếp
 function sendOrderToZalo() {
+  if (!currentCheckoutOrderId) currentCheckoutOrderId = 'TN' + Math.floor(100000 + Math.random() * 900000);
   const name = document.getElementById('customer-name').value.trim() || 'Khách hàng';
   const phone = document.getElementById('customer-phone').value.trim() || 'Chưa cung cấp';
   const address = document.getElementById('customer-address').value.trim() || 'Chưa cung cấp';
@@ -1081,19 +1089,20 @@ function sendOrderToZalo() {
     `${i + 1}. ${item.name} - Size ${item.size} - Màu: ${item.color} - SL: ${item.quantity} đôi - Giá: ${formatCurrency(item.price * item.quantity)}`
   ).join('\n');
 
-  const message = `Chào xưởng Dép Nam Tuyết Nhung, tôi muốn đặt hàng:\n` +
+  const message = `[ĐƠN HÀNG MỚI #${currentCheckoutOrderId}]\n` +
+    `Chào xưởng Dép Nam Tuyết Nhung, tôi muốn đặt hàng:\n` +
     `--------------------------------\n` +
     `👤 Khách hàng: ${name}\n` +
     `📞 Số điện thoại: ${phone}\n` +
     `🏠 Địa chỉ: ${address}\n` +
     `📦 Danh sách dép đặt:\n${itemsText}\n` +
     `💰 Tổng thanh toán: ${formatCurrency(finalTotal)}\n` +
-    `💳 Hình thức: ${paymentMethod}\n` +
+    `💳 Hình thức: ${paymentMethod}` + (paymentMethod.includes('banking') || paymentMethod.includes('Chuyển khoản') ? ` (Nội dung CK: TT ${currentCheckoutOrderId})` : '') + `\n` +
     (note ? `📝 Ghi chú: ${note}\n` : '') +
     `--------------------------------\n` +
     `Nhờ xưởng kiểm tra size và đóng hàng giúp tôi nhé!`;
 
-  const orderId = 'TN' + Math.floor(100000 + Math.random() * 900000);
+  const orderId = currentCheckoutOrderId || ('TN' + Math.floor(100000 + Math.random() * 900000));
   const orderData = {
     orderId,
     name,
@@ -1185,7 +1194,7 @@ function showSuccessModal(order) {
       </div>
       <p><span class="font-semibold text-stone-700">Khách hàng:</span> ${order.name} - ${order.phone}</p>
       <p><span class="font-semibold text-stone-700">Địa chỉ giao:</span> ${order.address}</p>
-      <p><span class="font-semibold text-stone-700">Hình thức:</span> ${order.paymentMethod === 'banking' ? 'Chuyển khoản' : 'Thanh toán COD khi nhận hàng'}</p>
+      <p><span class="font-semibold text-stone-700">Hình thức:</span> ${order.paymentMethod === 'banking' ? 'Chuyển khoản (Nội dung CK: <strong class="text-amber-900 font-mono font-bold">TT ' + order.orderId + '</strong>)' : 'Thanh toán COD khi nhận hàng'}</p>
       <p><span class="font-semibold text-stone-700">Tổng tiền:</span> <span class="text-amber-900 font-extrabold text-sm">${formatCurrency(order.finalTotal)}</span></p>
     </div>
     <div class="p-3 bg-blue-50 rounded-xl border border-blue-200 text-blue-950 text-xs mb-4 text-left flex items-start gap-2.5">

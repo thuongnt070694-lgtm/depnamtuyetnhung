@@ -835,6 +835,24 @@ function processUserQuery(query) {
     return;
   }
 
+  // 7.2. TÀI KHOẢN NGÂN HÀNG & CHUYỂN KHOẢN
+  if (q.includes('stk') || q.includes('tai khoan') || q.includes('chuyen khoan') || q.includes('ngan hang') || q.includes('vietqr') || q.includes('so tai khoan') || q.includes('noi dung')) {
+    const reply = `
+      💳 <strong>Thông tin tài khoản ngân hàng Xưởng Dép Nam Tuyết Nhung:</strong><br/><br/>
+      • <strong>Ngân hàng:</strong> Á Châu (ACB)<br/>
+      • <strong>Số tài khoản:</strong> <span class="text-amber-900 font-mono font-black text-sm">20000987</span><br/>
+      • <strong>Chủ tài khoản:</strong> NGUYEN THI HONG NHUNG<br/>
+      • <strong>Nội dung chuyển khoản:</strong> <span class="font-mono font-bold text-amber-950">TT [Mã đơn]</span> (Ví dụ: TT TN123456)<br/><br/>
+      <em>💡 Khi bấm đặt mua trên web, hệ thống sẽ tự động tạo mã QR có sẵn số tiền và nội dung để anh/chị quét thanh toán ngay trong 3 giây cực kỳ tiện lợi ạ!</em>
+    `;
+    sendBotMessage(reply, [
+      '👟 Xem mẫu dép bán chạy',
+      '🚚 Có được kiểm hàng khi nhận?',
+      '💬 Chat Zalo với xưởng'
+    ]);
+    return;
+  }
+
   // 8. CHÀO HỎI / XIN CHÀO
   if (q.includes('chao') || q.includes('hello') || q.includes('hi') || q.includes('alo') || q.includes('ad oi') || q.includes('shop oi') || q.includes('em oi') || q === 'ad') {
     const reply = `

@@ -322,7 +322,11 @@ const STORE_INFO = {
   "email": "depnamtuyetnhung@gmail.com",
   "workingHours": "08:00 - 21:30 (Cả Thứ 7 & Chủ Nhật)",
   "warrantyText": "Bảo hành 12 tháng da & chỉ khâu trọn đời đế",
-  "shippingText": "Miễn phí giao hàng toàn quốc từ 2 đôi"
+  "shippingText": "Miễn phí giao hàng toàn quốc từ 2 đôi",
+  "bankId": "ACB",
+  "bankName": "Ngân Hàng Á Châu (ACB)",
+  "bankAccount": "20000987",
+  "bankAccountName": "NGUYEN THI HONG NHUNG"
 };
 
 const HOMEPAGE_CONFIG = {
