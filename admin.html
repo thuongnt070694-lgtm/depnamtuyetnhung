@@ -8,6 +8,13 @@
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
     @media print {
+      html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+      }
       body > *:not(#print-order-modal) {
         display: none !important;
       }
@@ -61,9 +68,7 @@
       }
     }
   </style>
-  <!-- old style wrapper below -->
-  <template id="disabled-old-styles">
-  <style>
+  <style media="not all">
     @media print {
       body * {
         visibility: hidden !important;
@@ -87,11 +92,10 @@
       }
       @page {
         size: auto;
-        margin: 10mm;
+        margin: 10mm; /* test */
       }
     }
   </style>
-  </template>
 </head>
 <body class="bg-stone-100 text-stone-800 antialiased p-2 sm:p-6 lg:p-8">
 
@@ -2881,8 +2885,9 @@ function doGet(e) {
       const printSheet = document.getElementById('print-packing-slip-sheet');
       if (!printSheet) return;
 
-      // Dùng iframe ẩn chuyên dụng để in: Không bao giờ bị chặn popup và CHẮC CHẮN CHỈ IN ĐÚNG 1 TỜ DUY NHẤT
-      let printFrame = document.getElementById('hidden-packing-slip-iframe');
+      window.print();
+      return;
+    } /* disabled-legacy-print
       if (!printFrame) {
         printFrame = document.createElement('iframe');
         printFrame.id = 'hidden-packing-slip-iframe';
@@ -2931,7 +2936,6 @@ function doGet(e) {
       break-inside: avoid !important;
     }
   </style>
-  </template>
 </head>
 <body class="bg-white p-2 text-stone-900">
   ${printSheet.outerHTML}
@@ -2948,7 +2952,8 @@ function doGet(e) {
         }
       }, 300);
       return;
-      function _legacyPrintPopup() {
+    }
+    // start-legacy-code
       try {
         const printWindow = window.open('', '_blank', 'width=750,height=850');
         if (printWindow && printWindow.document) {
@@ -2961,8 +2966,7 @@ function doGet(e) {
           printWindow.document.open();
           printWindow.document.write('<!DOCTYPE html><html><head><title>Phiếu Đóng Hàng #' + (currentPrintOrderId || '') + '</title>' +
             stylesHtml +
-            '<style>@media print { @page { size: auto; margin: 10mm; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; } } body { background: #fff !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; } #print-packing-slip-sheet { border: 2px solid #292524 !important; box-shadow: none !important; width: 100% !important; margin: 0 auto; }</style>  </template>
-</head><body class="bg-white p-4 font-sans text-stone-900">' +
+            '<style>@media print { @page { size: auto; margin: 10mm; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; } } body { background: #fff !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; } #print-packing-slip-sheet { border: 2px solid #292524 !important; box-shadow: none !important; width: 100% !important; margin: 0 auto; }</style></head><body class="bg-white p-4 font-sans text-stone-900">' +
             printSheet.outerHTML +
             '</body></html>');
           printWindow.document.close();
@@ -2986,7 +2990,7 @@ function doGet(e) {
       return;
     }
 
-    /* old print stub
+    // old print stub
       printWindow.document.write(`
         <!DOCTYPE html>
         <html>
@@ -2995,6 +2999,13 @@ function doGet(e) {
           <link rel="stylesheet" href="assets/css/style.css">
   <style>
     @media print {
+      html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+      }
       body > *:not(#print-order-modal) {
         display: none !important;
       }
@@ -3048,9 +3059,7 @@ function doGet(e) {
       }
     }
   </style>
-  <!-- old style wrapper below -->
-  <template id="disabled-old-styles">
-  <style>
+  <style media="not all">
     @media print {
       body * {
         visibility: hidden !important;
@@ -3074,7 +3083,7 @@ function doGet(e) {
       }
       @page {
         size: auto;
-        margin: 10mm;
+        margin: 10mm; /* test */
       }
     }
   </style>
@@ -3083,8 +3092,7 @@ function doGet(e) {
               body { margin: 0; padding: 15px; }
             }
           </style>
-          </template>
-</head>
+        </head>
         <body class="bg-white p-4 font-sans text-stone-900">
           ${printSheet.outerHTML}
 
