@@ -1692,8 +1692,19 @@ function searchOrderTracking(query) {
           </div>
         </div>
 
-        <!-- Nút hỗ trợ & gửi tin nhắn trạng thái -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+        <!-- Nút liên hệ hỗ trợ khi khách xem tiến độ -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-2 border-t border-stone-200/60">
+          <span class="text-[11px] text-stone-500 font-medium">Bạn cần đổi size dép hoặc hỗ trợ đơn #${order.orderId}?</span>
+          <div class="flex items-center gap-2">
+            <a href="${workshopZaloUrl}" target="_blank" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors" title="Nhắn tin Zalo với Xưởng Tuyết Nhung hỗ trợ đơn #${order.orderId}">
+              <span>💬 Chat Zalo Xưởng</span>
+            </a>
+            <a href="tel:0962860721" class="px-3.5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-1 transition-colors border border-stone-200" title="Gọi Hotline xưởng 0962.860.721">
+              <span>📞 Gọi Hotline</span>
+            </a>
+          </div>
+        </div>
+        <div class="hidden">
           <a href="javascript:void(0)" onclick="sendZaloStatusToBuyer('${order.orderId}')" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer" title="Sao chép lời nhắn & Mở Zalo người mua ${order.phone}">
             <span>💬 Nhắn Zalo Người Mua (${order.phone})</span>
           </a>
