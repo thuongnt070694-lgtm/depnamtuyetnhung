@@ -92,7 +92,7 @@
       }
       @page {
         size: auto;
-        margin: 10mm; /* test */
+        margin: 10mm;
       }
     }
   </style>
@@ -2888,107 +2888,6 @@ function doGet(e) {
       window.print();
       return;
     } /* disabled-legacy-print
-      if (!printFrame) {
-        printFrame = document.createElement('iframe');
-        printFrame.id = 'hidden-packing-slip-iframe';
-        printFrame.style.position = 'fixed';
-        printFrame.style.right = '0';
-        printFrame.style.bottom = '0';
-        printFrame.style.width = '0';
-        printFrame.style.height = '0';
-        printFrame.style.border = '0';
-        document.body.appendChild(printFrame);
-      }
-
-      const frameDoc = printFrame.contentWindow.document;
-      frameDoc.open();
-      frameDoc.write(`<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>Phiếu Đóng Hàng #${currentPrintOrderId || ''}</title>
-  <script src="https://cdn.tailwindcss.com"><\/script>
-  <style>
-    @page {
-      size: auto;
-      margin: 8mm;
-    }
-    html, body {
-      background: #ffffff !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      height: auto !important;
-      overflow: visible !important;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    #print-packing-slip-sheet {
-      width: 100% !important;
-      max-width: 100% !important;
-      margin: 0 auto !important;
-      border: 2px solid #292524 !important;
-      box-shadow: none !important;
-      background: #ffffff !important;
-      page-break-after: avoid !important;
-      break-after: avoid !important;
-      page-break-inside: avoid !important;
-      break-inside: avoid !important;
-    }
-  </style>
-</head>
-<body class="bg-white p-2 text-stone-900">
-  ${printSheet.outerHTML}
-</body>
-</html>`);
-      frameDoc.close();
-
-      setTimeout(() => {
-        try {
-          printFrame.contentWindow.focus();
-          printFrame.contentWindow.print();
-        } catch (e) {
-          // legacy unused print
-        }
-      }, 300);
-      return;
-    }
-    // start-legacy-code
-      try {
-        const printWindow = window.open('', '_blank', 'width=750,height=850');
-        if (printWindow && printWindow.document) {
-          isPopupHandled = true;
-          let stylesHtml = '';
-          document.querySelectorAll('style, link[rel="stylesheet"]').forEach(el => {
-            stylesHtml += el.outerHTML;
-          });
-
-          printWindow.document.open();
-          printWindow.document.write('<!DOCTYPE html><html><head><title>Phiếu Đóng Hàng #' + (currentPrintOrderId || '') + '</title>' +
-            stylesHtml +
-            '<style>@media print { @page { size: auto; margin: 10mm; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; } } body { background: #fff !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; } #print-packing-slip-sheet { border: 2px solid #292524 !important; box-shadow: none !important; width: 100% !important; margin: 0 auto; }</style></head><body class="bg-white p-4 font-sans text-stone-900">' +
-            printSheet.outerHTML +
-            '</body></html>');
-          printWindow.document.close();
-          printWindow.focus();
-          setTimeout(() => {
-            try {
-              printWindow.print();
-              setTimeout(() => {
-                try { printWindow.close(); } catch(e) {}
-              }, 400);
-            } catch(e) {}
-          }, 350);
-        }
-      } catch (err) {
-        isPopupHandled = false;
-      }
-
-      // legacy unused
-        // legacy unused print
-      }
-      return;
-    }
 
     // old print stub
       printWindow.document.write(`
@@ -3083,7 +2982,7 @@ function doGet(e) {
       }
       @page {
         size: auto;
-        margin: 10mm; /* test */
+        margin: 10mm;
       }
     }
   </style>
