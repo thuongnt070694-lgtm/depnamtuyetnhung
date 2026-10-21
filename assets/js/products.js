@@ -316,8 +316,8 @@ const CATEGORIES = [
 const STORE_INFO = {
   "name": "Dép Nam Tuyết Nhung",
   "slogan": "Giày Dép Da Nam Thủ Công - Tự Làm Tại Xưởng",
-  "hotline": "0348.789.257",
-  "zalo": "0348789257",
+  "hotline": "0962.860.721",
+  "zalo": "0962860721",
   "address": "1005C Hà Huy Giáp, Phường An Phú Đông, Thành phố Hồ Chí Minh",
   "email": "depnamtuyetnhung@gmail.com",
   "workingHours": "08:00 - 21:30 (Cả Thứ 7 & Chủ Nhật)",

@@ -28,12 +28,15 @@
         <button onclick="openCategoryManagerModal()" class="px-4 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50 flex items-center gap-1.5 transition-colors shadow-2xs">
           <span>🏷️ Quản Lý Danh Mục</span>
         </button>
+
         <button onclick="openProductModal()" class="px-5 py-2.5 rounded-xl btn-leather-primary font-bold text-xs flex items-center gap-1.5 shadow-sm">
           <span>+ Thêm Mẫu Dép Mới</span>
         </button>
+
         <button onclick="publishDirectlyToGitHub()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-700 to-green-600 hover:from-emerald-800 hover:to-green-700 text-white font-extrabold text-xs flex items-center gap-2 shadow-md transition-all hover:scale-105">
           <span>🚀 Xuất Bản Lên Web (1-Click)</span>
         </button>
+
       </div>
     </div>
 
@@ -52,12 +55,15 @@
         <button onclick="publishDirectlyToGitHub()" class="px-5 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs rounded-xl shadow-lg whitespace-nowrap flex items-center gap-2 transition-all hover:scale-105">
           <span>🚀 Xuất Bản Lên Web (1-Click)</span>
         </button>
+
         <button onclick="openGitHubTokenModal()" class="p-3 bg-white hover:bg-stone-50 border border-stone-300 text-stone-700 font-bold text-xs rounded-xl shadow-xs transition-colors" title="Cài đặt GitHub Token">
           <span>⚙️ Token</span>
         </button>
+
         <button onclick="exportProductsFile()" class="px-3.5 py-3 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold text-xs rounded-xl shadow-xs transition-colors" title="Tải file dự phòng">
           <span>📥 Tải File</span>
         </button>
+
       </div>
     </div>
 
@@ -80,6 +86,15 @@
         <span>🖼️ Banner, Xưởng Da & Chatbot</span>
         <span class="bg-amber-100 text-amber-900 text-[10px] px-2 py-0.5 rounded-full font-black">Hot</span>
       </button>
+
+      <button 
+        id="tab-btn-orders" 
+        onclick="switchTab('orders')" 
+        class="px-5 py-3 rounded-xl text-xs font-bold transition-all bg-white text-stone-700 border border-stone-200 hover:border-amber-700 hover:text-amber-900 flex items-center gap-2 shadow-xs"
+      >
+        <span>📦 Quản Lý Đơn Hàng</span>
+        <span class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black" id="tab-orders-badge">0</span>
+      </button>
     </div>
 
     <!-- ================= TAB 1: QUẢN LÝ SẢN PHẨM ================= -->
@@ -97,7 +112,7 @@
           </div>
           <button onclick="resetToDefaultData()" class="text-xs text-stone-500 hover:text-red-600 underline">
             Khôi phục danh sách mẫu gốc
-          </button>
+  
         </div>
 
         <div class="overflow-x-auto">
@@ -132,6 +147,7 @@
           <button onclick="exportProductsFile()" class="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-lg transition-colors flex items-center gap-2">
             <span>📥 Tải File products.js Mới Để Lưu Cố Định</span>
           </button>
+  
         </div>
       </div>
 
@@ -549,6 +565,163 @@
 
     </div>
 
+
+    <!-- ================= TAB 3: QUẢN LÝ ĐƠN HÀNG ================= -->
+    <div id="tab-content-orders" class="hidden space-y-6">
+
+      <!-- THỐNG KÊ NHANH 4 THẺ (ORDER STATS CARDS) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- 1. Tổng đơn -->
+        <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
+            📦
+          </div>
+          <div>
+            <span class="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Tổng Đơn Hàng</span>
+            <span class="text-xl font-black text-stone-900" id="stat-total-orders">0</span>
+          </div>
+        </div>
+
+        <!-- 2. Chờ xác nhận -->
+        <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200 shadow-xs flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center text-xl font-bold flex-shrink-0">
+            ⏳
+          </div>
+          <div>
+            <span class="text-[11px] font-bold text-amber-900 uppercase tracking-wider block">Chờ Xác Nhận</span>
+            <span class="text-xl font-black text-amber-950" id="stat-pending-orders">0</span>
+          </div>
+        </div>
+
+        <!-- 3. Đang giao hàng -->
+        <div class="bg-blue-50/70 p-4 rounded-2xl border border-blue-200 shadow-xs flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-blue-100 text-blue-900 flex items-center justify-center text-xl font-bold flex-shrink-0">
+            🚚
+          </div>
+          <div>
+            <span class="text-[11px] font-bold text-blue-900 uppercase tracking-wider block">Đang Giao Hàng</span>
+            <span class="text-xl font-black text-blue-950" id="stat-shipping-orders">0</span>
+          </div>
+        </div>
+
+        <!-- 4. Tổng doanh thu chốt -->
+        <div class="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200 shadow-xs flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-900 flex items-center justify-center text-xl font-bold flex-shrink-0">
+            💰
+          </div>
+          <div>
+            <span class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider block">Tổng Doanh Thu</span>
+            <span class="text-xl font-black text-emerald-950" id="stat-total-revenue">0đ</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- THANH CÔNG CỤ TÌM KIẾM & BỘ LỌC ĐƠN HÀNG -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-stone-200 flex flex-wrap items-center justify-between gap-3">
+        <!-- Bộ lọc và ô tìm kiếm -->
+        <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
+          <select 
+            id="order-status-filter" 
+            onchange="filterOrdersTable()" 
+            class="px-3 py-2 rounded-xl border border-stone-300 text-xs font-bold text-stone-700 bg-white focus:outline-none focus:border-amber-800 shadow-2xs"
+          >
+            <option value="all">🔍 Tất cả trạng thái đơn</option>
+            <option value="Chờ xác nhận">⏳ Chờ xác nhận (Mới)</option>
+            <option value="Đã đóng hàng">📦 Đã đóng hàng</option>
+            <option value="Đang giao">🚚 Đang giao hàng</option>
+            <option value="Đã giao">✅ Đã giao thành công</option>
+            <option value="Đã hủy">❌ Đã hủy đơn</option>
+          </select>
+
+          <div class="relative flex-1 min-w-[200px]">
+            <input 
+              type="text" 
+              id="order-search-input" 
+              placeholder="🔍 Tìm theo Mã đơn, Tên khách hoặc Số điện thoại..." 
+              oninput="filterOrdersTable()" 
+              class="w-full px-3.5 py-2 pl-9 rounded-xl border border-stone-300 text-xs font-medium focus:outline-none focus:border-amber-800"
+            />
+            <svg class="w-4 h-4 text-stone-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+        </div>
+
+        <!-- Các nút tiện ích -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button 
+            type="button" 
+            onclick="syncOrdersFromGoogleSheets()" 
+            class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-300 flex items-center gap-1.5 transition-colors shadow-2xs"
+            title="Đồng bộ danh sách đơn mới nhất từ Google Sheets"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span>Đồng Bộ Google Sheets</span>
+  
+
+          <button 
+            type="button" 
+            onclick="openGoogleSheetsModal()" 
+            class="px-3.5 py-2 rounded-xl bg-white hover:bg-stone-50 text-stone-700 font-bold text-xs border border-stone-300 flex items-center gap-1.5 transition-colors shadow-2xs"
+            title="Cài đặt kết nối tự động lưu đơn vào Google Sheets"
+          >
+            <span>⚙️ Cài Đặt Sheets</span>
+  
+
+          <button 
+            type="button" 
+            onclick="exportOrdersToCSV()" 
+            class="px-3.5 py-2 rounded-xl bg-white hover:bg-stone-50 text-stone-700 font-bold text-xs border border-stone-300 flex items-center gap-1.5 transition-colors shadow-2xs"
+            title="Tải toàn bộ đơn hàng về máy dạng file Excel CSV"
+          >
+            <span>📥 Xuất Excel</span>
+  
+
+          <button 
+            type="button" 
+            onclick="openManualOrderModal()" 
+            class="px-4 py-2 rounded-xl btn-leather-primary font-bold text-xs flex items-center gap-1.5 shadow-sm"
+          >
+            <span>+ Tạo Đơn Thủ Công</span>
+  
+        </div>
+      </div>
+
+      <!-- BẢNG DANH SÁCH ĐƠN HÀNG -->
+      <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+        <div class="p-4 border-b border-stone-100 flex items-center justify-between bg-stone-50">
+          <div class="flex items-center gap-2">
+            <h3 class="font-bold text-stone-800 text-sm" id="orders-table-title">Danh Sách Đơn Hàng Đã Đặt</h3>
+            <span class="text-xs text-stone-400 font-normal">• Khách đặt online, Zalo hoặc gọi điện</span>
+          </div>
+          <button onclick="clearAllOrdersHistory()" class="text-[11px] text-stone-400 hover:text-rose-600 underline">
+            Dọn sạch lịch sử đơn
+  
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-stone-50 text-stone-500 border-b border-stone-200 font-semibold uppercase">
+                <th class="p-3.5 w-28">Mã Đơn & Giờ</th>
+                <th class="p-3.5">Khách Hàng & SĐT</th>
+                <th class="p-3.5">Sản Phẩm Đã Chọn</th>
+                <th class="p-3.5 w-32">Tổng Tiền & Hình Thức</th>
+                <th class="p-3.5 w-36">Trạng Thái Đơn</th>
+                <th class="p-3.5 text-center w-36">Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody id="admin-orders-tbody" class="divide-y divide-stone-100 font-medium">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+      </div>
+
+    </div>
+
   </div>
 
   <!-- MODAL THÊM / CHỈNH SỬA SẢN PHẨM (HỖ TRỢ NHIỀU ẢNH) -->
@@ -582,7 +755,7 @@
               <label class="block font-bold text-stone-700">Danh Mục Sản Phẩm</label>
               <button type="button" onclick="toggleQuickNewCategory()" class="text-[11px] font-bold text-amber-900 hover:underline">
                 + Thêm danh mục mới
-              </button>
+      
             </div>
             <select id="edit-category" class="w-full px-3 py-2.5 rounded-xl border border-stone-300 font-medium focus:outline-none focus:border-amber-800 bg-white text-xs">
               <!-- Rendered by JS -->
@@ -604,7 +777,7 @@
                   class="px-3 py-1.5 bg-amber-900 hover:bg-amber-950 text-white font-bold text-xs rounded-lg whitespace-nowrap"
                 >
                   Tạo Ngay
-                </button>
+        
               </div>
             </div>
           </div>
@@ -716,7 +889,7 @@
               class="px-4 py-2 bg-stone-800 hover:bg-stone-900 text-white font-bold text-xs rounded-xl transition-colors"
             >
               Thêm Link
-            </button>
+    
           </div>
 
           <!-- Danh sách ảnh xem trước và quản lý -->
@@ -821,10 +994,10 @@
         <div class="pt-4 border-t border-stone-200 flex justify-end gap-3">
           <button type="button" onclick="closeProductModal()" class="px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold hover:bg-stone-50">
             Hủy Bỏ
-          </button>
+  
           <button type="submit" class="px-7 py-2.5 rounded-xl btn-leather-primary font-bold shadow-md">
             Lưu Thay Đổi
-          </button>
+  
         </div>
 
       </form>
@@ -880,14 +1053,14 @@
             class="text-[11px] text-stone-400 hover:text-rose-600 underline hidden"
           >
             Xóa token đã lưu
-          </button>
+  
           <div class="flex items-center gap-2 ml-auto">
             <button type="button" onclick="closeGitHubTokenModal()" class="px-4 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold hover:bg-stone-50">
               Hủy
-            </button>
+    
             <button type="button" onclick="saveTokenAndPublish()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-md flex items-center gap-1.5">
               <span>Lưu & Xuất Bản Ngay 🚀</span>
-            </button>
+    
           </div>
         </div>
       </div>
@@ -924,7 +1097,7 @@
             class="px-4 py-2.5 bg-amber-900 hover:bg-amber-950 text-white font-bold text-xs rounded-xl whitespace-nowrap shadow-xs"
           >
             + Thêm Mới
-          </button>
+  
         </div>
       </div>
 
@@ -941,7 +1114,202 @@
         <button type="button" onclick="closeCategoryManagerModal()" class="px-5 py-2 rounded-xl bg-stone-900 text-white font-bold hover:bg-stone-800">
           Đóng
         </button>
+
       </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL IN PHIẾU GỬI HÀNG (PACKING SLIP) ================= -->
+  <div id="print-order-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative my-6">
+      <button onclick="closePrintOrderModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700 font-bold text-lg">✕</button>
+
+      <div class="flex items-center justify-between border-b border-stone-200 pb-3 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="p-2 rounded-xl bg-amber-100 text-amber-900 font-bold">🖨️</span>
+          <div>
+            <h3 class="text-base font-black text-stone-900 font-serif-heading">Phiếu Đóng Hàng & Giao Nhận</h3>
+            <p class="text-[11px] text-stone-400">In trực tiếp để dán lên hộp dép gửi bưu tá</p>
+          </div>
+        </div>
+        <button onclick="printOrderSlipDirectly()" class="px-4 py-2 bg-amber-900 hover:bg-amber-800 text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-1.5 transition-all">
+          <span>🖨️ Bấm In Ngay</span>
+        </button>
+      </div>
+
+      <!-- Khung Phiếu In (Chuẩn mẫu bưu tá đóng gói) -->
+      <div id="printable-slip-area" class="border-2 border-dashed border-stone-300 p-5 rounded-2xl bg-stone-50 space-y-4 text-xs font-sans">
+        <!-- JS fills this -->
+      </div>
+
+      <div class="mt-4 flex justify-end gap-2">
+        <button onclick="closePrintOrderModal()" class="px-5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold text-xs">
+          Đóng
+        </button>
+        <button onclick="printOrderSlipDirectly()" class="px-5 py-2 rounded-xl bg-amber-900 hover:bg-amber-800 text-white font-bold text-xs shadow-md">
+          In Phiếu Này
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL CÀI ĐẶT GOOGLE SHEETS ================= -->
+  <div id="sheets-config-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative my-6 max-h-[90vh] overflow-y-auto text-xs">
+      <button onclick="closeGoogleSheetsModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700 font-bold text-lg">✕</button>
+
+      <div class="flex items-center gap-2.5 mb-2">
+        <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800 text-xl font-bold">📊</span>
+        <div>
+          <h3 class="text-lg font-black text-stone-900 font-serif-heading">Cài Đặt Lưu Đơn Vào Google Sheets (Tự Động)</h3>
+          <p class="text-stone-500 text-[11px]">Mỗi khi khách đặt đơn, Google Sheets sẽ tự động thêm 1 dòng mới tinh</p>
+        </div>
+      </div>
+
+      <!-- 3 bước hướng dẫn -->
+      <div class="space-y-3.5 my-4">
+        <div class="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-2xl space-y-2">
+          <h4 class="font-bold text-emerald-950 text-xs flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[10px]">1</span>
+            <span>Tạo Google Spreadsheet & Mở Apps Script:</span>
+          </h4>
+          <p class="text-stone-600 text-[11px] leading-relaxed">
+            1. Mở trang <strong>Google Sheets</strong> (docs.google.com/spreadsheets) và tạo một bảng tính mới.<br/>
+            2. Trên thanh menu, bấm <strong>Tiện ích mở rộng (Extensions)</strong> &gt; Chọn <strong>Apps Script</strong>.
+          </p>
+        </div>
+
+        <div class="p-3.5 bg-stone-50 border border-stone-200 rounded-2xl space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-stone-900 text-xs flex items-center gap-1.5">
+              <span class="w-5 h-5 rounded-full bg-stone-800 text-white flex items-center justify-center text-[10px]">2</span>
+              <span>Dán mã lệnh tự động lưu đơn:</span>
+            </h4>
+            <button onclick="copyAppsScriptCode()" class="px-2.5 py-1 bg-amber-900 hover:bg-amber-800 text-white font-bold text-[10px] rounded-lg transition-colors">
+              📋 Sao Chép Mã
+            </button>
+          </div>
+          <textarea id="apps-script-code-box" readonly rows="6" class="w-full p-2.5 rounded-xl border border-stone-300 font-mono text-[10px] bg-stone-900 text-emerald-300 focus:outline-none"></textarea>
+          <p class="text-stone-500 text-[10px]">Xóa hết mã cũ trong Apps Script, dán mã này vào rồi bấm biểu tượng 💾 <strong>Lưu (Save)</strong>.</p>
+        </div>
+
+        <div class="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-2">
+          <h4 class="font-bold text-amber-950 text-xs flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-amber-800 text-white flex items-center justify-center text-[10px]">3</span>
+            <span>Triển khai làm Web App & Dán Link vào đây:</span>
+          </h4>
+          <p class="text-stone-600 text-[11px] leading-relaxed">
+            1. Bấm nút xanh <strong>Triển khai (Deploy)</strong> &gt; <strong>Tùy chọn triển khai mới (New deployment)</strong>.<br/>
+            2. Chọn loại: <strong>Ứng dụng web (Web app)</strong>.<br/>
+            3. Mục <em>Ai có quyền truy cập (Who has access)</em>: Chọn <strong>Bất kỳ ai (Anyone)</strong> &gt; Bấm <strong>Triển khai</strong>.<br/>
+            4. Sao chép <strong>URL Ứng dụng web (Web App URL)</strong> và dán vào ô bên dưới:
+          </p>
+        </div>
+      </div>
+
+      <!-- Ô dán link webhook -->
+      <div class="space-y-1.5 pt-1">
+        <label class="block font-bold text-stone-800">Dán Link Web App Google Sheets Của Bạn Vào Đây:</label>
+        <div class="flex gap-2">
+          <input 
+            type="text" 
+            id="sheets-webhook-input" 
+            placeholder="VD: https://script.google.com/macros/s/AKfycbx.../exec" 
+            class="flex-1 px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-mono font-bold focus:outline-none focus:border-amber-800"
+          />
+          <button onclick="saveGoogleSheetsWebhook()" class="px-5 py-2.5 rounded-xl btn-leather-primary font-bold text-xs flex-shrink-0 shadow-md">
+            Lưu Kết Nối
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-5 pt-3 border-t border-stone-200 flex items-center justify-between">
+        <button onclick="testGoogleSheetsWebhook()" type="button" class="px-3.5 py-2 rounded-xl bg-blue-50 text-blue-900 border border-blue-200 font-bold text-[11px] hover:bg-blue-100 flex items-center gap-1">
+          <span>🚀 Gửi Thử 1 Đơn Test Lên Sheets</span>
+        </button>
+        <button onclick="closeGoogleSheetsModal()" type="button" class="px-5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 font-bold text-xs">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL TẠO ĐƠN HÀNG THỦ CÔNG ================= -->
+  <div id="manual-order-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative my-6 text-xs max-h-[90vh] overflow-y-auto">
+      <button onclick="closeManualOrderModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700 font-bold text-lg">✕</button>
+
+      <div class="mb-4">
+        <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 uppercase">Ghi Nhận Đơn Mới</span>
+        <h3 class="text-xl font-black text-stone-900 font-serif-heading mt-1">Tạo Đơn Hàng Mới Cho Khách</h3>
+        <p class="text-stone-500 text-[11px]">Dành cho khách gọi điện hoặc nhắn tin Zalo riêng muốn xưởng lên đơn</p>
+      </div>
+
+      <form onsubmit="submitManualOrder(event)" class="space-y-3.5">
+        <div>
+          <label class="block font-bold text-stone-700 mb-1">Họ và tên khách hàng *</label>
+          <input type="text" id="manual-customer-name" required placeholder="VD: Nguyễn Thanh Thường" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-xs font-semibold focus:outline-none focus:border-amber-800">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Số điện thoại *</label>
+            <input type="tel" id="manual-customer-phone" required placeholder="VD: 0962860721" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-xs font-semibold focus:outline-none focus:border-amber-800">
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Hình thức thanh toán</label>
+            <select id="manual-payment-method" class="w-full px-3 py-2 rounded-xl border border-stone-300 text-xs font-semibold bg-white focus:outline-none focus:border-amber-800">
+              <option value="COD">Thanh toán COD khi nhận</option>
+              <option value="Chuyển khoản VietQR">Đã chuyển khoản VietQR</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-700 mb-1">Địa chỉ nhận hàng *</label>
+          <input type="text" id="manual-customer-address" required placeholder="VD: H54, Dương Thị Giang, P. Tân Thới Nhất, Q.12" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-xs font-medium focus:outline-none focus:border-amber-800">
+        </div>
+
+        <!-- Chọn sản phẩm -->
+        <div class="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-2.5">
+          <label class="block font-bold text-stone-800">Chọn mẫu dép & Size:</label>
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+            <select id="manual-product-select" onchange="updateManualPriceEstimate()" class="sm:col-span-6 px-3 py-2 rounded-xl border border-stone-300 text-xs font-semibold bg-white focus:outline-none focus:border-amber-800">
+              <!-- Rendered by JS -->
+            </select>
+            <select id="manual-size-select" class="sm:col-span-3 px-3 py-2 rounded-xl border border-stone-300 text-xs font-semibold bg-white focus:outline-none focus:border-amber-800">
+              <option value="38">Size 38</option>
+              <option value="39">Size 39</option>
+              <option value="40" selected>Size 40</option>
+              <option value="41">Size 41</option>
+              <option value="42">Size 42</option>
+              <option value="43">Size 43</option>
+              <option value="44">Size 44</option>
+            </select>
+            <input type="number" id="manual-qty-input" min="1" value="1" oninput="updateManualPriceEstimate()" class="sm:col-span-3 px-3 py-2 rounded-xl border border-stone-300 text-xs font-bold text-center focus:outline-none focus:border-amber-800" placeholder="Số lượng">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Tổng tiền thu khách (VNĐ) *</label>
+            <input type="number" id="manual-total-price" required class="w-full px-3.5 py-2 rounded-xl border border-amber-300 text-xs font-extrabold text-amber-950 focus:outline-none focus:border-amber-800">
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1">Ghi chú thêm</label>
+            <input type="text" id="manual-note" placeholder="VD: Khách dặn giao buổi chiều" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-xs focus:outline-none focus:border-amber-800">
+          </div>
+        </div>
+
+        <div class="pt-3 flex justify-end gap-2 border-t border-stone-200">
+          <button type="button" onclick="closeManualOrderModal()" class="px-5 py-2.5 rounded-xl bg-stone-200 hover:bg-stone-300 font-bold text-xs text-stone-700">
+            Hủy
+          </button>
+          <button type="submit" class="px-6 py-2.5 rounded-xl btn-leather-primary font-bold text-xs shadow-md">
+            + Lưu Đơn Hàng Mới
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1182,6 +1550,7 @@
       await loadProductsData();
       initCategoriesList();
       await loadHomepageDataIntoAdmin();
+      await loadOrdersData();
     });
 
     // ================= LOGIC QUẢN LÝ DANH MỤC SẢN PHẨM =================
@@ -1334,6 +1703,7 @@
               >
                 🗑️ Xóa
               </button>
+      
             </div>
           </div>
         `;
@@ -1536,7 +1906,830 @@
       }
     }
 
-    // Chuyển tab giữa Quản lý sản phẩm và Cài đặt Banner
+    // Chuyển tab giữa Quản lý sản phẩm, Banner và Đơn hàng
+    function switchTab(tab) {
+      const prodContent = document.getElementById('tab-content-products');
+      const bannerContent = document.getElementById('tab-content-banners');
+      const ordersContent = document.getElementById('tab-content-orders');
+      const prodBtn = document.getElementById('tab-btn-products');
+      const bannerBtn = document.getElementById('tab-btn-banners');
+      const ordersBtn = document.getElementById('tab-btn-orders');
+
+      // Ẩn toàn bộ tab trước
+      if (prodContent) prodContent.classList.add('hidden');
+      if (bannerContent) bannerContent.classList.add('hidden');
+      if (ordersContent) ordersContent.classList.add('hidden');
+
+      const inactiveBtn = "px-5 py-3 rounded-xl text-xs font-bold transition-all bg-white text-stone-700 border border-stone-200 hover:border-amber-700 hover:text-amber-900 flex items-center gap-2 shadow-xs";
+      const activeBtn = "px-5 py-3 rounded-xl text-xs font-bold transition-all bg-amber-900 text-white shadow-sm flex items-center gap-2";
+
+      if (prodBtn) prodBtn.className = inactiveBtn;
+      if (bannerBtn) bannerBtn.className = inactiveBtn;
+      if (ordersBtn) ordersBtn.className = inactiveBtn;
+
+      if (tab === 'products') {
+        if (prodContent) prodContent.classList.remove('hidden');
+        if (prodBtn) prodBtn.className = activeBtn;
+      } else if (tab === 'banners') {
+        if (bannerContent) bannerContent.classList.remove('hidden');
+        if (bannerBtn) bannerBtn.className = activeBtn;
+      } else if (tab === 'orders') {
+        if (ordersContent) ordersContent.classList.remove('hidden');
+        if (ordersBtn) ordersBtn.className = activeBtn;
+        renderOrdersTable();
+      }
+    }
+
+    // ================= LOGIC QUẢN LÝ ĐƠN HÀNG (ORDERS MANAGEMENT) =================
+    let ordersList = [];
+    let currentPrintOrderId = null;
+
+    // Đoạn mã Apps Script mẫu chuẩn để copy
+    const APPS_SCRIPT_TEMPLATE = `/**
+ * GOOGLE APPS SCRIPT CHO XƯỞNG DÉP NAM TUYẾT NHUNG
+ * Dán đoạn mã này vào Google Sheets: Tiện ích mở rộng -> Apps Script -> Lưu -> Triển khai (Web App)
+ */
+
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        "Mã Đơn",
+        "Ngày Giờ Đặt",
+        "Khách Hàng",
+        "Số Điện Thoại",
+        "Địa Chỉ Giao",
+        "Danh Sách Dép (Size & SL)",
+        "Tổng Tiền (VNĐ)",
+        "Hình Thức",
+        "Ghi Chú",
+        "Trạng Thái"
+      ]);
+      var header = sheet.getRange(1, 1, 1, 10);
+      header.setBackground("#451a03").setFontColor("#ffffff").setFontWeight("bold");
+    }
+    
+    var data = JSON.parse(e.postData.contents);
+    sheet.appendRow([
+      "#" + (data.orderId || ""),
+      data.createdAt || new Date().toLocaleString("vi-VN"),
+      data.name || "",
+      "'" + (data.phone || ""),
+      data.address || "",
+      data.items || "",
+      data.finalTotal || 0,
+      data.paymentMethod || "COD",
+      data.note || "",
+      data.status || "Chờ xác nhận"
+    ]);
+    
+    return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var rows = sheet.getDataRange().getValues();
+  if (rows.length <= 1) {
+    return ContentService.createTextOutput(JSON.stringify([]))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  var orders = [];
+  for (var i = 1; i < rows.length; i++) {
+    var r = rows[i];
+    orders.push({
+      orderId: (r[0] || "").toString().replace("#", ""),
+      createdAt: r[1] || "",
+      name: r[2] || "",
+      phone: (r[3] || "").toString(),
+      address: r[4] || "",
+      itemsText: r[5] || "",
+      finalTotal: Number(r[6]) || 0,
+      paymentMethod: r[7] || "COD",
+      note: r[8] || "",
+      status: r[9] || "Chờ xác nhận"
+    });
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify(orders))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+    // Đọc danh sách đơn hàng
+    async function loadOrdersData() {
+      try {
+        const saved = localStorage.getItem('tuyetnhung_orders');
+        if (saved) {
+          ordersList = JSON.parse(saved);
+        } else {
+          // Khởi tạo đơn hàng mẫu (ví dụ đơn khách Nguyễn Thanh Thường vừa đặt)
+          ordersList = [
+            {
+              orderId: "TN679759",
+              name: "Nguyễn Thanh Thường",
+              phone: "0962860721",
+              address: "H54, Dương Thị Giang, P. Tân Thới Nhất, Q.12, TP.HCM",
+              note: "Chân hơi dày, thợ may nới quai thoải mái giúp",
+              paymentMethod: "banking",
+              paymentText: "Chuyển khoản VietQR",
+              items: [
+                {
+                  id: 2,
+                  name: "Dép Kẹp Xỏ Ngón Da Bò Hạt Cao Cấp - TN02",
+                  size: 40,
+                  color: "Nâu sáp",
+                  quantity: 1,
+                  price: 440000,
+                  image: "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=400&q=80"
+                }
+              ],
+              finalTotal: 440000,
+              createdAt: new Date().toLocaleString('vi-VN'),
+              status: "Chờ xác nhận"
+            }
+          ];
+          saveOrdersData();
+        }
+      } catch (e) {
+        console.warn('Lỗi đọc đơn hàng:', e);
+        ordersList = [];
+      }
+
+      updateOrdersStats();
+      renderOrdersTable();
+    }
+
+    function saveOrdersData() {
+      try {
+        localStorage.setItem('tuyetnhung_orders', JSON.stringify(ordersList));
+      } catch (e) {
+        console.warn('Lỗi lưu đơn hàng:', e);
+      }
+      updateOrdersStats();
+    }
+
+    // Cập nhật các ô thống kê & badge
+    function updateOrdersStats() {
+      const badge = document.getElementById('tab-orders-badge');
+      const totalEl = document.getElementById('stat-total-orders');
+      const pendingEl = document.getElementById('stat-pending-orders');
+      const shippingEl = document.getElementById('stat-shipping-orders');
+      const revenueEl = document.getElementById('stat-total-revenue');
+
+      const totalCount = ordersList.length;
+      const pendingCount = ordersList.filter(o => o.status === 'Chờ xác nhận' || o.status === 'Mới đặt' || o.status === 'new').length;
+      const shippingCount = ordersList.filter(o => o.status === 'Đang giao' || o.status === 'Đang giao hàng').length;
+      const totalRevenue = ordersList
+        .filter(o => o.status !== 'Đã hủy')
+        .reduce((sum, o) => sum + (Number(o.finalTotal) || 0), 0);
+
+      if (badge) {
+        badge.innerText = pendingCount;
+        badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+      }
+      if (totalEl) totalEl.innerText = totalCount;
+      if (pendingEl) pendingEl.innerText = pendingCount;
+      if (shippingEl) shippingEl.innerText = shippingCount;
+      if (revenueEl) revenueEl.innerText = formatCurrency(totalRevenue);
+    }
+
+    // Lọc và render bảng đơn hàng
+    function filterOrdersTable() {
+      renderOrdersTable();
+    }
+
+    function renderOrdersTable() {
+      const tbody = document.getElementById('admin-orders-tbody');
+      const title = document.getElementById('orders-table-title');
+      if (!tbody) return;
+
+      const statusFilter = document.getElementById('order-status-filter')?.value || 'all';
+      const searchKeyword = (document.getElementById('order-search-input')?.value || '').toLowerCase().trim();
+
+      let filtered = [...ordersList];
+
+      if (statusFilter !== 'all') {
+        filtered = filtered.filter(o => (o.status || 'Chờ xác nhận').includes(statusFilter));
+      }
+
+      if (searchKeyword) {
+        filtered = filtered.filter(o => {
+          const id = (o.orderId || '').toLowerCase();
+          const name = (o.name || '').toLowerCase();
+          const phone = (o.phone || '').toLowerCase();
+          const address = (o.address || '').toLowerCase();
+          return id.includes(searchKeyword) || name.includes(searchKeyword) || phone.includes(searchKeyword) || address.includes(searchKeyword);
+        });
+      }
+
+      if (title) {
+        title.innerText = `Danh Sách Đơn Hàng (${filtered.length} đơn)`;
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="p-8 text-center text-stone-400 font-medium">
+              Chưa có đơn hàng nào phù hợp với bộ lọc tìm kiếm.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(order => {
+        const orderId = order.orderId || 'Chưa có mã';
+        const date = order.createdAt || 'Vừa xong';
+        const name = order.name || 'Khách hàng';
+        const phone = order.phone || '';
+        const address = order.address || '';
+        const note = order.note || '';
+        const status = order.status || 'Chờ xác nhận';
+        const total = formatCurrency(order.finalTotal || 0);
+        const paymentText = order.paymentText || (order.paymentMethod === 'banking' ? 'Chuyển khoản VietQR' : 'COD (Thu tiền khi nhận)');
+
+        // Format danh sách sản phẩm
+        let itemsHtml = '';
+        if (Array.isArray(order.items) && order.items.length > 0) {
+          itemsHtml = order.items.map(i => `
+            <div class="flex items-center gap-2 py-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-800"></span>
+              <span class="font-bold text-stone-900">${i.name}</span>
+              <span class="px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 text-[10px] font-extrabold">Size ${i.size}</span>
+              <span class="text-stone-500 font-medium">x${i.quantity}</span>
+            </div>
+          `).join('');
+        } else if (order.itemsText) {
+          itemsHtml = `<div class="text-stone-700">${order.itemsText}</div>`;
+        } else {
+          itemsHtml = `<span class="text-stone-400 italic">Chi tiết sản phẩm dép thủ công</span>`;
+        }
+
+        // Màu sắc badge trạng thái
+        const statusColors = {
+          'Chờ xác nhận': 'bg-amber-100 text-amber-900 border-amber-300',
+          'Mới đặt': 'bg-amber-100 text-amber-900 border-amber-300',
+          'Đã đóng hàng': 'bg-purple-100 text-purple-900 border-purple-300',
+          'Đang giao': 'bg-blue-100 text-blue-900 border-blue-300',
+          'Đã giao': 'bg-emerald-100 text-emerald-900 border-emerald-300',
+          'Đã hủy': 'bg-stone-100 text-stone-500 border-stone-300'
+        };
+
+        const currentBadgeColor = statusColors[status] || statusColors['Chờ xác nhận'];
+
+        return `
+          <tr class="hover:bg-amber-50/40 transition-colors">
+            <!-- Mã đơn & Ngày giờ -->
+            <td class="p-3.5 align-top">
+              <span class="font-mono font-black text-amber-950 text-xs block">#${orderId}</span>
+              <span class="text-[10px] text-stone-400 block mt-0.5">${date}</span>
+            </td>
+
+            <!-- Khách hàng & SĐT -->
+            <td class="p-3.5 align-top">
+              <div class="font-bold text-stone-900 text-xs">${name}</div>
+              <div class="flex items-center gap-2 mt-1">
+                <a href="tel:${phone}" class="inline-flex items-center gap-1 text-[11px] font-mono font-extrabold text-blue-700 hover:underline bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200" title="Bấm gọi ngay">
+                  <span>📞 ${phone}</span>
+                </a>
+                <a href="https://zalo.me/${phone}" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 px-1.5 py-0.5 rounded shadow-2xs" title="Chat Zalo với khách">
+                  <span>💬 Zalo</span>
+                </a>
+              </div>
+              <div class="text-[11px] text-stone-600 mt-1 line-clamp-2" title="${address}">📍 ${address}</div>
+              ${note ? `<div class="text-[10px] text-amber-800 bg-amber-50 p-1 rounded mt-1 border border-amber-200/80">📝 ${note}</div>` : ''}
+            </td>
+
+            <!-- Sản phẩm đã chọn -->
+            <td class="p-3.5 align-top">
+              <div class="space-y-0.5">${itemsHtml}</div>
+            </td>
+
+            <!-- Tổng tiền & Hình thức -->
+            <td class="p-3.5 align-top">
+              <div class="font-black text-amber-950 text-xs">${total}</div>
+              <span class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${order.paymentMethod === 'banking' ? 'bg-purple-100 text-purple-900 border border-purple-200' : 'bg-stone-100 text-stone-700 border border-stone-200'}">
+                ${paymentText}
+              </span>
+            </td>
+
+            <!-- Trạng thái đơn -->
+            <td class="p-3.5 align-top">
+              <select 
+                onchange="updateOrderStatus('${orderId}', this.value)"
+                class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${currentBadgeColor} focus:outline-none cursor-pointer shadow-2xs transition-all"
+              >
+                <option value="Chờ xác nhận" ${status.includes('Chờ') || status === 'Mới đặt' ? 'selected' : ''}>⏳ Chờ xác nhận</option>
+                <option value="Đã đóng hàng" ${status.includes('đóng') ? 'selected' : ''}>📦 Đã đóng hàng</option>
+                <option value="Đang giao" ${status.includes('Đang giao') ? 'selected' : ''}>🚚 Đang giao hàng</option>
+                <option value="Đã giao" ${status.includes('Đã giao') ? 'selected' : ''}>✅ Đã giao thành công</option>
+                <option value="Đã hủy" ${status.includes('hủy') ? 'selected' : ''}>❌ Đã hủy đơn</option>
+              </select>
+            </td>
+
+            <!-- Thao tác -->
+            <td class="p-3.5 align-top text-center">
+              <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                <button 
+                  type="button" 
+                  onclick="openPrintOrderModal('${orderId}')" 
+                  class="p-1.5 bg-amber-100 hover:bg-amber-200 text-amber-950 rounded-lg font-bold text-xs shadow-2xs flex items-center gap-1 transition-colors"
+                  title="In phiếu đóng hàng / Bill dán bưu tá"
+                >
+                  <span>🖨️ In Bill</span>
+                </button>
+                <button 
+                  type="button" 
+                  onclick="openZaloCustomerChat('${orderId}')" 
+                  class="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg font-bold text-xs border border-blue-200 transition-colors"
+                  title="Soạn tin nhắn Zalo xác nhận đơn gửi cho khách"
+                >
+                  <span>💬</span>
+                </button>
+                <button 
+                  type="button" 
+                  onclick="deleteOrder('${orderId}')" 
+                  class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg font-bold text-xs border border-rose-200 transition-colors"
+                  title="Xóa đơn hàng này"
+                >
+                  <span>🗑️</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Đổi trạng thái đơn hàng
+    function updateOrderStatus(orderId, newStatus) {
+      const order = ordersList.find(o => o.orderId === orderId);
+      if (!order) return;
+
+      order.status = newStatus;
+      saveOrdersData();
+      renderOrdersTable();
+      showToast(`Đã chuyển đơn #${orderId} sang trạng thái "${newStatus}"!`, 'success');
+    }
+
+    // Xóa đơn hàng
+    function deleteOrder(orderId) {
+      if (!confirm(`Bạn có chắc chắn muốn xóa đơn hàng #${orderId} không?`)) return;
+
+      ordersList = ordersList.filter(o => o.orderId !== orderId);
+      saveOrdersData();
+      renderOrdersTable();
+      showToast(`Đã xóa đơn #${orderId}!`, 'info');
+    }
+
+    // Xóa toàn bộ lịch sử đơn
+    function clearAllOrdersHistory() {
+      if (!confirm('⚠️ Bạn có chắc chắn muốn dọn sạch toàn bộ lịch sử đơn hàng không?\n\nLưu ý: Thao tác này sẽ xóa sạch danh sách đơn trên trình duyệt này!')) return;
+
+      ordersList = [];
+      saveOrdersData();
+      renderOrdersTable();
+      showToast('Đã dọn sạch lịch sử đơn hàng!', 'info');
+    }
+
+    // Nhắn Zalo khách hàng xác nhận đơn
+    function openZaloCustomerChat(orderId) {
+      const order = ordersList.find(o => o.orderId === orderId);
+      if (!order) return;
+
+      let itemsStr = '';
+      if (Array.isArray(order.items) && order.items.length > 0) {
+        itemsStr = order.items.map(i => `${i.name} (Size ${i.size}) x${i.quantity}`).join(', ');
+      } else {
+        itemsStr = order.itemsText || 'Dép da nam thủ công';
+      }
+
+      const msg = `Dạ chào anh/chị ${order.name}! Xưởng Dép Nam Tuyết Nhung đã nhận được đơn hàng #${order.orderId} của anh/chị:\n` +
+        `• Mẫu dép: ${itemsStr}\n` +
+        `• Tổng thanh toán: ${formatCurrency(order.finalTotal)}\n` +
+        `• Địa chỉ giao: ${order.address}\n\n` +
+        `Xưởng đang tiến hành kiểm tra đóng gói và gửi shipper cho anh/chị nhé. Khi nhận hàng anh/chị được kiểm tra và xỏ thử dép vừa chân mới thanh toán ạ! Cảm ơn anh/chị đã ủng hộ xưởng.`;
+
+      const zaloUrl = `https://zalo.me/${order.phone}?text=${encodeURIComponent(msg)}`;
+      window.open(zaloUrl, '_blank');
+    }
+
+    // In phiếu đóng hàng
+    function openPrintOrderModal(orderId) {
+      const order = ordersList.find(o => o.orderId === orderId);
+      if (!order) return;
+
+      currentPrintOrderId = orderId;
+      const modal = document.getElementById('print-order-modal');
+      const printableArea = document.getElementById('printable-slip-area');
+      if (!modal || !printableArea) return;
+
+      let itemsRows = '';
+      if (Array.isArray(order.items) && order.items.length > 0) {
+        itemsRows = order.items.map((i, idx) => `
+          <tr class="border-b border-stone-200">
+            <td class="py-2 text-center">${idx + 1}</td>
+            <td class="py-2 font-bold">${i.name}</td>
+            <td class="py-2 text-center font-bold">Size ${i.size}</td>
+            <td class="py-2 text-center">${i.quantity}</td>
+            <td class="py-2 text-right font-bold">${formatCurrency(i.price * i.quantity)}</td>
+          </tr>
+        `).join('');
+      } else {
+        itemsRows = `
+          <tr class="border-b border-stone-200">
+            <td class="py-2 text-center">1</td>
+            <td class="py-2 font-bold">${order.itemsText || 'Dép da thủ công Tuyết Nhung'}</td>
+            <td class="py-2 text-center">Chuẩn</td>
+            <td class="py-2 text-center">1</td>
+            <td class="py-2 text-right font-bold">${formatCurrency(order.finalTotal)}</td>
+          </tr>
+        `;
+      }
+
+      printableArea.innerHTML = `
+        <div id="print-packing-slip-sheet" class="bg-white p-5 rounded-xl border border-stone-300 shadow-sm space-y-4">
+          <!-- Header phiếu in -->
+          <div class="flex items-center justify-between border-b-2 border-stone-800 pb-3">
+            <div>
+              <h2 class="text-base font-black text-stone-900 uppercase tracking-wide">XƯỞNG DÉP NAM THỦ CÔNG TUYẾT NHUNG</h2>
+              <p class="text-[10px] text-stone-600">Đ/C: 1005C Hà Huy Giáp, P. An Phú Đông, Q.12, TP.HCM</p>
+              <p class="text-[10px] text-stone-600 font-bold">Hotline / Zalo: 0962.860.721</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-bold text-stone-500 uppercase block">PHIẾU ĐÓNG HÀNG</span>
+              <span class="text-sm font-mono font-black text-amber-950 block">#${order.orderId}</span>
+              <span class="text-[9px] text-stone-400 block">${order.createdAt}</span>
+            </div>
+          </div>
+
+          <!-- Thông tin người nhận -->
+          <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-1">
+            <span class="text-[10px] font-black text-amber-900 uppercase tracking-widest block">NGƯỜI NHẬN HÀNG:</span>
+            <div class="text-sm font-black text-stone-900">${order.name} - <span class="font-mono text-base">${order.phone}</span></div>
+            <div class="text-xs text-stone-700">📍 ${order.address}</div>
+            ${order.note ? `<div class="text-[11px] text-amber-900 font-medium pt-1">Ghi chú: ${order.note}</div>` : ''}
+          </div>
+
+          <!-- Bảng sản phẩm -->
+          <div>
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-stone-800 font-bold text-stone-700 text-[11px]">
+                  <th class="py-1.5 w-8 text-center">STT</th>
+                  <th class="py-1.5">Sản Phẩm</th>
+                  <th class="py-1.5 text-center w-20">Size</th>
+                  <th class="py-1.5 text-center w-12">SL</th>
+                  <th class="py-1.5 text-right w-24">Thành Tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsRows}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Tổng tiền & COD -->
+          <div class="p-3 bg-amber-50 rounded-xl border-2 border-amber-800/80 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] text-stone-600 uppercase font-bold block">Hình thức thanh toán:</span>
+              <span class="text-xs font-bold text-stone-800">${order.paymentText || (order.paymentMethod === 'banking' ? 'Đã Chuyển Khoản VietQR' : 'Thu tiền COD')}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-amber-900 uppercase font-black block">TIỀN THU HỘ (COD):</span>
+              <span class="text-lg font-black text-amber-950">${order.paymentMethod === 'banking' ? '0 đ (Đã thanh toán)' : formatCurrency(order.finalTotal)}</span>
+            </div>
+          </div>
+
+          <!-- Lưu ý bưu tá -->
+          <div class="text-center pt-2 border-t border-dashed border-stone-300">
+            <p class="text-[11px] font-bold text-stone-800 uppercase">⭐ QUÝ KHÁCH ĐƯỢC MỞ HỘP KIỂM TRA &amp; ĐI THỬ DÉP VỪA CHÂN TRƯỚC KHI TRẢ TIỀN ⭐</p>
+            <p class="text-[9px] text-stone-400 mt-0.5">Xưởng hỗ trợ đổi size miễn phí tận nhà trong 7 ngày nếu không vừa chân.</p>
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closePrintOrderModal() {
+      const modal = document.getElementById('print-order-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function printOrderSlipDirectly() {
+      const printSheet = document.getElementById('print-packing-slip-sheet');
+      if (!printSheet) return;
+
+      const printWindow = window.open('', '_blank', 'width=750,height=800');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Phiếu Đóng Hàng #${currentPrintOrderId || ''}</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <style>
+            @media print {
+              body { margin: 0; padding: 15px; }
+            }
+          </style>
+        </head>
+        <body class="bg-white p-4 font-sans text-stone-900">
+          ${printSheet.outerHTML}
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function(){ window.close(); }, 500);
+            };
+          </script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    // Modal Google Sheets Webhook
+    function openGoogleSheetsModal() {
+      const modal = document.getElementById('sheets-config-modal');
+      const codeBox = document.getElementById('apps-script-code-box');
+      const urlInput = document.getElementById('sheets-webhook-input');
+      if (!modal) return;
+
+      if (codeBox) codeBox.value = APPS_SCRIPT_TEMPLATE;
+      const savedUrl = localStorage.getItem('tuyetnhung_sheets_webhook') || '';
+      if (urlInput) urlInput.value = savedUrl;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeGoogleSheetsModal() {
+      const modal = document.getElementById('sheets-config-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copyAppsScriptCode() {
+      const codeBox = document.getElementById('apps-script-code-box');
+      if (!codeBox) return;
+
+      codeBox.select();
+      navigator.clipboard.writeText(codeBox.value).then(() => {
+        showToast('📋 Đã sao chép mã Apps Script vào bộ nhớ đệm!', 'success');
+      }).catch(() => {
+        showToast('Vui lòng chọn và copy mã thủ công trong ô!', 'info');
+      });
+    }
+
+    function saveGoogleSheetsWebhook() {
+      const input = document.getElementById('sheets-webhook-input');
+      if (!input) return;
+
+      const url = input.value.trim();
+      localStorage.setItem('tuyetnhung_sheets_webhook', url);
+      showToast('🎉 Đã lưu liên kết Google Sheets thành công!', 'success');
+      closeGoogleSheetsModal();
+    }
+
+    async function testGoogleSheetsWebhook() {
+      const input = document.getElementById('sheets-webhook-input');
+      const url = input ? input.value.trim() : '';
+
+      if (!url) {
+        showToast('Vui lòng dán URL Web App trước khi gửi test!', 'error');
+        return;
+      }
+
+      showToast('Đang gửi 1 đơn hàng test lên Google Sheets...', 'info');
+
+      const testPayload = {
+        orderId: "TEST" + Math.floor(1000 + Math.random() * 9000),
+        createdAt: new Date().toLocaleString('vi-VN'),
+        name: "Đơn Thử Nghiệm Kết Nối",
+        phone: "0348789257",
+        address: "Xưởng Dép Tuyết Nhung, 1005C Hà Huy Giáp, Q.12, TP.HCM",
+        items: "Dép Quai Ngang Da Bò (Size 40, SL: 1)",
+        finalTotal: 380000,
+        paymentMethod: "COD",
+        note: "Đơn hàng kiểm tra kết nối Webhook",
+        status: "Mới đặt"
+      };
+
+      try {
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testPayload)
+        });
+
+        localStorage.setItem('tuyetnhung_sheets_webhook', url);
+        showToast('🎉 Gửi thành công! Hãy mở Google Sheets kiểm tra dòng mới nhé.', 'success');
+      } catch (err) {
+        console.error('Lỗi test sheets:', err);
+        showToast('Không thể kết nối đến Webhook! Hãy kiểm tra quyền "Bất kỳ ai (Anyone)" trong Apps Script.', 'error');
+      }
+    }
+
+    // Đồng bộ đơn hàng từ Google Sheets
+    async function syncOrdersFromGoogleSheets() {
+      const webhookUrl = localStorage.getItem('tuyetnhung_sheets_webhook');
+      if (!webhookUrl || !webhookUrl.trim()) {
+        showToast('Chưa cài đặt Webhook Google Sheets! Bấm "⚙️ Cài Đặt Sheets" trước nhé.', 'info');
+        openGoogleSheetsModal();
+        return;
+      }
+
+      showToast('Đang đồng bộ đơn hàng từ Google Sheets...', 'info');
+
+      try {
+        const res = await fetch(webhookUrl.trim());
+        if (!res.ok) throw new Error('Network error');
+
+        const remoteOrders = await res.json();
+        if (Array.isArray(remoteOrders) && remoteOrders.length > 0) {
+          let addedCount = 0;
+          remoteOrders.forEach(ro => {
+            if (ro.orderId && !ordersList.some(o => o.orderId === ro.orderId)) {
+              ordersList.unshift(ro);
+              addedCount++;
+            }
+          });
+
+          saveOrdersData();
+          renderOrdersTable();
+          showToast(`Đã đồng bộ thành công! Có ${addedCount} đơn mới từ Google Sheets.`, 'success');
+        } else {
+          showToast('Google Sheets chưa có dòng đơn hàng nào mới.', 'info');
+        }
+      } catch (err) {
+        console.warn('Lỗi đọc đơn từ Sheets:', err);
+        showToast('Không thể đọc dữ liệu từ Sheets! Trình duyệt vẫn lưu đơn an toàn trên máy.', 'info');
+      }
+    }
+
+    async function sendOrderToGoogleSheets(order) {
+      const webhookUrl = localStorage.getItem('tuyetnhung_sheets_webhook');
+      if (!webhookUrl || !webhookUrl.trim()) return;
+
+      try {
+        const payload = {
+          orderId: order.orderId,
+          createdAt: order.createdAt,
+          name: order.name,
+          phone: order.phone,
+          address: order.address,
+          note: order.note || '',
+          paymentMethod: order.paymentText || (order.paymentMethod === 'banking' ? 'Chuyển khoản VietQR' : 'COD'),
+          items: Array.isArray(order.items) ? order.items.map(i => `${i.name} (Size ${i.size}, SL: ${i.quantity})`).join('; ') : (order.itemsText || ''),
+          finalTotal: order.finalTotal,
+          status: order.status || 'Chờ xác nhận'
+        };
+
+        await fetch(webhookUrl.trim(), {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.warn('Lỗi gửi đơn lên Google Sheets:', err);
+      }
+    }
+
+    // Xuất file CSV (Excel)
+    function exportOrdersToCSV() {
+      if (ordersList.length === 0) {
+        showToast('Chưa có đơn hàng nào để xuất file!', 'info');
+        return;
+      }
+
+      let csvContent = "\uFEFF"; // Thêm BOM UTF-8 để Excel đọc tiếng Việt có dấu chuẩn 100%
+      csvContent += "Mã Đơn,Ngày Giờ,Tên Khách Hàng,Số Điện Thoại,Địa Chỉ,Danh Sách Sản Phẩm,Tổng Tiền,Hình Thức Thanh Toán,Ghi Chú,Trạng Thái\n";
+
+      ordersList.forEach(o => {
+        let itemsStr = '';
+        if (Array.isArray(o.items)) {
+          itemsStr = o.items.map(i => `${i.name} (Size ${i.size}, SL: ${i.quantity})`).join('; ');
+        } else {
+          itemsStr = o.itemsText || '';
+        }
+
+        const row = [
+          `"${o.orderId || ''}"`,
+          `"${o.createdAt || ''}"`,
+          `"${(o.name || '').replace(/"/g, '""')}"`,
+          `"'${o.phone || ''}"`,
+          `"${(o.address || '').replace(/"/g, '""')}"`,
+          `"${itemsStr.replace(/"/g, '""')}"`,
+          o.finalTotal || 0,
+          `"${o.paymentText || o.paymentMethod || 'COD'}"`,
+          `"${(o.note || '').replace(/"/g, '""')}"`,
+          `"${o.status || 'Chờ xác nhận'}"`
+        ];
+        csvContent += row.join(",") + "\n";
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `DonHang_DepNam_TuyetNhung_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('📥 Đã tải file Excel đơn hàng thành công!', 'success');
+    }
+
+    // Modal tạo đơn thủ công
+    function openManualOrderModal() {
+      const modal = document.getElementById('manual-order-modal');
+      const select = document.getElementById('manual-product-select');
+      if (!modal) return;
+
+      if (select && productsList.length > 0) {
+        select.innerHTML = productsList.map(p => `
+          <option value="${p.id}" data-price="${p.price}">${p.name} - ${formatCurrency(p.price)}</option>
+        `).join('');
+        updateManualPriceEstimate();
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeManualOrderModal() {
+      const modal = document.getElementById('manual-order-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function updateManualPriceEstimate() {
+      const prodSelect = document.getElementById('manual-product-select');
+      const qtyInput = document.getElementById('manual-qty-input');
+      const totalInput = document.getElementById('manual-total-price');
+      if (!prodSelect || !qtyInput || !totalInput) return;
+
+      const selectedOption = prodSelect.options[prodSelect.selectedIndex];
+      const price = Number(selectedOption ? selectedOption.dataset.price : 0) || 0;
+      const qty = Number(qtyInput.value) || 1;
+
+      totalInput.value = price * qty;
+    }
+
+    function submitManualOrder(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('manual-customer-name').value.trim();
+      const phone = document.getElementById('manual-customer-phone').value.trim();
+      const address = document.getElementById('manual-customer-address').value.trim();
+      const note = document.getElementById('manual-note').value.trim();
+      const paymentMethod = document.getElementById('manual-payment-method').value;
+      const total = Number(document.getElementById('manual-total-price').value) || 0;
+
+      const prodSelect = document.getElementById('manual-product-select');
+      const size = document.getElementById('manual-size-select').value;
+      const qty = Number(document.getElementById('manual-qty-input').value) || 1;
+
+      const selectedProduct = productsList.find(p => p.id === parseInt(prodSelect.value));
+      const orderId = 'TN' + Math.floor(100000 + Math.random() * 900000);
+
+      const newOrder = {
+        orderId,
+        name,
+        phone,
+        address,
+        note,
+        paymentMethod: paymentMethod === 'COD' ? 'COD' : 'banking',
+        paymentText: paymentMethod,
+        items: [
+          {
+            id: selectedProduct ? selectedProduct.id : 1,
+            name: selectedProduct ? selectedProduct.name : 'Dép Da Nam Tuyết Nhung',
+            size: Number(size) || 40,
+            quantity: qty,
+            price: selectedProduct ? selectedProduct.price : total,
+            image: (selectedProduct && selectedProduct.images && selectedProduct.images[0]) ? selectedProduct.images[0] : 'assets/images/dep-tn01.jpg'
+          }
+        ],
+        finalTotal: total,
+        createdAt: new Date().toLocaleString('vi-VN'),
+        status: 'Chờ xác nhận'
+      };
+
+      ordersList.unshift(newOrder);
+      saveOrdersData();
+      renderOrdersTable();
+      closeManualOrderModal();
+      showToast(`🎉 Đã tạo đơn hàng mới #${orderId} thành công!`, 'success');
+
+      // Tự động gửi lên Sheets nếu có
+      sendOrderToGoogleSheets(newOrder);
+    }
+    /*
+    }
     function switchTab(tab) {
       const prodContent = document.getElementById('tab-content-products');
       const bannerContent = document.getElementById('tab-content-banners');
@@ -1556,6 +2749,7 @@
       }
     }
 
+    */
     async function loadProductsData() {
       if (typeof loadProductsFromStorage === 'function') {
         productsList = await loadProductsFromStorage();
@@ -1658,10 +2852,10 @@
               <div class="flex items-center justify-center gap-2">
                 <button onclick="editProduct(${p.id})" class="px-2.5 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold transition-colors">
                   ✏️ Sửa
-                </button>
+        
                 <button onclick="deleteProduct(${p.id})" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold transition-colors">
                   🗑️
-                </button>
+        
               </div>
             </td>
           </tr>
@@ -2054,7 +3248,7 @@
                 class="w-full py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] rounded shadow transition-colors"
               >
                 Làm ảnh chính
-              </button>
+      
             ` : ''}
             <button 
               type="button" 
@@ -2062,7 +3256,7 @@
               class="w-full py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] rounded shadow transition-colors"
             >
               🗑️ Xóa ảnh
-            </button>
+    
           </div>
         </div>
       `).join('');

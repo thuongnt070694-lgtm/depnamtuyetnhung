@@ -1005,6 +1005,7 @@ function submitOrder(event) {
   }
 
   const orderId = 'TN' + Math.floor(100000 + Math.random() * 900000);
+  const paymentText = paymentMethod === 'banking' ? 'Chuyển khoản VietQR' : 'COD (Nhận hàng thanh toán)';
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const discountVal = subtotal * appliedDiscount;
   const finalTotal = subtotal - discountVal;
@@ -1018,7 +1019,22 @@ function submitOrder(event) {
     paymentMethod,
     items: [...cart],
     finalTotal,
-    createdAt: new Date().toLocaleString('vi-VN')
+    createdAt: new Date().toLocaleString('vi-VN'),
+    status: 'Chờ xác nhận',
+    paymentText,
+    zaloMessage: `[ĐƠN HÀNG MỚI #${orderId}]\n` +
+      `Chào xưởng Dép Nam Tuyết Nhung, tôi vừa đặt đơn hàng trên website:\n` +
+      `--------------------------------\n` +
+      `🆔 Mã đơn: #${orderId}\n` +
+      `👤 Khách hàng: ${name}\n` +
+      `📞 Số điện thoại: ${phone}\n` +
+      `🏠 Địa chỉ nhận: ${address}\n` +
+      `📦 Danh sách dép:\n` + cart.map((item, i) => `${i + 1}. ${item.name} - Size ${item.size} - SL: ${item.quantity} đôi - ${formatCurrency(item.price * item.quantity)}`).join('\n') + `\n` +
+      `💰 Tổng thanh toán: ${formatCurrency(finalTotal)}\n` +
+      `💳 Hình thức: ${paymentText}\n` +
+      (note ? `📝 Ghi chú: ${note}\n` : '') +
+      `--------------------------------\n` +
+      `Nhờ xưởng kiểm tra size và đóng hàng gửi sớm giúp tôi nhé!`
   };
 
   // Lưu lịch sử đơn hàng vào LocalStorage
@@ -1033,6 +1049,19 @@ function submitOrder(event) {
   closeCheckoutModal();
 
   // Hiển thị modal thành công
+  // 2. Gửi lên Google Sheets nếu đã cài đặt Webhook
+  sendOrderToGoogleSheets(orderData);
+
+  // 3. Tự động chuyển hướng mở Zalo sau 1 giây
+  const zaloPhone = (typeof STORE_INFO !== 'undefined' && STORE_INFO.zalo) ? STORE_INFO.zalo : '0962860721';
+  const zaloUrl = `https://zalo.me/${zaloPhone}?text=${encodeURIComponent(orderData.zaloMessage)}`;
+  setTimeout(() => {
+    try {
+      window.open(zaloUrl, '_blank');
+    } catch(e) {}
+  }, 1000);
+
+  // 4. Hiển thị modal thành công
   showSuccessModal(orderData);
 }
 
@@ -1064,6 +1093,32 @@ function sendOrderToZalo() {
     `--------------------------------\n` +
     `Nhờ xưởng kiểm tra size và đóng hàng giúp tôi nhé!`;
 
+  const orderId = 'TN' + Math.floor(100000 + Math.random() * 900000);
+  const orderData = {
+    orderId,
+    name,
+    phone,
+    address,
+    note,
+    paymentMethod,
+    paymentText: paymentMethod === 'banking' ? 'Chuyển khoản VietQR' : 'COD (Nhận hàng thanh toán)',
+    items: [...cart],
+    finalTotal,
+    createdAt: new Date().toLocaleString('vi-VN'),
+    status: 'Chờ xác nhận',
+    zaloMessage: message
+  };
+
+  const orderHistory = JSON.parse(localStorage.getItem('tuyetnhung_orders')) || [];
+  orderHistory.push(orderData);
+  localStorage.setItem('tuyetnhung_orders', JSON.stringify(orderHistory));
+  sendOrderToGoogleSheets(orderData);
+
+  cart = [];
+  saveCart();
+  updateCartBadge();
+  closeCheckoutModal();
+
   // Mở liên kết chat Zalo
   const zaloPhone = STORE_INFO.zalo;
   const zaloUrl = `https://zalo.me/${zaloPhone}?text=${encodeURIComponent(message)}`;
@@ -1072,19 +1127,73 @@ function sendOrderToZalo() {
   showToast('Đang kết nối đến Zalo Xưởng Tuyết Nhung...', 'info');
 }
 
+// Gửi đơn hàng lên Google Sheets Webhook
+async function sendOrderToGoogleSheets(order) {
+  let webhookUrl = localStorage.getItem('tuyetnhung_sheets_webhook');
+  if (!webhookUrl && typeof GOOGLE_SHEETS_WEBHOOK_URL !== 'undefined') {
+    webhookUrl = GOOGLE_SHEETS_WEBHOOK_URL;
+  }
+  if (!webhookUrl || !webhookUrl.trim()) return;
+
+  try {
+    const payload = {
+      orderId: order.orderId,
+      createdAt: order.createdAt,
+      name: order.name,
+      phone: order.phone,
+      address: order.address,
+      note: order.note || '',
+      paymentMethod: order.paymentText || (order.paymentMethod === 'banking' ? 'Chuyển khoản VietQR' : 'COD'),
+      items: order.items.map(i => `${i.name} (Size ${i.size}, SL: ${i.quantity})`).join('; '),
+      finalTotal: order.finalTotal,
+      status: order.status || 'Chờ xác nhận'
+    };
+
+    await fetch(webhookUrl.trim(), {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    console.log('Đã gửi đơn hàng lên Google Sheets!');
+  } catch (err) {
+    console.warn('Lỗi khi gửi đơn lên Google Sheets:', err);
+  }
+}
+
 // Hiển thị modal đặt hàng thành công
 function showSuccessModal(order) {
   const modal = document.getElementById('success-modal');
   const details = document.getElementById('success-order-details');
   if (!modal || !details) return;
 
+  const zaloPhone = (typeof STORE_INFO !== 'undefined' && STORE_INFO.zalo) ? STORE_INFO.zalo : '0962860721';
+  const zaloUrl = `https://zalo.me/${zaloPhone}?text=${encodeURIComponent(order.zaloMessage || '')}`;
+
+  const zaloBtn = document.getElementById('success-zalo-btn');
+  if (zaloBtn) {
+    zaloBtn.href = zaloUrl;
+  }
+
   details.innerHTML = `
     <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 text-left text-xs space-y-2 mb-4">
-      <p class="font-bold text-amber-950 text-sm">Mã đơn hàng: #${order.orderId}</p>
+      <div class="flex items-center justify-between border-b border-amber-200/80 pb-1.5">
+        <span class="font-black text-amber-950 text-sm">Mã đơn hàng: #${order.orderId}</span>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">🟢 Đã lưu vào hệ thống</span>
+      </div>
       <p><span class="font-semibold text-stone-700">Khách hàng:</span> ${order.name} - ${order.phone}</p>
       <p><span class="font-semibold text-stone-700">Địa chỉ giao:</span> ${order.address}</p>
       <p><span class="font-semibold text-stone-700">Hình thức:</span> ${order.paymentMethod === 'banking' ? 'Chuyển khoản' : 'Thanh toán COD khi nhận hàng'}</p>
       <p><span class="font-semibold text-stone-700">Tổng tiền:</span> <span class="text-amber-900 font-extrabold text-sm">${formatCurrency(order.finalTotal)}</span></p>
+    </div>
+    <div class="p-3 bg-blue-50 rounded-xl border border-blue-200 text-blue-950 text-xs mb-4 text-left flex items-start gap-2.5">
+      <span class="text-lg flex-shrink-0">📲</span>
+      <div>
+        <p class="font-bold text-blue-900">Hệ thống đang mở Zalo để gửi chi tiết đơn sang Xưởng...</p>
+        <p class="text-[11px] text-blue-800 mt-0.5">Nếu Zalo chưa tự mở, anh/chị vui lòng <strong>bấm vào nút xanh bên dưới</strong> để gửi tin nhắn xác nhận đơn ngay nhé!</p>
+      </div>
     </div>
     <p class="text-stone-500 text-xs mb-4">Thợ xưởng Tuyết Nhung sẽ liên hệ xác nhận đơn hàng qua điện thoại trong vòng 15-30 phút. Thời gian giao hàng dự kiến từ 2-3 ngày làm việc (Được kiểm tra và đi thử dép trước khi trả tiền).</p>
   `;

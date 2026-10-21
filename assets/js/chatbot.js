@@ -810,7 +810,7 @@ function processUserQuery(query) {
       `;
       sendBotMessage(reply, [
         '💬 Nhắn Zalo kiểm tra đơn',
-        '📞 Gọi Hotline 0348.789.257',
+        '📞 Gọi Hotline 0962.860.721',
         '👟 Chọn mẫu dép mới'
       ]);
       return;
@@ -822,8 +822,8 @@ function processUserQuery(query) {
     const reply = `
       📍 <strong>Thông tin liên hệ Xưởng Dép Nam Tuyết Nhung:</strong><br/><br/>
       • <strong>Địa chỉ xưởng:</strong> 1005C Hà Huy Giáp, Phường An Phú Đông, Quận 12, TP. Hồ Chí Minh.<br/>
-      • <strong>Hotline tư vấn nhanh:</strong> <a href="tel:0348789257" class="text-amber-900 font-bold underline">0348.789.257</a><br/>
-      • <strong>Zalo xưởng:</strong> <a href="https://zalo.me/0348789257" target="_blank" class="text-blue-700 font-bold underline">0348789257 (Tuyết Nhung)</a><br/>
+      • <strong>Hotline tư vấn nhanh:</strong> <a href="tel:0962860721" class="text-amber-900 font-bold underline">0962.860.721</a><br/>
+      • <strong>Zalo xưởng:</strong> <a href="https://zalo.me/0962860721" target="_blank" class="text-blue-700 font-bold underline">0962860721 (Tuyết Nhung)</a><br/>
       • <strong>Giờ làm việc:</strong> 08:00 - 21:30 (Mở cửa tất cả các ngày trong tuần, kể cả Thứ 7 & CN).<br/><br/>
       <em>Anh/chị ghé xưởng xem mẫu trực tiếp hoặc đặt giao tận nhà đều được ạ!</em>
     `;
