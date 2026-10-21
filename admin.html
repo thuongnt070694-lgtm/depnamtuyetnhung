@@ -1183,6 +1183,71 @@
     </div>
   </div>
 
+  <!-- ================= MODAL HƯỚNG DẪN & NHẮN ZALO NHANH CHO KHÁCH ================= -->
+  <div id="zalo-helper-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative my-6 border border-blue-200">
+      <button onclick="closeZaloHelperModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700 font-bold text-lg">✕</button>
+
+      <div class="flex items-center gap-3 border-b border-stone-200 pb-3 mb-4">
+        <div class="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl font-bold flex-shrink-0 shadow-md">
+          💬
+        </div>
+        <div>
+          <h3 class="text-base font-black text-stone-900 font-serif-heading">Gửi Thông Tin Đơn Hàng Qua Zalo</h3>
+          <p id="zalo-modal-recipient" class="text-xs text-blue-700 font-bold mt-0.5">Khách hàng: ...</p>
+        </div>
+      </div>
+
+      <!-- Khung hướng dẫn 2 bước siêu dễ -->
+      <div class="p-3.5 bg-blue-50/80 rounded-2xl border border-blue-200 mb-4 text-xs space-y-2">
+        <div class="flex items-center gap-2 text-emerald-800 font-black">
+          <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs">✓</span>
+          <span>ĐÃ TỰ ĐỘNG SAO CHÉP LỜI NHẮN VÀO BỘ NHỚ TẠM!</span>
+        </div>
+        <p class="text-[11px] text-stone-700 leading-relaxed">
+          Trình duyệt vừa mở trang Zalo của khách ở tab bên cạnh. Bạn chỉ cần <strong>2 thao tác cực nhanh</strong>:
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-bold text-stone-800">
+          <div class="bg-white p-2.5 rounded-xl border border-blue-200 flex items-center gap-2 shadow-2xs">
+            <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-900 flex items-center justify-center text-xs font-black flex-shrink-0">1</span>
+            <span>Bấm nút <strong>"Nhắn tin"</strong> trên Zalo</span>
+          </div>
+          <div class="bg-white p-2.5 rounded-xl border border-blue-200 flex items-center gap-2 shadow-2xs">
+            <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center text-xs font-black flex-shrink-0">2</span>
+            <span>Nhấn phím <strong>Ctrl + V</strong> (Dán) và Gửi</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nội dung tin nhắn xem trước -->
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-[11px] font-black text-stone-500 uppercase tracking-wider">Nội dung tin nhắn sẵn sàng:</span>
+          <button type="button" onclick="copyCurrentZaloMessage()" class="text-blue-700 hover:text-blue-900 text-xs font-bold flex items-center gap-1 hover:underline">
+            <span>📋 Bấm để chép lại</span>
+          </button>
+        </div>
+        <textarea id="zalo-modal-preview-text" readonly class="w-full h-32 text-xs bg-stone-50 border border-stone-200 rounded-xl p-3 font-sans text-stone-800 leading-relaxed resize-none focus:outline-none"></textarea>
+      </div>
+
+      <!-- Các lựa chọn mở Zalo tiện lợi -->
+      <div class="grid grid-cols-2 gap-2 mb-4">
+        <button type="button" id="btn-zalo-app-pc" class="py-2.5 px-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors border border-stone-300 shadow-2xs" title="Mở trực tiếp ứng dụng Zalo PC cài trên máy tính">
+          <span>💻 Mở App Zalo PC</span>
+        </button>
+        <button type="button" onclick="openZaloWebDirect()" class="py-2.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors border border-blue-200 shadow-2xs" title="Mở Zalo trên trình duyệt Web">
+          <span>🌐 Mở Zalo Web</span>
+        </button>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button type="button" onclick="closeZaloHelperModal()" class="w-full py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs transition-colors shadow-md">
+          ✓ Đã Hiểu & Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= MODAL CÀI ĐẶT GOOGLE SHEETS ================= -->
   <div id="sheets-config-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
     <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative my-6 max-h-[90vh] overflow-y-auto text-xs">
@@ -2248,7 +2313,7 @@ function doGet(e) {
                 <a href="tel:${phone}" class="inline-flex items-center gap-1 text-[11px] font-mono font-extrabold text-blue-700 hover:underline bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200" title="Bấm gọi ngay">
                   <span>📞 ${phone}</span>
                 </a>
-                <a href="https://zalo.me/${phone}" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 px-1.5 py-0.5 rounded shadow-2xs" title="Chat Zalo với khách">
+                <a href="javascript:void(0)" onclick="openZaloCustomerChat('${orderId}')" class="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 px-1.5 py-0.5 rounded shadow-2xs transition-colors cursor-pointer" title="Soạn tin & Mở Zalo nhắn cho khách">
                   <span>💬 Zalo</span>
                 </a>
               </div>
@@ -2314,10 +2379,10 @@ function doGet(e) {
                 <button 
                   type="button" 
                   onclick="openZaloCustomerChat('${orderId}')" 
-                  class="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg font-bold text-xs border border-blue-200 transition-colors"
+                  class="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg font-bold text-xs border border-blue-200 transition-colors flex items-center gap-1"
                   title="Soạn tin nhắn Zalo xác nhận đơn gửi cho khách"
                 >
-                  <span>💬</span>
+                  <span>💬 Zalo</span>
                 </button>
                 <button 
                   type="button" 
@@ -2344,7 +2409,7 @@ function doGet(e) {
       order.paymentText = 'Chuyển khoản VietQR (Đã nhận tiền)';
       saveOrdersData();
       renderOrdersTable();
-      showToast(`Đã duyệt đơn #${orderId}: Đã nhận đủ tiền chuyển khoản!`, 'success');
+      showToast(`Đã duyệt đơn #${orderId}: Đã nhận đủ tiền ACB! Bấm [💬 Zalo] để báo khách.`, 'success');
 
       const modal = document.getElementById('print-order-modal');
       if (modal && !modal.classList.contains('hidden') && currentPrintOrderId === orderId) {
@@ -2379,7 +2444,7 @@ function doGet(e) {
       order.status = newStatus;
       saveOrdersData();
       renderOrdersTable();
-      showToast(`Đã chuyển đơn #${orderId} sang trạng thái "${newStatus}"!`, 'success');
+      showToast(`Đã chuyển đơn #${orderId} sang "${newStatus}"! Bấm [💬 Zalo] để gửi tin báo khách.`, 'success');
     }
 
     // Xóa đơn hàng
@@ -2453,8 +2518,87 @@ function doGet(e) {
 
 
       let phoneClean = String(order.phone || '').trim().replace(/[^0-9]/g, '');
+      currentZaloCopiedMessage = msg;
+      currentZaloPhone = phoneClean;
+
+      // 1. Tự động sao chép toàn bộ lời nhắn vào Clipboard
+      copyTextToClipboard(msg);
+
+      // 2. Mở Zalo của khách hàng
       const zaloUrl = `https://zalo.me/${phoneClean}?text=${encodeURIComponent(msg)}`;
       window.open(zaloUrl, '_blank');
+      // legacy unused
+
+      // 3. Hiển thị modal hỗ trợ 2 bước & nút mở Zalo PC/Web
+      const modal = document.getElementById('zalo-helper-modal');
+      const recipientEl = document.getElementById('zalo-modal-recipient');
+      const previewEl = document.getElementById('zalo-modal-preview-text');
+      const btnPc = document.getElementById('btn-zalo-app-pc');
+
+      if (recipientEl) recipientEl.innerText = `Khách hàng: ${order.name} • SĐT: ${order.phone} • Đơn #${order.orderId}`;
+      if (previewEl) previewEl.value = msg;
+      if (btnPc) btnPc.onclick = () => openZaloPcDirect(phoneClean);
+
+      if (modal) modal.classList.remove('hidden');
+
+      showToast(`📋 Đã sao chép lời nhắn đơn #${order.orderId}! Nhấn Ctrl+V để Dán trên Zalo.`, 'success');
+      return;
+    }
+
+    let currentZaloCopiedMessage = '';
+    let currentZaloPhone = '';
+
+    function copyTextToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
+      } else {
+        return fallbackCopyText(text);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        return successful ? Promise.resolve() : Promise.reject();
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    }
+
+    function copyCurrentZaloMessage() {
+      if (!currentZaloCopiedMessage) return;
+      copyTextToClipboard(currentZaloCopiedMessage).then(() => {
+        showToast('📋 Đã sao chép lại nội dung tin nhắn!', 'success');
+      });
+    }
+
+    function openZaloPcDirect(phone) {
+      const clean = String(phone || currentZaloPhone || '').replace(/[^0-9]/g, '');
+      if (clean) {
+        window.location.href = `zalo://chat?phone=${clean}`;
+      }
+    }
+
+    function openZaloWebDirect() {
+      window.open('https://chat.zalo.me/', '_blank');
+    }
+
+    function closeZaloHelperModal() {
+      const modal = document.getElementById('zalo-helper-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function _legacyZaloOpen() {
+      // legacy unused
     }
 
     // In phiếu đóng hàng

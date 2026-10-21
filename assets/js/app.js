@@ -1132,6 +1132,7 @@ function submitOrder(event) {
 
   // 3. Tự động chuyển hướng mở Zalo sau 1 giây
   const zaloPhone = (typeof STORE_INFO !== 'undefined' && STORE_INFO.zalo) ? STORE_INFO.zalo : '0962860721';
+  copyTextToClipboard(orderData.zaloMessage);
   const zaloUrl = `https://zalo.me/${zaloPhone}?text=${encodeURIComponent(orderData.zaloMessage)}`;
   setTimeout(() => {
     try {
@@ -1204,6 +1205,7 @@ function sendOrderToZalo() {
 
   // Mở liên kết chat Zalo
   const zaloPhone = STORE_INFO.zalo;
+  copyTextToClipboard(message);
   const zaloUrl = `https://zalo.me/${zaloPhone}?text=${encodeURIComponent(message)}`;
   window.open(zaloUrl, '_blank');
 
@@ -1692,7 +1694,7 @@ function searchOrderTracking(query) {
 
         <!-- Nút hỗ trợ & gửi tin nhắn trạng thái -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
-          <a href="${buyerZaloUrl}" target="_blank" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors" title="Mở Zalo gửi cập nhật trạng thái đơn đến người mua ${order.phone}">
+          <a href="javascript:void(0)" onclick="sendZaloStatusToBuyer('${order.orderId}')" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer" title="Sao chép lời nhắn & Mở Zalo người mua ${order.phone}">
             <span>💬 Nhắn Zalo Người Mua (${order.phone})</span>
           </a>
           <div class="flex items-center gap-2">
@@ -1749,3 +1751,78 @@ window.closeOrderTrackingModal = closeOrderTrackingModal;
 window.openOrderTrackingModalFromSuccess = openOrderTrackingModalFromSuccess;
 window.handleOrderTrackingSearch = handleOrderTrackingSearch;
 window.searchOrderTracking = searchOrderTracking;
+
+// ============================================
+// HỖ TRỢ SAO CHÉP & GỬI ZALO NHANH CHO KHÁCH
+// ============================================
+
+function copyTextToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
+  } else {
+    return fallbackCopyText(text);
+  }
+}
+
+function fallbackCopyText(text) {
+  try {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    const successful = document.execCommand('copy');
+    document.body.removeChild(textArea);
+    return successful ? Promise.resolve() : Promise.reject();
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+
+function sendZaloStatusToBuyer(orderId) {
+  let orders = [];
+  try {
+    orders = JSON.parse(localStorage.getItem('tuyetnhung_orders')) || [];
+  } catch(e) {}
+
+  const order = orders.find(o => o.orderId === orderId);
+  if (!order) return;
+
+  const status = order.status || 'Chờ xác nhận';
+  const isPaid = order.isPaid === true || order.paymentStatus === 'Đã thanh toán';
+
+  let statusTextForBuyer = '';
+  if (status.includes('Đã giao')) {
+    statusTextForBuyer = `đã được giao thành công đến bạn! Dép đi có êm và vừa chân không ạ? Xưởng Tuyết Nhung bảo hành chính hãng 12 tháng da & đế. Nếu cần đổi size cứ nhắn xưởng hỗ trợ ngay nhé!`;
+  } else if (status.includes('Đang giao')) {
+    statusTextForBuyer = `đang trên đường giao đến bạn. Bạn chú ý điện thoại để shipper liên hệ nhé. Khi nhận hàng bạn ĐƯỢC MỞ HỘP KIỂM TRA VÀ ĐI THỬ VỪA CHÂN mới thanh toán ạ!`;
+  } else if (status.includes('đóng')) {
+    statusTextForBuyer = `đã được thợ xưởng kiểm tra da & đóng hộp dép hoàn tất, đang chờ bàn giao cho bên bưu tá để gửi đi sớm nhất!`;
+  } else if (isPaid) {
+    statusTextForBuyer = `đã được xưởng xác nhận NHẬN ĐỦ TIỀN CHUYỂN KHOẢN ACB (0đ khi nhận hàng). Thợ đang chuẩn bị dép để đóng gói cho bạn nhé!`;
+  } else {
+    statusTextForBuyer = `đã được xưởng tiếp nhận. Thợ đang chuẩn bị mẫu dép đúng size để đóng gói gửi đi cho bạn nhé!`;
+  }
+
+  const itemsSummary = Array.isArray(order.items) && order.items.length > 0
+    ? order.items.map(i => `${i.name} (Size ${i.size}) x${i.quantity}`).join(', ')
+    : (order.itemsText || 'Dép da nam thủ công');
+
+  const buyerZaloMsg = `Dạ chào bạn ${order.name}! Xưởng Dép Nam Tuyết Nhung thông báo đơn hàng #${order.orderId} của bạn ${statusTextForBuyer}\n` +
+    `• Sản phẩm: ${itemsSummary}\n` +
+    `• Tổng thanh toán: ${isPaid ? 'ĐÃ THANH TOÁN ACB (0đ khi nhận)' : formatCurrency(order.finalTotal || 0) + ' (Thu COD khi nhận)'}\n` +
+    `• Nơi nhận: ${order.address}\n\n` +
+    `Cảm ơn bạn đã tin tưởng xưởng dép thủ công Tuyết Nhung! Hotline: 0962.860.721`;
+
+  const cleanPhone = String(order.phone || '').trim().replace(/[^0-9]/g, '');
+
+  copyTextToClipboard(buyerZaloMsg);
+  showToast(`📋 Đã sao chép lời nhắn đơn #${order.orderId}! Bấm [Nhắn tin] trên Zalo và nhấn Ctrl+V để Gửi.`, 'success');
+
+  const zaloUrl = `https://zalo.me/${cleanPhone}?text=${encodeURIComponent(buyerZaloMsg)}`;
+  window.open(zaloUrl, '_blank');
+}
+window.sendZaloStatusToBuyer = sendZaloStatusToBuyer;
