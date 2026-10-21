@@ -2067,7 +2067,19 @@ function doGet(e) {
 
     function saveOrdersData() {
       try {
-        localStorage.setItem('tuyetnhung_orders', JSON.stringify(ordersList));
+        const cleanOrders = (ordersList || []).map(o => {
+          if (Array.isArray(o.items)) {
+            return {
+              ...o,
+              items: o.items.map(it => {
+                const { image, ...rest } = it;
+                return rest;
+              })
+            };
+          }
+          return o;
+        });
+        localStorage.setItem('tuyetnhung_orders', JSON.stringify(cleanOrders));
       } catch (e) {
         console.warn('Lỗi lưu đơn hàng:', e);
       }

@@ -550,7 +550,11 @@ function addToCart(product, size, color, quantity = 1) {
 
 // Lưu giỏ hàng
 function saveCart() {
-  localStorage.setItem('tuyetnhung_cart', JSON.stringify(cart));
+  try {
+    localStorage.setItem('tuyetnhung_cart', JSON.stringify(cart));
+  } catch (err) {
+    console.warn('Lỗi lưu giỏ hàng:', err);
+  }
 }
 
 // Cập nhật số lượng giỏ hàng trên header
@@ -989,6 +993,70 @@ function handlePaymentMethodChange(method) {
   }
 }
 
+// Lưu lịch sử đơn hàng an toàn (Chống tràn bộ nhớ QuotaExceededError)
+function saveOrderToStorage(orderData) {
+  try {
+    const cleanItems = (orderData.items || []).map(i => ({
+      id: i.id,
+      name: i.name,
+      price: i.price,
+      size: i.size,
+      color: i.color,
+      quantity: i.quantity
+    }));
+
+    const cleanOrder = {
+      ...orderData,
+      items: cleanItems
+    };
+
+    let history = [];
+    try {
+      const raw = localStorage.getItem('tuyetnhung_orders');
+      if (raw) history = JSON.parse(raw) || [];
+    } catch (e) {
+      history = [];
+    }
+
+    // Dọn sạch ảnh Base64 của các đơn cũ nếu có trong bộ nhớ
+    history = history.map(o => {
+      if (Array.isArray(o.items)) {
+        return {
+          ...o,
+          items: o.items.map(it => {
+            const { image, ...rest } = it;
+            return rest;
+          })
+        };
+      }
+      return o;
+    });
+
+    history.push(cleanOrder);
+
+    // Giữ tối đa 50 đơn gần nhất
+    if (history.length > 50) {
+      history = history.slice(-50);
+    }
+
+    try {
+      localStorage.setItem('tuyetnhung_orders', JSON.stringify(history));
+    } catch (quotaErr) {
+      console.warn('Bộ nhớ đầy, tự động rút gọn danh sách đơn:', quotaErr);
+      history = history.slice(-15);
+      try {
+        localStorage.setItem('tuyetnhung_orders', JSON.stringify(history));
+      } catch (quotaErr2) {
+        try {
+          localStorage.setItem('tuyetnhung_orders', JSON.stringify([cleanOrder]));
+        } catch(e) {}
+      }
+    }
+  } catch (err) {
+    console.warn('Lỗi khi lưu đơn hàng vào LocalStorage:', err);
+  }
+}
+
 // Xử lý gửi đơn hàng (Chốt COD hoặc Đặt hàng)
 function submitOrder(event) {
   event.preventDefault();
@@ -1045,15 +1113,16 @@ function submitOrder(event) {
   };
 
   // Lưu lịch sử đơn hàng vào LocalStorage
-  const orderHistory = JSON.parse(localStorage.getItem('tuyetnhung_orders')) || [];
-  orderHistory.push(orderData);
-  localStorage.setItem('tuyetnhung_orders', JSON.stringify(orderHistory));
+  saveOrderToStorage(orderData);
+
+
 
   // Reset giỏ hàng
   cart = [];
   saveCart();
   updateCartBadge();
   closeCheckoutModal();
+  currentCheckoutOrderId = null;
 
   // Hiển thị modal thành công
   // 2. Gửi lên Google Sheets nếu đã cài đặt Webhook
@@ -1118,15 +1187,16 @@ function sendOrderToZalo() {
     zaloMessage: message
   };
 
-  const orderHistory = JSON.parse(localStorage.getItem('tuyetnhung_orders')) || [];
-  orderHistory.push(orderData);
-  localStorage.setItem('tuyetnhung_orders', JSON.stringify(orderHistory));
+  saveOrderToStorage(orderData);
+
+
   sendOrderToGoogleSheets(orderData);
 
   cart = [];
   saveCart();
   updateCartBadge();
   closeCheckoutModal();
+  currentCheckoutOrderId = null;
 
   // Mở liên kết chat Zalo
   const zaloPhone = STORE_INFO.zalo;
@@ -1298,6 +1368,7 @@ function setupEventListeners() {
       closeQuickView();
       closeCartDrawer();
       closeCheckoutModal();
+  currentCheckoutOrderId = null;
       closeSizeGuideModal();
       closeSuccessModal();
     }
