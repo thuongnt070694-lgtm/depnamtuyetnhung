@@ -366,6 +366,18 @@ function initChatHistory() {
 
   const saved = sessionStorage.getItem('tuyetnhung_chat_messages');
   if (saved) {
+    // Tự động dọn dẹp bộ nhớ đệm nếu phát hiện tin nhắn bị lưu lỗi HTML từ phiên bản cũ
+    if (saved.includes('type="button"') || saved.includes('<button <br') || saved.includes('flex-shrink-0 shadow-xs" >')) {
+      sessionStorage.removeItem('tuyetnhung_chat_messages');
+      container.innerHTML = '';
+      sendBotMessage(chatbotConfig.greeting, [
+        '👟 Xem mẫu dép bán chạy',
+        '📏 Tư vấn đo size chân',
+        '🚚 Phí giao hàng & Kiểm hàng'
+      ]);
+      return;
+    }
+
     try {
       const msgs = JSON.parse(saved);
       container.innerHTML = '';
@@ -479,21 +491,18 @@ function sendBotMessage(textOrHtml, followUpPills = null) {
     if (typing) typing.classList.add('hidden');
     isBotTyping = false;
 
-    let finalHtml = textOrHtml.replace(/\n/g, '<br/>');
+    let finalHtml = textOrHtml;
+    // Chỉ thay thế ký tự \n bằng <br/> nếu nội dung là văn bản thuần (không chứa thẻ HTML)
+    // để tránh chèn <br/> vào bên trong các thuộc tính của thẻ HTML (như <button ...>)
+    if (!/<[a-z][\s\S]*>/i.test(textOrHtml)) {
+      finalHtml = textOrHtml.replace(/\n/g, '<br/>');
+    }
 
     // Thêm các nút gợi ý câu hỏi tiếp theo nếu có
     if (Array.isArray(followUpPills) && followUpPills.length > 0) {
       finalHtml += `
         <div class="mt-3 pt-2.5 border-t border-stone-100 flex flex-wrap gap-1.5">
-          ${followUpPills.map(pill => `
-            <button 
-              type="button" 
-              onclick="handleQuickChipClick('${pill.replace(/'/g, "\\'")}')" 
-              class="px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-[10px] border border-amber-200 transition-colors"
-            >
-              ${pill}
-            </button>
-          `).join('')}
+          ${followUpPills.map(pill => `<button type="button" onclick="handleQuickChipClick('${pill.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-[10px] border border-amber-200 transition-colors">${pill}</button>`).join('')}
         </div>
       `;
     }
@@ -549,24 +558,22 @@ function renderMiniProductCards(products, title = 'Các mẫu dép da thật ph�
       <div class="space-y-2">
         ${products.slice(0, 3).map(p => {
           const img = p.images && p.images[0] ? p.images[0] : 'assets/images/dep-tn01.jpg';
+          const leather = p.leatherType || 'Da bò thật';
+          const sole = p.soleType || 'Đế cao su khâu dù';
+          const priceStr = formatCurrency(p.price);
+          const origPriceStr = p.originalPrice > p.price ? `<span class="text-[10px] text-stone-400 line-through">${formatCurrency(p.originalPrice)}</span>` : '';
           return `
-            <div class="flex items-center gap-2.5 p-2 bg-stone-50 hover:bg-amber-50/60 rounded-xl border border-stone-200/90 transition-all">
-              <img src="${img}" alt="${p.name}" class="w-13 h-13 object-cover rounded-lg border border-stone-200 flex-shrink-0" style="width: 52px; height: 52px;" />
+            <div class="flex items-center gap-2.5 p-2 bg-stone-50 hover:bg-amber-50/70 rounded-xl border border-stone-200/90 transition-all">
+              <img src="${img}" alt="${escapeHtml(p.name)}" class="w-12 h-12 rounded-lg object-cover border border-stone-200 flex-shrink-0 bg-stone-200" style="width: 48px; height: 48px;" />
               <div class="flex-1 min-w-0">
-                <div class="font-bold text-stone-900 text-xs truncate">${p.name}</div>
-                <div class="text-[10px] text-stone-500">${p.leatherType || 'Da bò thật'} • ${p.soleType || 'Đế khâu dù'}</div>
-                <div class="flex items-center gap-2 mt-0.5">
-                  <span class="font-extrabold text-amber-950 text-xs">${formatCurrency(p.price)}</span>
-                  ${p.originalPrice > p.price ? `<span class="text-[10px] text-stone-400 line-through">${formatCurrency(p.originalPrice)}</span>` : ''}
+                <div class="font-bold text-stone-900 text-xs truncate" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
+                <div class="text-[10px] text-stone-500 truncate mt-0.5" title="${escapeHtml(leather + ' • ' + sole)}">${escapeHtml(leather)} • ${escapeHtml(sole)}</div>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="font-extrabold text-amber-950 text-xs">${priceStr}</span>
+                  ${origPriceStr}
                 </div>
               </div>
-              <button 
-                type="button" 
-                onclick="openQuickView(${p.id})" 
-                class="px-2.5 py-1.5 rounded-lg bg-amber-900 hover:bg-amber-800 text-white font-bold text-[10px] flex-shrink-0 shadow-xs"
-              >
-                Xem
-              </button>
+              <button type="button" onclick="openQuickViewFromChat(${p.id})" class="px-2.5 py-1.5 rounded-lg bg-amber-900 hover:bg-amber-800 active:scale-95 text-white font-bold text-[11px] flex-shrink-0 shadow-xs cursor-pointer transition-all">Xem</button>
             </div>
           `;
         }).join('')}
@@ -916,7 +923,17 @@ function formatCurrency(amount) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
 }
 
+// Mở modal xem nhanh sản phẩm từ tin nhắn Chatbot
+function openQuickViewFromChat(productId) {
+  if (typeof openQuickView === 'function') {
+    openQuickView(productId);
+  } else if (window.openQuickView) {
+    window.openQuickView(productId);
+  }
+}
+
 // Gắn các hàm ra window để inline onclick trong HTML hoạt động mượt mà 100%
+window.openQuickViewFromChat = openQuickViewFromChat;
 window.toggleChatbot = toggleChatbot;
 window.handleQuickChipClick = handleQuickChipClick;
 window.dismissWelcomeBubble = dismissWelcomeBubble;

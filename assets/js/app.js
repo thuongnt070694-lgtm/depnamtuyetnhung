@@ -1185,3 +1185,11 @@ function setupEventListeners() {
     }
   });
 }
+
+// Xuất các hàm điều khiển modal ra window
+window.openQuickView = openQuickView;
+window.closeQuickView = closeQuickView;
+window.openCartDrawer = openCartDrawer;
+window.closeCartDrawer = closeCartDrawer;
+window.openCheckoutModal = openCheckoutModal;
+window.closeCheckoutModal = closeCheckoutModal;

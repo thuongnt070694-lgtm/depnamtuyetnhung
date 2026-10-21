@@ -44,11 +44,10 @@
   <div class="bg-brand-950 text-amber-200 text-xs py-2 border-b border-amber-900/40">
     <div class="site-container flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left">
       <div class="flex items-center gap-2">
-        <span class="bg-amber-700 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">Xưởng Tự Làm</span>
-        <span>🎉 Khai trương ưu đãi: Giảm 10% mã <strong>TUYETNHUNG</strong> • Miễn phí vận chuyển từ 2 đôi</span>
+        <span class="bg-amber-700 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">Dép Nam Tuyết Nhung</span>
       </div>
       <div class="flex items-center gap-4 text-stone-300">
-        <span class="hidden md:inline">🕒 Mở cửa: 08:00 - 21:30 hàng ngày</span>
+        <span class="hidden md:inline">🕒 Mở cửa: 07:00 - 20:00 hàng ngày</span>
         <a href="tel:0348789257" class="text-amber-400 font-bold hover:underline flex items-center gap-1">
           <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 4V3z"/></svg>
           Hotline: 0348.789.257
@@ -78,7 +77,7 @@
               TUYẾT NHUNG
             </span>
             <span class="block text-[11px] sm:text-xs text-amber-800 font-semibold tracking-wide uppercase">
-              Dép Nam Da Bò Thủ Công
+              Dép Nam Da Thủ Công
             </span>
           </div>
         </a>
@@ -731,7 +730,7 @@
   <!-- ================= MODALS & DRAWERS ================= -->
 
   <!-- 1. CART DRAWER -->
-  <div id="cart-drawer" class="fixed inset-0 z-50 hidden">
+  <div id="cart-drawer" class="fixed inset-0 z-[60] hidden">
     <!-- Backdrop overlay -->
     <div id="cart-overlay" onclick="closeCartDrawer()" class="cart-drawer-overlay absolute inset-0 bg-black/60 opacity-0 transition-opacity"></div>
     
@@ -813,7 +812,7 @@
   </div>
 
   <!-- 2. QUICK VIEW MODAL -->
-  <div id="quick-view-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 overflow-y-auto">
+  <div id="quick-view-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/60 overflow-y-auto">
     <div class="relative bg-white rounded-3xl max-w-3xl xl:max-w-4xl 2xl:max-w-5xl w-full shadow-2xl overflow-hidden my-8">
       <button onclick="closeQuickView()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center font-bold">
         ✕
@@ -825,7 +824,7 @@
   </div>
 
   <!-- 3. CHECKOUT MODAL (COD & VIETQR) -->
-  <div id="checkout-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 overflow-y-auto">
+  <div id="checkout-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/60 overflow-y-auto">
     <div class="relative bg-white rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden my-8 p-6 sm:p-8">
       
       <button onclick="closeCheckoutModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700 font-bold text-lg">✕</button>
@@ -967,7 +966,7 @@
   </div>
 
   <!-- 4. ORDER SUCCESS CELEBRATION MODAL -->
-  <div id="success-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60">
+  <div id="success-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/60">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 text-center shadow-2xl border border-amber-200">
       <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-black">
         ✓
@@ -991,7 +990,7 @@
   </div>
 
   <!-- 5. SIZE GUIDE MODAL (Stand-alone popup) -->
-  <div id="size-guide-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60">
+  <div id="size-guide-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/60">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
       <button onclick="closeSizeGuideModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 font-bold">✕</button>
       <h3 class="text-xl font-black text-stone-900 font-serif-heading mb-2">Bảng Hướng Dẫn Đo Size Chân</h3>
