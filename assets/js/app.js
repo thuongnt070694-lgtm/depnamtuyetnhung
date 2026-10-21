@@ -1585,8 +1585,33 @@ function searchOrderTracking(query) {
       itemsHtml = `<div class="text-xs text-stone-600 py-1">${order.itemsText || 'Dép da nam Tuyết Nhung'}</div>`;
     }
 
-    const zaloMsg = `Dạ chào xưởng Tuyết Nhung, tôi đang tra cứu tiến độ đơn hàng #${order.orderId} của tôi (${order.name} - ${order.phone}). Nhờ xưởng hỗ trợ thông tin giúp tôi nhé!`;
-    const zaloUrl = `https://zalo.me/0962860721?text=${encodeURIComponent(zaloMsg)}`;
+    const cleanBuyerPhone = String(order.phone || '').trim().replace(/[^0-9]/g, '');
+    let statusTextForBuyer = '';
+    if (status.includes('Đã giao')) {
+      statusTextForBuyer = `đã được giao thành công đến bạn! Dép đi có êm và vừa chân không ạ? Xưởng Tuyết Nhung bảo hành chính hãng 12 tháng da & đế. Nếu cần đổi size cứ nhắn xưởng hỗ trợ ngay nhé!`;
+    } else if (status.includes('Đang giao')) {
+      statusTextForBuyer = `đang trên đường giao đến bạn. Bạn chú ý điện thoại để shipper liên hệ nhé. Khi nhận hàng bạn ĐƯỢC MỞ HỘP KIỂM TRA VÀ ĐI THỬ VỪA CHÂN mới thanh toán ạ!`;
+    } else if (status.includes('đóng')) {
+      statusTextForBuyer = `đã được thợ xưởng kiểm tra da & đóng hộp dép hoàn tất, đang chờ bàn giao cho bên bưu tá để gửi đi sớm nhất!`;
+    } else if (isPaid) {
+      statusTextForBuyer = `đã được xưởng xác nhận NHẬN ĐỦ TIỀN CHUYỂN KHOẢN (0đ khi nhận hàng). Thợ đang chuẩn bị dép để đóng gói cho bạn nhé!`;
+    } else {
+      statusTextForBuyer = `đã được xưởng tiếp nhận. Thợ đang chuẩn bị mẫu dép đúng size để đóng gói gửi đi cho bạn nhé!`;
+    }
+
+    const itemsSummary = Array.isArray(order.items) && order.items.length > 0
+      ? order.items.map(i => `${i.name} (Size ${i.size}) x${i.quantity}`).join(', ')
+      : (order.itemsText || 'Dép da nam thủ công');
+
+    const buyerZaloMsg = `Dạ chào bạn ${order.name}! Xưởng Dép Nam Tuyết Nhung thông báo đơn hàng #${order.orderId} của bạn ${statusTextForBuyer}\n` +
+      `• Sản phẩm: ${itemsSummary}\n` +
+      `• Tổng thanh toán: ${isPaid ? 'ĐÃ THANH TOÁN (0đ khi nhận)' : formatCurrency(order.finalTotal || 0) + ' (Thu COD khi nhận)'}\n` +
+      `• Nơi nhận: ${order.address}\n\n` +
+      `Cảm ơn bạn đã tin tưởng xưởng dép thủ công Tuyết Nhung! Hotline: 0962.860.721`;
+
+    const buyerZaloUrl = `https://zalo.me/${cleanBuyerPhone}?text=${encodeURIComponent(buyerZaloMsg)}`;
+    const workshopZaloUrl = `https://zalo.me/0962860721?text=${encodeURIComponent('Dạ chào xưởng Tuyết Nhung, tôi cần hỗ trợ về đơn hàng #' + order.orderId + ' (' + order.name + ' - ' + order.phone + ')')}`;
+
 
     return `
       <div class="bg-white rounded-2xl border-2 border-amber-800/20 p-4 sm:p-5 shadow-sm space-y-4 mb-3">
@@ -1665,13 +1690,42 @@ function searchOrderTracking(query) {
           </div>
         </div>
 
-        <!-- Nút hỗ trợ nhanh -->
-        <div class="flex items-center gap-2 pt-1">
-          <a href="${zaloUrl}" target="_blank" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors">
-            <span>💬 Nhắn Zalo Về Đơn Này</span>
+        <!-- Nút hỗ trợ & gửi tin nhắn trạng thái -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+          <a href="${buyerZaloUrl}" target="_blank" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors" title="Mở Zalo gửi cập nhật trạng thái đơn đến người mua ${order.phone}">
+            <span>💬 Nhắn Zalo Người Mua (${order.phone})</span>
           </a>
-          <a href="tel:0962860721" class="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors border border-stone-200">
-            <span>📞 Gọi Xưởng</span>
+          <div class="flex items-center gap-2">
+            <a href="${workshopZaloUrl}" target="_blank" class="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs flex items-center justify-center gap-1 transition-colors border border-amber-200" title="Nhắn tin với Zalo Xưởng Tuyết Nhung">
+              <span>💬 Zalo Xưởng</span>
+            </a>
+            <a href="tel:0962860721" class="px-3.5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-1 transition-colors border border-stone-200" title="Gọi Hotline xưởng">
+              <span>📞 Gọi Xưởng</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="text-xs text-stone-500 mb-2 flex items-center justify-between">
+      <span>Tìm thấy <strong>${matchedOrders.length}</strong> đơn hàng:</span>
+      <span class="text-[11px] text-stone-400">Từ khóa: "${rawQuery}"</span>
+    </div>
+    ${ordersHtml}
+  `;
+  return;
+}
+
+/* old block
+  const dummy = `
+        <div class="flex items-center gap-2 pt-1">
+
+
+          </a>
+
+
           </a>
         </div>
       </div>
@@ -1686,6 +1740,8 @@ function searchOrderTracking(query) {
     ${ordersHtml}
   `;
 }
+
+*/
 
 // Xuất hàm ra window
 window.openOrderTrackingModal = openOrderTrackingModal;
