@@ -741,6 +741,25 @@
         <div class="flex items-center gap-2 flex-wrap">
           <button 
             type="button" 
+            onclick="openSupabaseModal()" 
+            class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+            title="Cài đặt kết nối cơ sở dữ liệu Supabase Realtime"
+          >
+            <span>⚡ Cài Đặt Supabase</span>
+            <span id="supabase-status-pill" class="ml-1 px-1.5 py-0.5 rounded-full text-[9px] bg-white/20 text-white font-black">Chưa kết nối</span>
+          </button>
+
+          <button 
+            type="button" 
+            onclick="syncOrdersFromSupabase()" 
+            class="px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 font-bold text-xs border border-teal-300 flex items-center gap-1.5 transition-colors shadow-2xs"
+            title="Đồng bộ ngay đơn hàng từ Supabase Database"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span>Lấy Đơn Supabase</span>
+          </button>
+          <button 
+            type="button" 
             onclick="syncOrdersFromGoogleSheets()" 
             class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-300 flex items-center gap-1.5 transition-colors shadow-2xs"
             title="Đồng bộ danh sách đơn mới nhất từ Google Sheets"
@@ -1391,6 +1410,98 @@
     </div>
   </div>
 
+  <!-- ================= MODAL CẤU HÌNH SUPABASE REALTIME DATABASE ================= -->
+  <div id="supabase-config-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative my-6 text-xs max-h-[92vh] overflow-y-auto space-y-4">
+      <button onclick="closeSupabaseModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700 font-bold text-lg">✕</button>
+
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-900 uppercase">Database Realtime</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">⚡ Miễn Phí 100%</span>
+        </div>
+        <h3 class="text-xl font-black text-stone-900 font-serif-heading mt-1">Kết Nối Cơ Sở Dữ Liệu Supabase</h3>
+        <p class="text-stone-500 text-[11px]">Đơn hàng đặt từ điện thoại hay bất kỳ đâu sẽ tự động phát chuông và nhảy ngay vào Dashboard này!</p>
+      </div>
+
+      <!-- Hướng dẫn 3 bước -->
+      <div class="space-y-3">
+        <div class="p-3.5 bg-stone-50 border border-stone-200 rounded-2xl space-y-1.5">
+          <h4 class="font-bold text-stone-800 text-xs flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-stone-800 text-white flex items-center justify-center text-[10px]">1</span>
+            <span>Tạo dự án trên Supabase:</span>
+          </h4>
+          <p class="text-stone-600 text-[11px] leading-relaxed">
+            Mở <a href="https://supabase.com" target="_blank" class="text-teal-700 font-bold underline">supabase.com</a> &gt; Bấm <strong>Start your project</strong> &gt; Chọn <strong>Sign in with GitHub</strong> (đăng nhập 1-click không cần tạo mật khẩu) &gt; Bấm <strong>New Project</strong> (chọn khu vực Singapore).
+          </p>
+        </div>
+
+        <div class="p-3.5 bg-stone-50 border border-stone-200 rounded-2xl space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-stone-800 text-xs flex items-center gap-1.5">
+              <span class="w-5 h-5 rounded-full bg-stone-800 text-white flex items-center justify-center text-[10px]">2</span>
+              <span>Tạo bảng đơn hàng orders (chạy mã SQL):</span>
+            </h4>
+            <button onclick="copySupabaseSqlCode()" type="button" class="px-2.5 py-1 bg-teal-800 hover:bg-teal-900 text-white rounded-lg text-[10px] font-bold flex items-center gap-1">
+              <span>📋 Sao chép mã SQL</span>
+            </button>
+          </div>
+          <p class="text-stone-600 text-[11px]">Vào mục <strong>SQL Editor</strong> ở thanh menu bên trái Supabase &gt; Bấm nút "Sao chép mã SQL" ở trên rồi dán vào &gt; Bấm nút xanh <strong>Run</strong>.</p>
+          <textarea id="supabase-sql-code-box" readonly rows="4" class="w-full p-2.5 bg-stone-900 text-emerald-400 font-mono text-[10px] rounded-xl focus:outline-none"></textarea>
+        </div>
+
+        <div class="p-3.5 bg-teal-50/70 border border-teal-200 rounded-2xl space-y-2">
+          <h4 class="font-bold text-teal-950 text-xs flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-teal-800 text-white flex items-center justify-center text-[10px]">3</span>
+            <span>Lấy Project URL và Anon Public Key dán vào đây:</span>
+          </h4>
+          <p class="text-stone-600 text-[11px]">Trên Supabase, vào <strong>Project Settings (biểu tượng bánh răng)</strong> &gt; <strong>API</strong> &gt; Copy 2 ô sau:</p>
+          
+          <div class="space-y-2 pt-1">
+            <div>
+              <label class="block font-bold text-stone-700 text-[11px] mb-1">Project URL (Địa chỉ kết nối):</label>
+              <input 
+                type="text" 
+                id="supabase-url-input" 
+                placeholder="VD: https://xyzcompany.supabase.co" 
+                class="w-full px-3 py-2 rounded-xl border border-stone-300 font-mono text-xs focus:outline-none focus:border-teal-700 bg-white"
+              />
+            </div>
+            <div>
+              <label class="block font-bold text-stone-700 text-[11px] mb-1">Project API Key (anon public):</label>
+              <input 
+                type="text" 
+                id="supabase-key-input" 
+                placeholder="VD: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
+                class="w-full px-3 py-2 rounded-xl border border-stone-300 font-mono text-xs focus:outline-none focus:border-teal-700 bg-white"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-stone-200 flex items-center justify-between gap-2 flex-wrap">
+        <div class="flex items-center gap-2">
+          <button onclick="testSupabaseConnection()" type="button" class="px-3.5 py-2 rounded-xl bg-teal-50 text-teal-900 border border-teal-200 font-bold text-xs hover:bg-teal-100 flex items-center gap-1">
+            <span>🚀 Thử Kết Nối & Đọc Đơn</span>
+          </button>
+          <button onclick="testOrderAlertSound()" type="button" class="px-3 py-2 rounded-xl bg-stone-100 text-stone-700 font-bold text-xs hover:bg-stone-200" title="Thử tiếng chuông báo khi có đơn mới">
+            <span>🔔 Thử Chuông Báo</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="closeSupabaseModal()" type="button" class="px-4 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 font-bold text-xs">
+            Đóng
+          </button>
+          <button onclick="saveSupabaseSettings()" type="button" class="px-5 py-2 rounded-xl bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs shadow-md">
+            💾 Lưu Cài Đặt
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= MODAL TẠO ĐƠN HÀNG THỦ CÔNG ================= -->
   <div id="manual-order-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
     <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative my-6 text-xs max-h-[90vh] overflow-y-auto">
@@ -1474,6 +1585,7 @@
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2"></div>
 
   <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/products.js"></script>
   <script src="assets/js/storage.js"></script>
   <script>
@@ -1708,6 +1820,10 @@
       initCategoriesList();
       await loadHomepageDataIntoAdmin();
       await loadOrdersData();
+      syncOrdersFromGoogleSheets(true);
+      updateSupabaseStatusPill();
+      syncOrdersFromSupabase(true);
+      initSupabaseRealtime();
     });
 
     // ================= LOGIC QUẢN LÝ DANH MỤC SẢN PHẨM =================
@@ -2093,6 +2209,11 @@
       } else if (tab === 'orders') {
         if (ordersContent) ordersContent.classList.remove('hidden');
         if (ordersBtn) ordersBtn.className = activeBtn;
+        syncOrdersFromGoogleSheets(true);
+      updateSupabaseStatusPill();
+      syncOrdersFromSupabase(true);
+      initSupabaseRealtime();
+
         renderOrdersTable();
       }
     }
@@ -2472,6 +2593,7 @@ function doGet(e) {
       saveOrdersData();
       renderOrdersTable();
       showToast(`Đã duyệt đơn #${orderId}: Đã nhận đủ tiền ACB! Bấm [💬 Zalo] để báo khách.`, 'success');
+      updateOrderPaymentOnSupabase(orderId, true);
 
       const modal = document.getElementById('print-order-modal');
       if (modal && !modal.classList.contains('hidden') && currentPrintOrderId === orderId) {
@@ -2491,6 +2613,7 @@ function doGet(e) {
       saveOrdersData();
       renderOrdersTable();
       showToast(`Đã chuyển đơn #${orderId} sang thu COD khi nhận: ${formatCurrency(order.finalTotal)}!`, 'info');
+      updateOrderPaymentOnSupabase(orderId, false);
 
       const modal = document.getElementById('print-order-modal');
       if (modal && !modal.classList.contains('hidden') && currentPrintOrderId === orderId) {
@@ -2507,6 +2630,7 @@ function doGet(e) {
       saveOrdersData();
       renderOrdersTable();
       showToast(`Đã chuyển đơn #${orderId} sang "${newStatus}"! Bấm [💬 Zalo] để gửi tin báo khách.`, 'success');
+      updateOrderStatusOnSupabase(orderId, newStatus);
     }
 
     // Xóa đơn hàng
@@ -2517,6 +2641,7 @@ function doGet(e) {
       saveOrdersData();
       renderOrdersTable();
       showToast(`Đã xóa đơn #${orderId}!`, 'info');
+      deleteOrderOnSupabase(orderId);
     }
 
     // Xóa toàn bộ lịch sử đơn
@@ -3016,6 +3141,317 @@ function doGet(e) {
     }
 
     */
+    // ================= SUPABASE REALTIME DATABASE =================
+    const SUPABASE_ORDERS_SQL = `-- TẠO BẢNG ĐƠN HÀNG CHO XƯỞNG DÉP NAM TUYẾT NHUNG
+create table if not exists public.orders (
+  id bigint generated by default as identity primary key,
+  order_id text unique not null,
+  name text not null,
+  phone text not null,
+  address text not null,
+  note text,
+  payment_method text default 'COD',
+  payment_status text default 'Chờ kiểm tra',
+  is_paid boolean default false,
+  items jsonb default '[]'::jsonb,
+  final_total numeric default 0,
+  status text default 'Chờ xác nhận',
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Bật bảo mật cấp hàng (Row Level Security)
+alter table public.orders enable row level security;
+
+-- Cho phép đọc và ghi đơn hàng công khai qua Anon key
+create policy "Cho phép gửi đơn hàng" on public.orders for insert with check (true);
+create policy "Cho phép xem đơn hàng" on public.orders for select using (true);
+create policy "Cho phép cập nhật đơn hàng" on public.orders for update using (true);
+create policy "Cho phép xóa đơn hàng" on public.orders for delete using (true);
+
+-- Bật tính năng Realtime truyền tức thì cho bảng orders
+alter publication supabase_realtime add table public.orders;
+`;
+
+    function getSupabaseConfig() {
+      const url = localStorage.getItem('tuyetnhung_supabase_url') || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.url : '') || '';
+      const anonKey = localStorage.getItem('tuyetnhung_supabase_key') || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.anonKey : '') || '';
+      return { url: url.trim(), anonKey: anonKey.trim() };
+    }
+
+    function getSupabaseClient() {
+      const cfg = getSupabaseConfig();
+      if (!cfg.url || !cfg.anonKey) return null;
+      if (typeof window.supabase === 'undefined' || !window.supabase.createClient) return null;
+      try {
+        return window.supabase.createClient(cfg.url, cfg.anonKey);
+      } catch (e) {
+        console.warn('Lỗi khởi tạo Supabase:', e);
+        return null;
+      }
+    }
+
+    function updateSupabaseStatusPill() {
+      const pill = document.getElementById('supabase-status-pill');
+      if (!pill) return;
+      const cfg = getSupabaseConfig();
+      if (cfg.url && cfg.anonKey) {
+        pill.innerText = '🟢 Realtime';
+        pill.className = 'ml-1 px-1.5 py-0.5 rounded-full text-[9px] bg-emerald-400 text-emerald-950 font-black';
+      } else {
+        pill.innerText = 'Chưa kết nối';
+        pill.className = 'ml-1 px-1.5 py-0.5 rounded-full text-[9px] bg-white/20 text-white font-black';
+      }
+    }
+
+    function openSupabaseModal() {
+      const modal = document.getElementById('supabase-config-modal');
+      const sqlBox = document.getElementById('supabase-sql-code-box');
+      const urlInput = document.getElementById('supabase-url-input');
+      const keyInput = document.getElementById('supabase-key-input');
+      if (!modal) return;
+
+      if (sqlBox) sqlBox.value = SUPABASE_ORDERS_SQL;
+      const cfg = getSupabaseConfig();
+      if (urlInput) urlInput.value = cfg.url || 'https://rtkoilugjgzfmxlpsboh.supabase.co';
+      if (keyInput) keyInput.value = cfg.anonKey || 'sb_publishable_xtiiivDfkf6wS4LynpIkzg_lSPoNpyL';
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeSupabaseModal() {
+      const modal = document.getElementById('supabase-config-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copySupabaseSqlCode() {
+      const sqlBox = document.getElementById('supabase-sql-code-box');
+      if (!sqlBox) return;
+      sqlBox.select();
+      navigator.clipboard.writeText(SUPABASE_ORDERS_SQL).then(() => {
+        showToast('📋 Đã sao chép toàn bộ mã SQL tạo bảng orders!', 'success');
+      }).catch(() => {
+        showToast('Vui lòng bôi đen và copy thủ công trong ô màu đen!', 'info');
+      });
+    }
+
+    function saveSupabaseSettings() {
+      const urlInput = document.getElementById('supabase-url-input');
+      const keyInput = document.getElementById('supabase-key-input');
+      if (!urlInput || !keyInput) return;
+
+      const url = urlInput.value.trim();
+      const key = keyInput.value.trim();
+
+      if (!url || !key) {
+        showToast('Vui lòng điền đủ Project URL và Anon Key!', 'error');
+        return;
+      }
+
+      localStorage.setItem('tuyetnhung_supabase_url', url);
+      localStorage.setItem('tuyetnhung_supabase_key', key);
+      updateSupabaseStatusPill();
+      showToast('🎉 Đã lưu cấu hình Supabase! Đang kết nối thử...', 'success');
+      closeSupabaseModal();
+
+      syncOrdersFromSupabase(false);
+      initSupabaseRealtime();
+    }
+
+    async function testSupabaseConnection() {
+      const urlInput = document.getElementById('supabase-url-input');
+      const keyInput = document.getElementById('supabase-key-input');
+      const url = urlInput ? urlInput.value.trim() : '';
+      const key = keyInput ? keyInput.value.trim() : '';
+
+      if (!url || !key) {
+        showToast('Vui lòng nhập Project URL và Anon Key trước khi test!', 'error');
+        return;
+      }
+
+      showToast('Đang kiểm tra kết nối tới Supabase...', 'info');
+
+      try {
+        if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+          const client = window.supabase.createClient(url, key);
+          const { data, error } = await client.from('orders').select('id').limit(1);
+          if (error) throw error;
+          showToast('🎉 KẾT NỐI SUPABASE THÀNH CÔNG! Bảng orders sẵn sàng hoạt động.', 'success');
+          return;
+        }
+
+        const res = await fetch(`${url.replace(/\/$/, '')}/rest/v1/orders?limit=1`, {
+          headers: {
+            'apikey': key,
+            'Authorization': `Bearer ${key}`
+          }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        showToast('🎉 KẾT NỐI SUPABASE THÀNH CÔNG! Bảng orders sẵn sàng hoạt động.', 'success');
+      } catch (err) {
+        console.error('Lỗi test Supabase:', err);
+        showToast('Không thể kết nối! Kiểm tra lại URL, Key hoặc bạn đã chạy mã SQL tạo bảng chưa.', 'error');
+      }
+    }
+
+    function playOrderAlertSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+
+        const playTone = (freq, start, duration, vol) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(vol, start);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + duration);
+        };
+
+        playTone(659.25, now, 0.35, 0.3);
+        playTone(830.61, now + 0.15, 0.45, 0.35);
+        playTone(987.77, now + 0.32, 0.75, 0.4);
+      } catch (e) {
+        console.warn('Không thể phát âm thanh:', e);
+      }
+    }
+
+    function testOrderAlertSound() {
+      playOrderAlertSound();
+      showToast('🔔 Đã phát thử tiếng chuông báo đơn mới!', 'info');
+    }
+
+    async function syncOrdersFromSupabase(isSilent = false) {
+      const client = getSupabaseClient();
+      if (!client) {
+        if (!isSilent) {
+          showToast('Chưa cấu hình Supabase! Bấm "⚡ Cài Đặt Supabase" để kết nối.', 'info');
+          openSupabaseModal();
+        }
+        return;
+      }
+
+      if (!isSilent) showToast('Đang lấy đơn hàng từ Supabase...', 'info');
+
+      try {
+        const { data, error } = await client
+          .from('orders')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (Array.isArray(data) && data.length > 0) {
+          let addedCount = 0;
+          data.forEach(row => {
+            const formatted = {
+              orderId: row.order_id,
+              name: row.name,
+              phone: row.phone,
+              address: row.address,
+              note: row.note || '',
+              paymentMethod: (row.payment_method && row.payment_method.includes('VietQR')) ? 'banking' : (row.payment_method || 'COD'),
+              paymentText: row.payment_method || 'COD',
+              paymentStatus: row.payment_status || (row.is_paid ? 'Đã thanh toán' : 'Chờ kiểm tra'),
+              isPaid: !!row.is_paid,
+              items: Array.isArray(row.items) ? row.items : [],
+              finalTotal: Number(row.final_total) || 0,
+              status: row.status || 'Chờ xác nhận',
+              createdAt: new Date(row.created_at).toLocaleString('vi-VN')
+            };
+
+            const idx = ordersList.findIndex(o => o.orderId === formatted.orderId);
+            if (idx === -1) {
+              ordersList.unshift(formatted);
+              addedCount++;
+            } else {
+              ordersList[idx].status = formatted.status;
+              ordersList[idx].isPaid = formatted.isPaid;
+              ordersList[idx].paymentStatus = formatted.paymentStatus;
+            }
+          });
+
+          saveOrdersData();
+          renderOrdersTable();
+          updateOrdersStats();
+
+          if (addedCount > 0) {
+            showToast(`🎉 Đã đồng bộ ${addedCount} đơn hàng từ Supabase!`, 'success');
+          } else if (!isSilent) {
+            showToast('Danh sách đơn hàng trên Supabase đã cập nhật mới nhất.', 'info');
+          }
+        } else if (!isSilent) {
+          showToast('Supabase chưa có đơn hàng nào.', 'info');
+        }
+      } catch (err) {
+        console.warn('Lỗi đọc đơn từ Supabase:', err);
+        if (!isSilent) showToast('Không thể đọc đơn từ Supabase: ' + (err.message || 'Lỗi mạng'), 'error');
+      }
+    }
+
+    let supabaseRealtimeChannel = null;
+    function initSupabaseRealtime() {
+      const client = getSupabaseClient();
+      if (!client) return;
+
+      if (supabaseRealtimeChannel) {
+        try { client.removeChannel(supabaseRealtimeChannel); } catch(e) {}
+      }
+
+      try {
+        supabaseRealtimeChannel = client.channel('public:orders')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, payload => {
+            playOrderAlertSound();
+            showToast(`🔔 CÓ ĐƠN HÀNG MỚI #${payload.new.order_id} TỪ ${payload.new.name}!`, 'success');
+            syncOrdersFromSupabase(true);
+              })
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, payload => {
+            syncOrdersFromSupabase(true);
+              })
+          .subscribe();
+      } catch(e) {
+        console.warn('Lỗi khởi tạo Realtime:', e);
+      }
+    }
+
+    async function updateOrderStatusOnSupabase(orderId, newStatus) {
+      const client = getSupabaseClient();
+      if (!client) return;
+      try {
+        await client.from('orders').update({ status: newStatus }).eq('order_id', orderId);
+      } catch(e) {
+        console.warn('Lỗi cập nhật trạng thái Supabase:', e);
+      }
+    }
+
+    async function updateOrderPaymentOnSupabase(orderId, isPaid) {
+      const client = getSupabaseClient();
+      if (!client) return;
+      try {
+        await client.from('orders').update({
+          is_paid: isPaid,
+          payment_status: isPaid ? 'Đã thanh toán' : 'Thu tiền COD'
+        }).eq('order_id', orderId);
+      } catch(e) {
+        console.warn('Lỗi cập nhật thanh toán Supabase:', e);
+      }
+    }
+
+    async function deleteOrderOnSupabase(orderId) {
+      const client = getSupabaseClient();
+      if (!client) return;
+      try {
+        await client.from('orders').delete().eq('order_id', orderId);
+      } catch(e) {
+        console.warn('Lỗi xóa đơn Supabase:', e);
+      }
+    }
+
     // Modal Google Sheets Webhook
     function openGoogleSheetsModal() {
       const modal = document.getElementById('sheets-config-modal');
@@ -3024,7 +3460,7 @@ function doGet(e) {
       if (!modal) return;
 
       if (codeBox) codeBox.value = APPS_SCRIPT_TEMPLATE;
-      const savedUrl = localStorage.getItem('tuyetnhung_sheets_webhook') || '';
+      const savedUrl = localStorage.getItem('tuyetnhung_sheets_webhook') || (typeof GOOGLE_SHEETS_WEBHOOK_URL !== 'undefined' ? GOOGLE_SHEETS_WEBHOOK_URL : '');
       if (urlInput) urlInput.value = savedUrl;
 
       modal.classList.remove('hidden');
@@ -3098,15 +3534,18 @@ function doGet(e) {
     }
 
     // Đồng bộ đơn hàng từ Google Sheets
-    async function syncOrdersFromGoogleSheets() {
-      const webhookUrl = localStorage.getItem('tuyetnhung_sheets_webhook');
+    async function syncOrdersFromGoogleSheets(isSilent = false) {
+      let webhookUrl = localStorage.getItem('tuyetnhung_sheets_webhook') || (typeof GOOGLE_SHEETS_WEBHOOK_URL !== 'undefined' ? GOOGLE_SHEETS_WEBHOOK_URL : '');
       if (!webhookUrl || !webhookUrl.trim()) {
-        showToast('Chưa cài đặt Webhook Google Sheets! Bấm "⚙️ Cài Đặt Sheets" trước nhé.', 'info');
-        openGoogleSheetsModal();
+        if (!isSilent) {
+          showToast('Chưa cài đặt Webhook Google Sheets! Bấm "⚙️ Cài Đặt Sheets" trước nhé.', 'info');
+          openGoogleSheetsModal();
+            }
+
         return;
       }
 
-      showToast('Đang đồng bộ đơn hàng từ Google Sheets...', 'info');
+      if (!isSilent) showToast('Đang đồng bộ đơn hàng từ Google Sheets...', 'info');
 
       try {
         const res = await fetch(webhookUrl.trim());
@@ -3124,18 +3563,22 @@ function doGet(e) {
 
           saveOrdersData();
           renderOrdersTable();
-          showToast(`Đã đồng bộ thành công! Có ${addedCount} đơn mới từ Google Sheets.`, 'success');
+          if (addedCount > 0) {
+            showToast(`🎉 Đã đồng bộ ${addedCount} đơn hàng mới từ Google Sheets!`, 'success');
+          } else if (!isSilent) {
+            showToast('Google Sheets chưa có đơn hàng nào mới.', 'info');
+          }
         } else {
-          showToast('Google Sheets chưa có dòng đơn hàng nào mới.', 'info');
+          if (!isSilent) showToast('Google Sheets chưa có dòng đơn hàng nào mới.', 'info');
         }
       } catch (err) {
         console.warn('Lỗi đọc đơn từ Sheets:', err);
-        showToast('Không thể đọc dữ liệu từ Sheets! Trình duyệt vẫn lưu đơn an toàn trên máy.', 'info');
+        if (!isSilent) showToast('Không thể đọc dữ liệu từ Sheets! Kiểm tra lại link Webhook.', 'error');
       }
     }
 
     async function sendOrderToGoogleSheets(order) {
-      const webhookUrl = localStorage.getItem('tuyetnhung_sheets_webhook');
+      let webhookUrl = localStorage.getItem('tuyetnhung_sheets_webhook') || (typeof GOOGLE_SHEETS_WEBHOOK_URL !== 'undefined' ? GOOGLE_SHEETS_WEBHOOK_URL : '');
       if (!webhookUrl || !webhookUrl.trim()) return;
 
       try {
@@ -4007,6 +4450,13 @@ const CATEGORIES = ${JSON.stringify(exportCats, null, 2)};
 const STORE_INFO = ${JSON.stringify(STORE_INFO, null, 2)};
 
 const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
+
+const GOOGLE_SHEETS_WEBHOOK_URL = ${JSON.stringify(localStorage.getItem('tuyetnhung_sheets_webhook') || '')};
+
+const SUPABASE_CONFIG = ${JSON.stringify({
+  url: localStorage.getItem('tuyetnhung_supabase_url') || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.url : '') || '',
+  anonKey: localStorage.getItem('tuyetnhung_supabase_key') || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.anonKey : '') || ''
+}, null, 2)};
 `;
       const blob = new Blob([code], { type: 'application/javascript;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -4189,6 +4639,13 @@ const CATEGORIES = ${JSON.stringify(exportCats, null, 2)};
 const STORE_INFO = ${JSON.stringify(STORE_INFO, null, 2)};
 
 const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
+
+const GOOGLE_SHEETS_WEBHOOK_URL = ${JSON.stringify(localStorage.getItem('tuyetnhung_sheets_webhook') || '')};
+
+const SUPABASE_CONFIG = ${JSON.stringify({
+  url: localStorage.getItem('tuyetnhung_supabase_url') || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.url : '') || '',
+  anonKey: localStorage.getItem('tuyetnhung_supabase_key') || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.anonKey : '') || ''
+}, null, 2)};
 `;
 
       try {

@@ -1129,6 +1129,7 @@ function submitOrder(event) {
   // Hiển thị modal thành công
   // 2. Gửi lên Google Sheets nếu đã cài đặt Webhook
   sendOrderToGoogleSheets(orderData);
+  sendOrderToSupabase(orderData);
 
   // 3. Tự động chuyển hướng mở Zalo sau 1 giây
   const zaloPhone = (typeof STORE_INFO !== 'undefined' && STORE_INFO.zalo) ? STORE_INFO.zalo : '0962860721';
@@ -1196,6 +1197,7 @@ function sendOrderToZalo() {
 
 
   sendOrderToGoogleSheets(orderData);
+  sendOrderToSupabase(orderData);
 
   cart = [];
   saveCart();
@@ -1245,6 +1247,60 @@ async function sendOrderToGoogleSheets(order) {
     console.log('Đã gửi đơn hàng lên Google Sheets!');
   } catch (err) {
     console.warn('Lỗi khi gửi đơn lên Google Sheets:', err);
+  }
+}
+
+// Gửi đơn hàng lên Supabase Database (Realtime Sync)
+async function sendOrderToSupabase(order) {
+  let url = (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.url) ? SUPABASE_CONFIG.url : localStorage.getItem('tuyetnhung_supabase_url');
+  let anonKey = (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.anonKey) ? SUPABASE_CONFIG.anonKey : localStorage.getItem('tuyetnhung_supabase_key');
+  
+  if (!url || !anonKey || !url.trim() || !anonKey.trim()) return;
+
+  const orderPayload = {
+    order_id: order.orderId,
+    name: order.name,
+    phone: order.phone,
+    address: order.address,
+    note: order.note || '',
+    payment_method: order.paymentText || (order.paymentMethod === 'banking' ? 'Chuyển khoản VietQR' : 'COD'),
+    payment_status: order.paymentStatus || (order.isPaid ? 'Đã thanh toán' : (order.paymentMethod === 'banking' ? 'Chờ kiểm tra tiền' : 'Thu tiền COD')),
+    is_paid: !!order.isPaid,
+    items: Array.isArray(order.items) ? order.items : [],
+    final_total: Number(order.finalTotal) || 0,
+    status: order.status || 'Chờ xác nhận'
+  };
+
+  // 1. Thử gửi qua Supabase Client SDK nếu có
+  if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+    try {
+      const client = window.supabase.createClient(url.trim(), anonKey.trim());
+      const { error } = await client.from('orders').insert([orderPayload]);
+      if (!error) {
+        console.log('✅ Đã lưu đơn lên Supabase Database thành công!');
+        return;
+      }
+    } catch(err) {
+      console.warn('Lỗi Supabase SDK, chuyển sang REST API:', err);
+    }
+  }
+
+  // 2. Dự phòng: Gửi thẳng qua Supabase REST API (hoạt động 100% không phụ thuộc SDK CDN)
+  try {
+    const endpoint = `${url.trim().replace(/\/$/, '')}/rest/v1/orders`;
+    await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': anonKey.trim(),
+        'Authorization': `Bearer ${anonKey.trim()}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(orderPayload)
+    });
+    console.log('✅ Đã lưu đơn lên Supabase qua REST API!');
+  } catch (e) {
+    console.warn('Lỗi khi gửi đơn lên Supabase REST API:', e);
   }
 }
 
