@@ -105,7 +105,7 @@ async function applyHomepageConfig() {
 
   if (isCustomHero) {
     if (heroImg && config.heroImage) heroImg.src = config.heroImage;
-    if (heroName && config.heroTitle) heroName.innerText = config.heroTitle;
+    if (heroName && (config.heroTitle || config.heroName)) heroName.innerText = config.heroTitle || config.heroName;
     if (heroPrice && config.heroPrice) heroPrice.innerText = formatCurrency(config.heroPrice);
     if (heroOrigPrice && config.heroOriginalPrice) heroOrigPrice.innerText = formatCurrency(config.heroOriginalPrice);
   } else if (loadedProducts && loadedProducts.length > 0 && loadedProducts[0].images && loadedProducts[0].images.length > 0) {

@@ -207,7 +207,7 @@
         <p class="text-xs text-stone-500">Chỉnh sửa sản phẩm, đổi giá, thêm nhiều ảnh góc chụp và tùy chỉnh ảnh Banner trang chủ</p>
       </div>
 
-      <div class="flex items-center gap-3"><div style="display:none">
+      <div style="display:none">
 
 
 
@@ -220,7 +220,7 @@
 
 
         </button>
-</div><div id="admin-user-badge-box" class="flex items-center gap-1.5 px-3 py-2 bg-amber-50 rounded-xl border border-amber-200 text-xs shadow-2xs"><span class="text-stone-500">Tài khoản:</span><strong id="admin-user-display" class="text-amber-950 font-black">admin</strong></div>
+      <div class="flex items-center gap-2 flex-wrap"><div id="admin-user-badge-box" class="flex items-center gap-1.5 px-3 py-2 bg-amber-50 rounded-xl border border-amber-200 text-xs shadow-2xs"><span class="text-stone-500">Tài khoản:</span><strong id="admin-user-display" class="text-amber-950 font-black">admin</strong></div>
         <button id="admin-change-pwd-btn" onclick="openChangePasswordModal()" class="px-3.5 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50 flex items-center gap-1.5 transition-colors shadow-2xs" title="Đổi mật khẩu tài khoản quản trị"><span>🔑 Đổi Mật Khẩu</span></button>
         <button id="admin-logout-btn" onclick="handleAdminLogout()" class="px-3.5 py-2.5 rounded-xl bg-stone-100 hover:bg-rose-50 text-stone-700 hover:text-rose-700 font-bold text-xs flex items-center gap-1.5 transition-colors border border-stone-200 shadow-2xs" title="Đăng xuất khỏi trang quản trị"><span>🚪 Đăng Xuất</span></button>
         <a href="index.html" target="_blank" class="px-4 py-2.5 rounded-xl border border-amber-900 text-amber-900 font-bold text-xs hover:bg-amber-50 flex items-center gap-1.5 transition-colors">
@@ -241,8 +241,8 @@
       </div>
     </div>
 
-    <!-- KHUNG HƯỚNG DẪN ĐỒNG BỘ CHO KHÁCH & ĐIỆN THOẠI KHÁC XEM -->
-    <div class="bg-gradient-to-r from-emerald-50 via-amber-50 to-orange-50 border-2 border-emerald-500/60 rounded-2xl p-5 mb-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+
+    <div class="hidden">
       <div class="space-y-1">
         <div class="flex items-center gap-2">
           <span class="px-2 py-0.5 rounded bg-emerald-700 text-white font-black text-[10px] uppercase tracking-wider">Tự Động 100%</span>
@@ -305,7 +305,7 @@
       <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden mb-6">
         
         <div class="p-4 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-stone-50">
-          <div class="flex items-center gap-3"><div style="display:none">
+          <div style="display:none">
 
 
 
@@ -318,7 +318,7 @@
 
 
         </button>
-</div><h3 class="font-bold text-stone-800 text-sm" id="table-title">Danh Sách Dép Nam Đang Bán</h3>
+<h3 class="font-bold text-stone-800 text-sm" id="table-title">Danh Sách Dép Nam Đang Bán</h3>
             <select id="filter-admin-category" onchange="filterAdminTableByCategory(this.value)" class="px-2.5 py-1 rounded-lg border border-stone-300 text-xs font-semibold bg-white text-stone-700 focus:outline-none focus:border-amber-800">
               <option value="all">🔍 Tất cả danh mục</option>
             </select>
@@ -350,7 +350,7 @@
       </div>
 
       <!-- HƯỚNG DẪN XUẤT FILE -->
-      <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-5 text-xs text-stone-700 space-y-2">
+      <div class="hidden">
         <h4 class="font-bold text-amber-950 text-sm flex items-center gap-2">
           <span>💡 Lưu Ý Quan Trọng:</span>
         </h4>
@@ -692,7 +692,7 @@
       <!-- PHẦN 3: CÀI ĐẶT TRỢ LÝ ẢO CHATBOT TƯ VẤN 24/7 -->
       <div class="bg-white p-6 sm:p-7 rounded-3xl border border-stone-200 shadow-sm space-y-5">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-stone-100 pb-4 gap-3">
-          <div class="flex items-center gap-3"><div style="display:none">
+          <div style="display:none">
 
 
 
@@ -705,7 +705,7 @@
 
 
         </button>
-</div><div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-stone-900 via-amber-900 to-amber-700 text-white flex items-center justify-center font-black text-lg shadow-md border border-amber-300/40">
+<div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-stone-900 via-amber-900 to-amber-700 text-white flex items-center justify-center font-black text-lg shadow-md border border-amber-300/40">
               🤖
             </div>
             <div>
@@ -760,7 +760,7 @@
           </div>
 
           <!-- Tùy chọn âm thanh thông báo -->
-          <div class="flex items-center gap-3"><div style="display:none">
+          <div style="display:none">
 
 
 
@@ -902,60 +902,60 @@
         </div>
 
         <!-- DÒNG 2: BÁO CÁO DOANH THU & CHÊNH LỆCH -->
-        <div class="bg-gradient-to-r from-stone-900 via-amber-950 to-stone-900 p-4 sm:p-5 rounded-2xl text-white shadow-sm border border-amber-900/40">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-white/10 gap-2">
+        <div class="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/90 shadow-xs space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-stone-100 gap-2">
             <div class="flex items-center gap-2">
               <span class="text-xl">📊</span>
               <div>
-                <h4 class="font-black text-sm text-amber-200 uppercase tracking-wider">Báo Cáo Phân Tích Doanh Thu & Chênh Lệch</h4>
-                <p class="text-[11px] text-stone-300">Tự động tính toán tiền thực thu, tiền đơn hủy và tiền bưu tá đang giao</p>
+                <h4 class="font-extrabold text-sm text-stone-900 uppercase tracking-wider">Báo Cáo Phân Tích Doanh Thu & Chênh Lệch</h4>
+                <p class="text-[11px] text-stone-500">Tự động tính toán tiền thực thu, tiền đơn hủy và tiền bưu tá đang giao</p>
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-xs text-stone-300">Tỷ lệ thành công:</span>
-              <span id="stat-success-rate" class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-black text-xs">0%</span>
+              <span class="text-xs text-stone-600 font-medium">Tỷ lệ thành công:</span>
+              <span id="stat-success-rate" class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-black text-xs">0%</span>
             </div>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
             <!-- 1. Doanh thu tổng (Tất cả đơn phát sinh) -->
-            <div class="p-3.5 rounded-xl bg-white/5 border border-white/10">
-              <div class="flex items-center justify-between text-stone-400 text-[10px] uppercase font-bold mb-1">
+            <div class="p-4 rounded-xl bg-stone-50 border border-stone-200/80 space-y-1">
+              <div class="flex items-center justify-between text-stone-500 text-[10px] uppercase font-bold">
                 <span>Tổng Phát Sinh</span>
                 <span>📋</span>
               </div>
-              <span class="text-base sm:text-lg font-black text-amber-100 font-mono block" id="stat-total-revenue">0đ</span>
-              <span class="text-[10px] text-stone-400 mt-0.5 block">Tổng tất cả đơn đã đặt</span>
+              <span class="text-lg sm:text-xl font-black text-stone-900 font-mono block" id="stat-total-revenue">0đ</span>
+              <span class="text-[10px] text-stone-500 block">Tổng tất cả đơn đã đặt</span>
             </div>
 
             <!-- 2. Doanh thu thực nhận (Giao thành công) -->
-            <div class="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40">
-              <div class="flex items-center justify-between text-emerald-300 text-[10px] uppercase font-bold mb-1">
+            <div class="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-1">
+              <div class="flex items-center justify-between text-emerald-800 text-[10px] uppercase font-black">
                 <span>Thực Thu (Đã Giao)</span>
                 <span>✅</span>
               </div>
-              <span class="text-base sm:text-lg font-black text-emerald-300 font-mono block" id="stat-delivered-revenue">0đ</span>
-              <span class="text-[10px] text-emerald-200/80 mt-0.5 block">Tiền thực nhận cầm tay</span>
+              <span class="text-lg sm:text-xl font-black text-emerald-700 font-mono block" id="stat-delivered-revenue">0đ</span>
+              <span class="text-[10px] text-emerald-700/80 block">Tiền thực nhận cầm tay</span>
             </div>
 
             <!-- 3. Doanh thu đang trên đường giao -->
-            <div class="p-3.5 rounded-xl bg-blue-950/40 border border-blue-500/40">
-              <div class="flex items-center justify-between text-blue-300 text-[10px] uppercase font-bold mb-1">
+            <div class="p-4 rounded-xl bg-blue-50/70 border border-blue-200 space-y-1">
+              <div class="flex items-center justify-between text-blue-800 text-[10px] uppercase font-black">
                 <span>Đang Giao (Chờ Thu)</span>
                 <span>🚚</span>
               </div>
-              <span class="text-base sm:text-lg font-black text-blue-300 font-mono block" id="stat-shipping-revenue">0đ</span>
-              <span class="text-[10px] text-blue-200/80 mt-0.5 block">Tiền COD bưu tá đang giữ</span>
+              <span class="text-lg sm:text-xl font-black text-blue-700 font-mono block" id="stat-shipping-revenue">0đ</span>
+              <span class="text-[10px] text-blue-700/80 block">Tiền COD bưu tá đang giữ</span>
             </div>
 
             <!-- 4. Tiền thất thoát do hủy & hoàn -->
-            <div class="p-3.5 rounded-xl bg-rose-950/40 border border-rose-500/40">
-              <div class="flex items-center justify-between text-rose-300 text-[10px] uppercase font-bold mb-1">
+            <div class="p-4 rounded-xl bg-rose-50/70 border border-rose-200 space-y-1">
+              <div class="flex items-center justify-between text-rose-800 text-[10px] uppercase font-black">
                 <span>Hủy & Hoàn Lại</span>
                 <span>❌</span>
               </div>
-              <span class="text-base sm:text-lg font-black text-rose-300 font-mono block" id="stat-lost-revenue">0đ</span>
-              <span class="text-[10px] text-rose-200/80 mt-0.5 block" id="stat-lost-detail">Hủy: 0đ • Hoàn: 0đ</span>
+              <span class="text-lg sm:text-xl font-black text-rose-700 font-mono block" id="stat-lost-revenue">0đ</span>
+              <span class="text-[10px] text-rose-600 font-semibold block" id="stat-lost-detail">Hủy: 0đ • Hoàn: 0đ</span>
             </div>
           </div>
         </div>
@@ -1039,7 +1039,7 @@
         </div>
 
         <!-- Các nút tiện ích -->
-        <div class="flex items-center gap-2 flex-wrap">
+        <div style="display:none">
           <button 
             type="button" 
             onclick="openSupabaseModal()" 
@@ -1134,6 +1134,33 @@
 
     </div>
 
+  </div>
+
+  <!-- ================= PHẦN LƯU Ý & HƯỚNG DẪN ĐỒNG BỘ Ở CUỐI TRANG ================= -->
+  <div id="admin-bottom-notes" class="site-container mt-8 pb-8 hidden">
+    <div class="bg-amber-50/80 border border-amber-200 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div class="space-y-1.5 max-w-3xl">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-lg bg-amber-200 text-amber-950 font-black text-xs">💡 LƯU Ý QUAN TRỌNG:</span>
+          <span class="text-xs font-bold text-amber-900">• Cơ chế lưu trữ &amp; Đồng bộ lên mạng</span>
+        </div>
+        <p class="text-xs text-stone-700 leading-relaxed">
+          • <strong>Lưu trên máy tính này:</strong> Khi bạn thêm hoặc sửa sản phẩm, bấm <em>"Lưu Thay Đổi"</em> thì toàn bộ ảnh và dữ liệu được lưu tự động ngay vào bộ nhớ trình duyệt (IndexedDB) không giới hạn dung lượng.<br/>
+          • <strong>Đồng bộ cho khách xem trên điện thoại:</strong> Bấm nút <strong>"🚀 Xuất Bản Lên Web (1-Click)"</strong> (hoặc chạy file <code>push-to-github.bat</code>). Toàn bộ dữ liệu mới sẽ được gửi lên GitHub và Vercel cập nhật sau 20-30 giây cho mọi người cùng thấy!
+        </p>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0 flex-wrap">
+        <button onclick="publishDirectlyToGitHub()" class="px-4.5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs rounded-xl shadow-md whitespace-nowrap flex items-center gap-1.5 transition-all hover:scale-105">
+          <span>🚀 Xuất Bản Lên Web (1-Click)</span>
+        </button>
+        <button onclick="exportProductsFile()" class="px-3.5 py-2.5 bg-white hover:bg-stone-50 text-stone-700 font-bold text-xs rounded-xl border border-stone-300 transition-colors shadow-2xs" title="Tải file products.js dự phòng">
+          <span>📥 Tải File products.js</span>
+        </button>
+        <button onclick="openGitHubTokenModal()" class="p-2.5 bg-white hover:bg-stone-50 border border-stone-300 text-stone-600 font-bold text-xs rounded-xl shadow-2xs transition-colors" title="Cài đặt GitHub Token">
+          <span>⚙️ Token</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL THÊM / CHỈNH SỬA SẢN PHẨM (HỖ TRỢ NHIỀU ẢNH) -->
@@ -2242,11 +2269,13 @@
       if (isAuth) {
         if (overlay) overlay.classList.add('hidden');
         if (mainWrapper) mainWrapper.classList.remove('hidden');
+        const bNotes = document.getElementById('admin-bottom-notes'); if (bNotes) bNotes.classList.remove('hidden');
         initAdminData();
         return true;
       } else {
         if (overlay) overlay.classList.remove('hidden');
         if (mainWrapper) mainWrapper.classList.add('hidden');
+        const bNotes = document.getElementById('admin-bottom-notes'); if (bNotes) bNotes.classList.add('hidden');
         const userInput = document.getElementById('login-username');
         if (userInput && !userInput.value) {
           userInput.value = acc.username || 'admin';
@@ -2295,6 +2324,7 @@
         const passInput = document.getElementById('login-password');
         if (passInput) passInput.value = '';
         if (mainWrapper) mainWrapper.classList.add('hidden');
+        const bNotes = document.getElementById('admin-bottom-notes'); if (bNotes) bNotes.classList.add('hidden');
         if (overlay) overlay.classList.remove('hidden');
         showToast('Đã đăng xuất khỏi hệ thống quản trị an toàn!', 'info');
       }
