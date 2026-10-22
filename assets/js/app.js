@@ -120,7 +120,7 @@ async function applyHomepageConfig() {
   // Áp dụng tỉ lệ (Ratio), góc nhìn (Position), kiểu hiển thị (Fit) và màu nền (Bg) cho Banner
   if (heroBox && heroImg && config) {
     const fit = config.heroImageFit || 'contain';
-    const ratio = config.heroImageRatio || '4/5';
+    const ratio = config.heroImageRatio || 'auto';
     const pos = config.heroImagePosition || 'center';
     const bg = config.heroImageBg || 'dark';
 

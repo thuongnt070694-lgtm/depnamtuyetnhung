@@ -337,7 +337,7 @@ const HOMEPAGE_CONFIG = {
   "heroPrice": 90000,
   "heroOriginalPrice": 100000,
   "heroImageFit": "contain",
-  "heroImageRatio": "4/5",
+  "heroImageRatio": "auto",
   "heroImagePosition": "center",
   "heroImageBg": "dark",
   "storyImage1": "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80",
