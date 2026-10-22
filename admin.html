@@ -2381,6 +2381,14 @@
       }
     }
 
+    window.handleAdminLogin = handleAdminLogin;
+    window.handleAdminLogout = handleAdminLogout;
+    window.checkAdminAuth = checkAdminAuth;
+    window.openChangePasswordModal = openChangePasswordModal;
+    window.closeChangePasswordModal = closeChangePasswordModal;
+    window.handleChangePassword = handleChangePassword;
+    window.togglePasswordVisibility = togglePasswordVisibility;
+
     let adminDataLoaded = false;
     async function initAdminData() {
       if (adminDataLoaded) return;
@@ -2396,7 +2404,8 @@
     }
 
     // Khởi động trang quản trị
-    document.addEventListener('DOMContentLoaded', () => { checkAdminAuth(); }); if(false) (async () => {
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', checkAdminAuth); } else { checkAdminAuth(); }
+    /* dead code */ if (false) (async () => {
       await loadProductsData();
       initCategoriesList();
       await loadHomepageDataIntoAdmin();
@@ -3073,8 +3082,8 @@ function doGet(e) {
     }
 
     // Hàm cũ thay thế
-    function _legacyUpdateOrdersStats() {
-    function updateOrdersStats() {
+    // legacy function removed
+    function _unusedOldUpdateOrdersStats() {
       const badge = document.getElementById('tab-orders-badge');
       const totalEl = document.getElementById('stat-total-orders');
       const pendingEl = document.getElementById('stat-pending-orders');
@@ -3123,7 +3132,6 @@ function doGet(e) {
           filtered = filtered.filter(o => (o.paymentMethod === 'banking' || (o.paymentText && o.paymentText.includes('Chuyển khoản'))) && !o.isPaid && o.paymentStatus !== 'Đã thanh toán');
         } else if (statusFilter === 'Đã thanh toán') {
           filtered = filtered.filter(o => o.isPaid || o.paymentStatus === 'Đã thanh toán');
-        } else {
         } else if (statusFilter === 'Hoàn lại') {
           filtered = filtered.filter(o => (o.status || '').toLowerCase().includes('hoàn'));
         } else if (statusFilter === 'Đã hủy') {
