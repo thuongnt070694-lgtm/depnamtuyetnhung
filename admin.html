@@ -806,8 +806,161 @@
     <!-- ================= TAB 3: QUẢN LÝ ĐƠN HÀNG ================= -->
     <div id="tab-content-orders" class="hidden space-y-6">
 
-      <!-- THỐNG KÊ NHANH 4 THẺ (ORDER STATS CARDS) -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- BẢNG ĐIỀU KHIỂN THỐNG KÊ & BỘ LỌC ĐƠN HÀNG TOÀN DIỆN -->
+      <div class="space-y-4 mb-6">
+        <!-- DÒNG 1: THỐNG KÊ 6 TRẠNG THÁI (BẤM VÀO THẺ ĐỂ LỌC BẢNG) -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <!-- 1. Tất cả đơn -->
+          <button 
+            type="button" 
+            onclick="setOrderStatusFilter('all')" 
+            id="stat-card-all"
+            class="stat-filter-card p-3.5 rounded-2xl border-2 border-stone-300 bg-white text-left hover:border-amber-900 transition-all shadow-xs hover:scale-[1.02] cursor-pointer ring-2 ring-amber-900"
+          >
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xl">📋</span>
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-stone-600 bg-stone-100 px-2 py-0.5 rounded-full">Tất cả</span>
+            </div>
+            <span class="text-[10px] font-bold text-stone-500 uppercase block">Tổng Đơn Hàng</span>
+            <span class="text-xl sm:text-2xl font-black text-stone-900 font-mono mt-0.5 block" id="stat-total-orders">0</span>
+          </button>
+
+          <!-- 2. Chờ xác nhận -->
+          <button 
+            type="button" 
+            onclick="setOrderStatusFilter('Chờ xác nhận')" 
+            id="stat-card-pending"
+            class="stat-filter-card p-3.5 rounded-2xl border-2 border-amber-200 bg-amber-50/70 text-left hover:border-amber-700 transition-all shadow-xs hover:scale-[1.02] cursor-pointer"
+          >
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xl">⏳</span>
+              <span class="text-[10px] font-black uppercase tracking-wider text-amber-900 bg-amber-200/70 px-2 py-0.5 rounded-full">Mới</span>
+            </div>
+            <span class="text-[10px] font-bold text-amber-900 uppercase block">Chờ Xác Nhận</span>
+            <span class="text-xl sm:text-2xl font-black text-amber-950 font-mono mt-0.5 block" id="stat-pending-orders">0</span>
+          </button>
+
+          <!-- 3. Đang giao hàng -->
+          <button 
+            type="button" 
+            onclick="setOrderStatusFilter('Đang giao')" 
+            id="stat-card-shipping"
+            class="stat-filter-card p-3.5 rounded-2xl border-2 border-blue-200 bg-blue-50/70 text-left hover:border-blue-700 transition-all shadow-xs hover:scale-[1.02] cursor-pointer"
+          >
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xl">🚚</span>
+              <span class="text-[10px] font-black uppercase tracking-wider text-blue-900 bg-blue-200/70 px-2 py-0.5 rounded-full">Giao</span>
+            </div>
+            <span class="text-[10px] font-bold text-blue-900 uppercase block">Đang Giao Hàng</span>
+            <span class="text-xl sm:text-2xl font-black text-blue-950 font-mono mt-0.5 block" id="stat-shipping-orders">0</span>
+          </button>
+
+          <!-- 4. Giao thành công -->
+          <button 
+            type="button" 
+            onclick="setOrderStatusFilter('Đã giao')" 
+            id="stat-card-delivered"
+            class="stat-filter-card p-3.5 rounded-2xl border-2 border-emerald-200 bg-emerald-50/70 text-left hover:border-emerald-700 transition-all shadow-xs hover:scale-[1.02] cursor-pointer"
+          >
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xl">⭐</span>
+              <span class="text-[10px] font-black uppercase tracking-wider text-emerald-900 bg-emerald-200/70 px-2 py-0.5 rounded-full">Xong</span>
+            </div>
+            <span class="text-[10px] font-bold text-emerald-900 uppercase block">Giao Thành Công</span>
+            <span class="text-xl sm:text-2xl font-black text-emerald-950 font-mono mt-0.5 block" id="stat-delivered-orders">0</span>
+          </button>
+
+          <!-- 5. Đơn bị hủy -->
+          <button 
+            type="button" 
+            onclick="setOrderStatusFilter('Đã hủy')" 
+            id="stat-card-canceled"
+            class="stat-filter-card p-3.5 rounded-2xl border-2 border-rose-200 bg-rose-50/70 text-left hover:border-rose-700 transition-all shadow-xs hover:scale-[1.02] cursor-pointer"
+          >
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xl">❌</span>
+              <span class="text-[10px] font-black uppercase tracking-wider text-rose-900 bg-rose-200/70 px-2 py-0.5 rounded-full">Hủy</span>
+            </div>
+            <span class="text-[10px] font-bold text-rose-900 uppercase block">Đơn Đã Hủy</span>
+            <span class="text-xl sm:text-2xl font-black text-rose-950 font-mono mt-0.5 block" id="stat-canceled-orders">0</span>
+          </button>
+
+          <!-- 6. Đơn hoàn lại -->
+          <button 
+            type="button" 
+            onclick="setOrderStatusFilter('Hoàn lại')" 
+            id="stat-card-returned"
+            class="stat-filter-card p-3.5 rounded-2xl border-2 border-orange-200 bg-orange-50/70 text-left hover:border-orange-700 transition-all shadow-xs hover:scale-[1.02] cursor-pointer"
+          >
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xl">↩️</span>
+              <span class="text-[10px] font-black uppercase tracking-wider text-orange-900 bg-orange-200/70 px-2 py-0.5 rounded-full">Hoàn</span>
+            </div>
+            <span class="text-[10px] font-bold text-orange-900 uppercase block">Đơn Hoàn Lại</span>
+            <span class="text-xl sm:text-2xl font-black text-orange-950 font-mono mt-0.5 block" id="stat-returned-orders">0</span>
+          </button>
+        </div>
+
+        <!-- DÒNG 2: BÁO CÁO DOANH THU & CHÊNH LỆCH -->
+        <div class="bg-gradient-to-r from-stone-900 via-amber-950 to-stone-900 p-4 sm:p-5 rounded-2xl text-white shadow-sm border border-amber-900/40">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-white/10 gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">📊</span>
+              <div>
+                <h4 class="font-black text-sm text-amber-200 uppercase tracking-wider">Báo Cáo Phân Tích Doanh Thu & Chênh Lệch</h4>
+                <p class="text-[11px] text-stone-300">Tự động tính toán tiền thực thu, tiền đơn hủy và tiền bưu tá đang giao</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-stone-300">Tỷ lệ thành công:</span>
+              <span id="stat-success-rate" class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-black text-xs">0%</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <!-- 1. Doanh thu tổng (Tất cả đơn phát sinh) -->
+            <div class="p-3.5 rounded-xl bg-white/5 border border-white/10">
+              <div class="flex items-center justify-between text-stone-400 text-[10px] uppercase font-bold mb-1">
+                <span>Tổng Phát Sinh</span>
+                <span>📋</span>
+              </div>
+              <span class="text-base sm:text-lg font-black text-amber-100 font-mono block" id="stat-total-revenue">0đ</span>
+              <span class="text-[10px] text-stone-400 mt-0.5 block">Tổng tất cả đơn đã đặt</span>
+            </div>
+
+            <!-- 2. Doanh thu thực nhận (Giao thành công) -->
+            <div class="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40">
+              <div class="flex items-center justify-between text-emerald-300 text-[10px] uppercase font-bold mb-1">
+                <span>Thực Thu (Đã Giao)</span>
+                <span>✅</span>
+              </div>
+              <span class="text-base sm:text-lg font-black text-emerald-300 font-mono block" id="stat-delivered-revenue">0đ</span>
+              <span class="text-[10px] text-emerald-200/80 mt-0.5 block">Tiền thực nhận cầm tay</span>
+            </div>
+
+            <!-- 3. Doanh thu đang trên đường giao -->
+            <div class="p-3.5 rounded-xl bg-blue-950/40 border border-blue-500/40">
+              <div class="flex items-center justify-between text-blue-300 text-[10px] uppercase font-bold mb-1">
+                <span>Đang Giao (Chờ Thu)</span>
+                <span>🚚</span>
+              </div>
+              <span class="text-base sm:text-lg font-black text-blue-300 font-mono block" id="stat-shipping-revenue">0đ</span>
+              <span class="text-[10px] text-blue-200/80 mt-0.5 block">Tiền COD bưu tá đang giữ</span>
+            </div>
+
+            <!-- 4. Tiền thất thoát do hủy & hoàn -->
+            <div class="p-3.5 rounded-xl bg-rose-950/40 border border-rose-500/40">
+              <div class="flex items-center justify-between text-rose-300 text-[10px] uppercase font-bold mb-1">
+                <span>Hủy & Hoàn Lại</span>
+                <span>❌</span>
+              </div>
+              <span class="text-base sm:text-lg font-black text-rose-300 font-mono block" id="stat-lost-revenue">0đ</span>
+              <span class="text-[10px] text-rose-200/80 mt-0.5 block" id="stat-lost-detail">Hủy: 0đ • Hoàn: 0đ</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:none">
         <!-- 1. Tổng đơn -->
         <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs flex items-center gap-3.5">
           <div class="w-11 h-11 rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
@@ -815,7 +968,7 @@
           </div>
           <div>
             <span class="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Tổng Đơn Hàng</span>
-            <span class="text-xl font-black text-stone-900" id="stat-total-orders">0</span>
+            <span class="text-xl font-black text-stone-900" id="old-stat-total-orders">0</span>
           </div>
         </div>
 
@@ -826,7 +979,7 @@
           </div>
           <div>
             <span class="text-[11px] font-bold text-amber-900 uppercase tracking-wider block">Chờ Xác Nhận</span>
-            <span class="text-xl font-black text-amber-950" id="stat-pending-orders">0</span>
+            <span class="text-xl font-black text-amber-950" id="old-stat-pending-orders">0</span>
           </div>
         </div>
 
@@ -837,7 +990,7 @@
           </div>
           <div>
             <span class="text-[11px] font-bold text-blue-900 uppercase tracking-wider block">Đang Giao Hàng</span>
-            <span class="text-xl font-black text-blue-950" id="stat-shipping-orders">0</span>
+            <span class="text-xl font-black text-blue-950" id="old-stat-shipping-orders">0</span>
           </div>
         </div>
 
@@ -848,7 +1001,7 @@
           </div>
           <div>
             <span class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider block">Tổng Doanh Thu</span>
-            <span class="text-xl font-black text-emerald-950" id="stat-total-revenue">0đ</span>
+            <span class="text-xl font-black text-emerald-950" id="old-stat-total-revenue">0đ</span>
           </div>
         </div>
       </div>
@@ -870,6 +1023,7 @@
             <option value="Đang giao">🚚 Đang giao hàng</option>
             <option value="Đã giao">✅ Đã giao thành công</option>
             <option value="Đã hủy">❌ Đã hủy đơn</option>
+            <option value="Hoàn lại">↩️ Đơn hoàn lại (Trả hàng)</option>
           </select>
 
           <div class="relative flex-1 min-w-[200px]">
@@ -2791,7 +2945,135 @@ function doGet(e) {
       updateOrdersStats();
     }
 
-    // Cập nhật các ô thống kê & badge
+    // Cập nhật các ô thống kê & badge toàn diện
+    function updateOrdersStats() {
+      const badge = document.getElementById('tab-orders-badge');
+      const totalEl = document.getElementById('stat-total-orders');
+      const pendingEl = document.getElementById('stat-pending-orders');
+      const shippingEl = document.getElementById('stat-shipping-orders');
+      const deliveredEl = document.getElementById('stat-delivered-orders');
+      const canceledEl = document.getElementById('stat-canceled-orders');
+      const returnedEl = document.getElementById('stat-returned-orders');
+
+      const totalRevenueEl = document.getElementById('stat-total-revenue');
+      const deliveredRevenueEl = document.getElementById('stat-delivered-revenue');
+      const shippingRevenueEl = document.getElementById('stat-shipping-revenue');
+      const lostRevenueEl = document.getElementById('stat-lost-revenue');
+      const lostDetailEl = document.getElementById('stat-lost-detail');
+      const successRateEl = document.getElementById('stat-success-rate');
+
+      const totalCount = ordersList.length;
+      const pendingCount = ordersList.filter(o => {
+        const s = (o.status || '').toLowerCase();
+        return s.includes('chờ') || s.includes('mới') || s === 'new';
+      }).length;
+
+      const shippingCount = ordersList.filter(o => {
+        const s = (o.status || '').toLowerCase();
+        return s.includes('giao') && !s.includes('đã giao') && !s.includes('thành công');
+      }).length;
+
+      const deliveredCount = ordersList.filter(o => {
+        const s = (o.status || '').toLowerCase();
+        return s.includes('đã giao') || s.includes('thành công') || s.includes('hoàn tất');
+      }).length;
+
+      const canceledCount = ordersList.filter(o => {
+        const s = (o.status || '').toLowerCase();
+        return s.includes('hủy');
+      }).length;
+
+      const returnedCount = ordersList.filter(o => {
+        const s = (o.status || '').toLowerCase();
+        return s.includes('hoàn');
+      }).length;
+
+      // 1. Doanh thu tổng (Tất cả đơn phát sinh)
+      const totalRevenue = ordersList.reduce((sum, o) => sum + (Number(o.finalTotal) || 0), 0);
+
+      // 2. Doanh thu thực nhận (Chỉ đơn đã giao thành công)
+      const deliveredRevenue = ordersList
+        .filter(o => {
+          const s = (o.status || '').toLowerCase();
+          return s.includes('đã giao') || s.includes('thành công') || s.includes('hoàn tất');
+        })
+        .reduce((sum, o) => sum + (Number(o.finalTotal) || 0), 0);
+
+      // 3. Doanh thu đang trên đường giao (Tiền COD bưu tá đang giữ)
+      const shippingRevenue = ordersList
+        .filter(o => {
+          const s = (o.status || '').toLowerCase();
+          return s.includes('giao') && !s.includes('đã giao') && !s.includes('thành công');
+        })
+        .reduce((sum, o) => sum + (Number(o.finalTotal) || 0), 0);
+
+      // 4. Doanh thu đơn hủy
+      const canceledRevenue = ordersList
+        .filter(o => (o.status || '').toLowerCase().includes('hủy'))
+        .reduce((sum, o) => sum + (Number(o.finalTotal) || 0), 0);
+
+      // 5. Doanh thu đơn hoàn lại
+      const returnedRevenue = ordersList
+        .filter(o => (o.status || '').toLowerCase().includes('hoàn'))
+        .reduce((sum, o) => sum + (Number(o.finalTotal) || 0), 0);
+
+      // 6. Tổng tiền thất thoát do hủy & hoàn
+      const lostRevenue = canceledRevenue + returnedRevenue;
+
+      // 7. Tỷ lệ giao thành công %
+      const successRate = totalCount > 0 ? Math.round((deliveredCount / totalCount) * 100) : 0;
+
+      if (badge) {
+        badge.innerText = pendingCount;
+        badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+      }
+
+      if (totalEl) totalEl.innerText = totalCount;
+      if (pendingEl) pendingEl.innerText = pendingCount;
+      if (shippingEl) shippingEl.innerText = shippingCount;
+      if (deliveredEl) deliveredEl.innerText = deliveredCount;
+      if (canceledEl) canceledEl.innerText = canceledCount;
+      if (returnedEl) returnedEl.innerText = returnedCount;
+
+      if (totalRevenueEl) totalRevenueEl.innerText = formatCurrency(totalRevenue);
+      if (deliveredRevenueEl) deliveredRevenueEl.innerText = formatCurrency(deliveredRevenue);
+      if (shippingRevenueEl) shippingRevenueEl.innerText = formatCurrency(shippingRevenue);
+      if (lostRevenueEl) lostRevenueEl.innerText = formatCurrency(lostRevenue);
+      if (lostDetailEl) lostDetailEl.innerText = `Hủy: ${formatCurrency(canceledRevenue)} • Hoàn: ${formatCurrency(returnedRevenue)}`;
+      if (successRateEl) successRateEl.innerText = `${successRate}%`;
+    }
+
+    function setOrderStatusFilter(statusVal) {
+      const select = document.getElementById('order-status-filter');
+      if (select) {
+        select.value = statusVal;
+      }
+      updateStatCardsActiveState(statusVal);
+      renderOrdersTable();
+    }
+
+    function updateStatCardsActiveState(activeVal) {
+      const cards = document.querySelectorAll('.stat-filter-card');
+      cards.forEach(c => {
+        c.classList.remove('ring-2', 'ring-amber-900', 'border-amber-900', 'scale-[1.02]');
+      });
+      const idMap = {
+        'all': 'stat-card-all',
+        'Chờ xác nhận': 'stat-card-pending',
+        'Đang giao': 'stat-card-shipping',
+        'Đã giao': 'stat-card-delivered',
+        'Đã hủy': 'stat-card-canceled',
+        'Hoàn lại': 'stat-card-returned'
+      };
+      const targetId = idMap[activeVal];
+      if (targetId) {
+        const el = document.getElementById(targetId);
+        if (el) el.classList.add('ring-2', 'ring-amber-900', 'border-amber-900', 'scale-[1.02]');
+      }
+    }
+
+    // Hàm cũ thay thế
+    function _legacyUpdateOrdersStats() {
     function updateOrdersStats() {
       const badge = document.getElementById('tab-orders-badge');
       const totalEl = document.getElementById('stat-total-orders');
@@ -2818,6 +3100,11 @@ function doGet(e) {
 
     // Lọc và render bảng đơn hàng
     function filterOrdersTable() {
+      const statusFilter = document.getElementById('order-status-filter')?.value || 'all';
+      updateStatCardsActiveState(statusFilter);
+      renderOrdersTable();
+    }
+    function _oldFilterOrdersTable() {
       renderOrdersTable();
     }
 
@@ -2837,7 +3124,18 @@ function doGet(e) {
         } else if (statusFilter === 'Đã thanh toán') {
           filtered = filtered.filter(o => o.isPaid || o.paymentStatus === 'Đã thanh toán');
         } else {
-          filtered = filtered.filter(o => (o.status || 'Chờ xác nhận').includes(statusFilter));
+        } else if (statusFilter === 'Hoàn lại') {
+          filtered = filtered.filter(o => (o.status || '').toLowerCase().includes('hoàn'));
+        } else if (statusFilter === 'Đã hủy') {
+          filtered = filtered.filter(o => (o.status || '').toLowerCase().includes('hủy'));
+        } else if (statusFilter === 'Đã giao') {
+          filtered = filtered.filter(o => (o.status || '').toLowerCase().includes('đã giao') || (o.status || '').toLowerCase().includes('thành công'));
+        } else if (statusFilter === 'Đang giao') {
+          filtered = filtered.filter(o => (o.status || '').toLowerCase().includes('giao') && !(o.status || '').toLowerCase().includes('đã giao'));
+        } else if (statusFilter === 'Chờ xác nhận') {
+          filtered = filtered.filter(o => (o.status || '').toLowerCase().includes('chờ') || (o.status || '').toLowerCase().includes('mới'));
+        } else {
+          filtered = filtered.filter(o => (o.status || 'Chờ xác nhận').toLowerCase().includes(statusFilter.toLowerCase()));
         }
       }
 
@@ -2903,7 +3201,8 @@ function doGet(e) {
           'Đã đóng hàng': 'bg-purple-100 text-purple-900 border-purple-300',
           'Đang giao': 'bg-blue-100 text-blue-900 border-blue-300',
           'Đã giao': 'bg-emerald-100 text-emerald-900 border-emerald-300',
-          'Đã hủy': 'bg-stone-100 text-stone-500 border-stone-300'
+          'Đã hủy': 'bg-rose-100 text-rose-800 border-rose-300',
+          'Hoàn lại': 'bg-orange-100 text-orange-900 border-orange-300'
         };
 
         const currentBadgeColor = statusColors[status] || statusColors['Chờ xác nhận'];
@@ -2972,6 +3271,7 @@ function doGet(e) {
                 <option value="Đang giao" ${status.includes('Đang giao') ? 'selected' : ''}>🚚 Đang giao hàng</option>
                 <option value="Đã giao" ${status.includes('Đã giao') ? 'selected' : ''}>✅ Đã giao thành công</option>
                 <option value="Đã hủy" ${status.includes('hủy') ? 'selected' : ''}>❌ Đã hủy đơn</option>
+                <option value="Hoàn lại" ${status.includes('hoàn') ? 'selected' : ''}>↩️ Đơn hoàn lại (Trả hàng)</option>
               </select>
             </td>
 
@@ -3056,6 +3356,7 @@ function doGet(e) {
       order.status = newStatus;
       saveOrdersData();
       renderOrdersTable();
+      updateOrdersStats();
       showToast(`Đã chuyển đơn #${orderId} sang "${newStatus}"! Bấm [💬 Zalo] để gửi tin báo khách.`, 'success');
       updateOrderStatusOnSupabase(orderId, newStatus);
     }
@@ -3100,7 +3401,13 @@ function doGet(e) {
         : `Thu hộ COD: ${formatCurrency(order.finalTotal)}`;
 
       let msg = '';
-      if (status.includes('đóng')) {
+      if (status.includes('hủy') || status.includes('Hủy')) {
+        msg = `Dạ chào anh/chị ${order.name}! Xưởng Dép Nam Tuyết Nhung xin thông báo đơn hàng #${order.orderId} (${itemsStr}) đã được HỦY trên hệ thống.\n\n` +
+          `Anh/chị không cần nhận hàng và không phát sinh bất kỳ khoản phí nào. Nếu cần đặt lại mẫu dép khác hoặc đổi size, anh/chị nhắn lại xưởng để thợ hỗ trợ ngay nhé! Cảm ơn anh/chị.`;
+      } else if (status.includes('hoàn') || status.includes('Hoàn')) {
+        msg = `Dạ chào anh/chị ${order.name}! Xưởng Dép Nam Tuyết Nhung xin thông báo đơn hàng #${order.orderId} (${itemsStr}) đang trong quá trình chuyển hoàn về xưởng.\n\n` +
+          `Nếu anh/chị cần hỗ trợ nhận lại hoặc gửi mẫu khác, vui lòng nhắn lại xưởng nhé!`;
+      } else if (status.includes('đóng')) {
         msg = `Dạ chào anh/chị ${order.name}! Xưởng Dép Nam Tuyết Nhung xin thông báo đơn hàng #${order.orderId} của anh/chị đã được KIỂM TRA & ĐÓNG GÓI XONG:\n` +
           `• Sản phẩm: ${itemsStr}\n` +
           `• Thanh toán: ${paymentInfo}\n` +
@@ -3847,6 +4154,44 @@ alter publication supabase_realtime add table public.orders;
     }
 
     async function updateOrderStatusOnSupabase(orderId, newStatus) {
+      let url = (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.url) ? SUPABASE_CONFIG.url : localStorage.getItem('tuyetnhung_supabase_url');
+      let anonKey = (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.anonKey) ? SUPABASE_CONFIG.anonKey : localStorage.getItem('tuyetnhung_supabase_key');
+      if (!url || !anonKey || !url.trim() || !anonKey.trim()) return;
+
+      const cleanId = String(orderId || '').replace(/#/g, '').trim();
+
+      // 1. Supabase Client SDK
+      const client = getSupabaseClient();
+      if (client) {
+        try {
+          await client.from('orders').update({ status: newStatus }).or(`order_id.eq.${cleanId},order_id.eq.#${cleanId}`);
+        } catch(e) {
+          console.warn('Lỗi Supabase Client SDK update:', e);
+        }
+      }
+
+      // 2. Dự phòng 100%: Gửi REST API PATCH trực tiếp tới Supabase
+      try {
+        const headers = {
+          'Content-Type': 'application/json',
+          'apikey': anonKey.trim(),
+          'Authorization': `Bearer ${anonKey.trim()}`,
+          'Prefer': 'return=minimal'
+        };
+        const bodyStr = JSON.stringify({ status: newStatus });
+        const ep1 = `${url.trim().replace(/\/$/, '')}/rest/v1/orders?order_id=eq.${cleanId}`;
+        const ep2 = `${url.trim().replace(/\/$/, '')}/rest/v1/orders?order_id=eq.%23${cleanId}`;
+
+        await Promise.allSettled([
+          fetch(ep1, { method: 'PATCH', headers, body: bodyStr }),
+          fetch(ep2, { method: 'PATCH', headers, body: bodyStr })
+        ]);
+        console.log(`✅ Đã cập nhật trạng thái đơn #${cleanId} thành "${newStatus}" trên Supabase!`);
+      } catch(e) {
+        console.warn('Lỗi REST API update:', e);
+      }
+    }
+    async function _legacyUpdateOrderStatusOnSupabase(orderId, newStatus) {
       const client = getSupabaseClient();
       if (!client) return;
       try {

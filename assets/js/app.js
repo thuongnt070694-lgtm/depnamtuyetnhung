@@ -1526,7 +1526,43 @@ async function fetchOrdersFromSupabase(query) {
   const cleanPhone = (query || '').replace(/[^0-9]/g, '');
 
   try {
-    const endpoint = `${url.trim().replace(/\/$/, '')}/rest/v1/orders?select=*&order=created_at.desc&limit=30`;
+  const mapSupabaseRow = (r) => ({
+    orderId: r.order_id,
+    name: r.name,
+    phone: r.phone,
+    address: r.address,
+    note: r.note || '',
+    paymentMethod: (r.payment_method && r.payment_method.includes('VietQR')) ? 'banking' : (r.payment_method || 'COD'),
+    paymentStatus: r.payment_status || (r.is_paid ? 'Đã thanh toán' : 'Chưa thanh toán'),
+    paymentText: r.payment_method || 'COD',
+    isPaid: !!r.is_paid,
+    items: Array.isArray(r.items) ? r.items : [],
+    finalTotal: Number(r.final_total) || 0,
+    status: r.status || 'Chờ xác nhận',
+    createdAt: r.created_at ? new Date(r.created_at).toLocaleString('vi-VN') : ''
+  });
+
+  const headers = {
+    'apikey': anonKey.trim(),
+    'Authorization': `Bearer ${anonKey.trim()}`
+  };
+
+  try {
+    if (cleanQuery) {
+      try {
+        const queryFilter = `or=(order_id.ilike.*${cleanQuery}*,order_id.ilike.*%23${cleanQuery}*,phone.ilike.*${cleanPhone || cleanQuery}*)`;
+        const directUrl = `${url.trim().replace(/\/$/, '')}/rest/v1/orders?${queryFilter}&order=created_at.desc&limit=20&_t=${Date.now()}`;
+        const directRes = await fetch(directUrl, { headers });
+        if (directRes.ok) {
+          const directRows = await directRes.json();
+          if (Array.isArray(directRows) && directRows.length > 0) {
+            return directRows.map(mapSupabaseRow);
+          }
+        }
+      } catch(de) {}
+    }
+
+    const endpoint = `${url.trim().replace(/\/$/, '')}/rest/v1/orders?select=*&order=created_at.desc&limit=50&_t=${Date.now()}`;
     const res = await fetch(endpoint, {
       headers: {
         'apikey': anonKey.trim(),
@@ -1535,21 +1571,7 @@ async function fetchOrdersFromSupabase(query) {
     });
     if (res.ok) {
       const rows = await res.json();
-      return (rows || []).map(r => ({
-        orderId: r.order_id,
-        name: r.name,
-        phone: r.phone,
-        address: r.address,
-        note: r.note || '',
-        paymentMethod: r.payment_method || 'COD',
-        paymentStatus: r.payment_status || (r.is_paid ? 'Đã thanh toán' : 'Chưa thanh toán'),
-        paymentText: r.payment_method || 'COD',
-        isPaid: !!r.is_paid,
-        items: r.items || [],
-        finalTotal: Number(r.final_total) || 0,
-        status: r.status || 'Chờ xác nhận',
-        createdAt: r.created_at ? new Date(r.created_at).toLocaleString('vi-VN') : ''
-      })).filter(o => {
+      return (rows || []).map(mapSupabaseRow).filter(o => {
         const id = String(o.orderId || '').toLowerCase().replace(/#/g, '');
         const phone = String(o.phone || '').replace(/[^0-9]/g, '');
         if (id === cleanQuery || id.includes(cleanQuery)) return true;
@@ -1687,6 +1709,8 @@ function renderSingleTrackingCard(order) {
   const isPaid = order.isPaid === true || order.paymentStatus === 'Đã thanh toán';
   const status = order.status || 'Chờ xác nhận';
   const isBanking = order.paymentMethod === 'banking' || (order.paymentText && order.paymentText.includes('Chuyển khoản'));
+  const isCanceled = status.includes('hủy') || status.includes('Hủy');
+  const isReturned = status.includes('hoàn') || status.includes('Hoàn');
 
   // Xác định 4 mốc tiến trình tinh gọn:
   // 1: Tiếp nhận | 2: Đóng gói | 3: Đang giao | 4: Hoàn tất
@@ -1700,14 +1724,14 @@ function renderSingleTrackingCard(order) {
   let bannerIcon = '📝';
   let bannerBg = 'bg-amber-50 border-amber-200 text-amber-950';
 
-  if (status.includes('hủy') || status.includes('Hủy')) {
+  if (isCanceled) {
     step = 0;
     stepPercent = '0%';
-    badgeColor = 'bg-rose-100 text-rose-900 border-rose-300';
-    bannerTitle = 'Đơn hàng đã được hủy';
-    bannerDesc = 'Nếu có nhầm lẫn hoặc cần đặt lại mẫu khác, bạn vui lòng liên hệ Zalo xưởng bên dưới để được thợ hỗ trợ ngay.';
-    bannerIcon = '✕';
-    bannerBg = 'bg-rose-50 border-rose-200 text-rose-950';
+    badgeColor = 'bg-rose-100 text-rose-800 border-rose-300';
+  } else if (isReturned) {
+    step = 0;
+    stepPercent = '0%';
+    badgeColor = 'bg-orange-100 text-orange-900 border-orange-300';
   } else if (status.includes('Đã giao') || status.includes('Hoàn tất') || status.includes('hoàn thành')) {
     step = 4;
     stepPercent = '100%';
@@ -1762,32 +1786,41 @@ function renderSingleTrackingCard(order) {
   const cleanBuyerPhone = String(order.phone || '').trim().replace(/[^0-9]/g, '');
   const workshopZaloUrl = `https://zalo.me/0962860721?text=${encodeURIComponent('Dạ chào xưởng Tuyết Nhung, tôi cần hỗ trợ kiểm tra đơn hàng #' + order.orderId + ' (' + order.name + ' - ' + order.phone + ')')}`;
 
-  return `
-    <div class="bg-white rounded-2xl border border-stone-200 p-3.5 sm:p-5 shadow-sm space-y-3.5 text-xs">
-      <!-- Header đơn hàng -->
-      <div class="flex items-start justify-between gap-2 pb-2.5 border-b border-stone-100">
-        <div>
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="font-mono font-black text-amber-950 text-base sm:text-lg">#${order.orderId}</span>
-            <button 
-              type="button" 
-              onclick="copyOrderCode('${order.orderId}')" 
-              class="px-1.5 py-0.5 rounded bg-stone-100 hover:bg-stone-200 text-stone-600 text-[10px] font-bold border border-stone-200 transition-colors flex items-center gap-1"
-              title="Sao chép mã đơn"
-            >
-              <span>📋</span><span>Chép</span>
-            </button>
+  let trackingStatusBody = '';
+  if (isCanceled) {
+    trackingStatusBody = `
+      <!-- Thông báo Đã Hủy Đơn -->
+      <div class="p-3.5 sm:p-4 rounded-2xl bg-rose-50 border-2 border-rose-300 text-rose-950 space-y-2">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center font-black text-sm flex-shrink-0 shadow-2xs">✕</span>
+          <div>
+            <strong class="font-extrabold text-sm text-rose-950 block">ĐƠN HÀNG ĐÃ ĐƯỢC HỦY</strong>
+            <span class="text-[11px] text-rose-800 font-medium">Hệ thống xưởng đã ghi nhận trạng thái Hủy đơn</span>
           </div>
-          <span class="text-[11px] text-stone-400 block mt-0.5">${order.createdAt ? 'Đặt lúc: ' + order.createdAt : 'Đơn mới đặt'}</span>
         </div>
-
-        <div class="text-right flex-shrink-0">
-          <span class="px-2.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider inline-block border ${badgeColor}">
-            ${status}
-          </span>
-        </div>
+        <p class="text-xs text-rose-900 leading-relaxed pt-1.5 border-t border-rose-200">
+          Đơn hàng <strong>#${order.orderId}</strong> đã được hủy trên hệ thống. Quý khách <strong>không cần nhận hàng</strong> và <strong>không phải thanh toán bất kỳ chi phí nào</strong>. Nếu anh/chị cần đặt lại mẫu dép khác hoặc cần đổi size, vui lòng bấm nút Zalo hoặc Hotline xưởng bên dưới để thợ xưởng hỗ trợ ngay nhé!
+        </p>
       </div>
-
+    `;
+  } else if (isReturned) {
+    trackingStatusBody = `
+      <!-- Thông báo Đơn Hoàn Lại -->
+      <div class="p-3.5 sm:p-4 rounded-2xl bg-orange-50 border-2 border-orange-300 text-orange-950 space-y-2">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center font-black text-sm flex-shrink-0 shadow-2xs">↩️</span>
+          <div>
+            <strong class="font-extrabold text-sm text-orange-950 block">ĐƠN HÀNG ĐANG HOÀN TRẢ VỀ XƯỞNG</strong>
+            <span class="text-[11px] text-orange-800 font-medium">Bưu tá đang chuyển hoàn kiện hàng về xưởng Tuyết Nhung</span>
+          </div>
+        </div>
+        <p class="text-xs text-orange-900 leading-relaxed pt-1.5 border-t border-orange-200">
+          Đơn hàng <strong>#${order.orderId}</strong> đang trong quá trình chuyển hoàn về kho xưởng. Nếu anh/chị cần hỗ trợ đổi địa chỉ nhận hoặc gửi lại kiện hàng, vui lòng liên hệ trực tiếp xưởng qua Zalo nhé!
+        </p>
+      </div>
+    `;
+  } else {
+    trackingStatusBody = `
       <!-- Thanh tiến trình 4 mốc (Thiết kế tối ưu cho điện thoại) -->
       <div class="py-1">
         <div class="flex items-center justify-between text-xs mb-2">
@@ -1846,6 +1879,36 @@ function renderSingleTrackingCard(order) {
           <p class="text-[11px] sm:text-xs mt-1 leading-relaxed opacity-90">${bannerDesc}</p>
         </div>
       </div>
+    `;
+  }
+
+  return `
+    <div class="bg-white rounded-2xl border border-stone-200 p-3.5 sm:p-5 shadow-sm space-y-3.5 text-xs">
+      <!-- Header đơn hàng -->
+      <div class="flex items-start justify-between gap-2 pb-2.5 border-b border-stone-100">
+        <div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="font-mono font-black text-amber-950 text-base sm:text-lg">#${order.orderId}</span>
+            <button 
+              type="button" 
+              onclick="copyOrderCode('${order.orderId}')" 
+              class="px-1.5 py-0.5 rounded bg-stone-100 hover:bg-stone-200 text-stone-600 text-[10px] font-bold border border-stone-200 transition-colors flex items-center gap-1"
+              title="Sao chép mã đơn"
+            >
+              <span>📋</span><span>Chép</span>
+            </button>
+          </div>
+          <span class="text-[11px] text-stone-400 block mt-0.5">${order.createdAt ? 'Đặt lúc: ' + order.createdAt : 'Đơn mới đặt'}</span>
+        </div>
+
+        <div class="text-right flex-shrink-0">
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider inline-block border ${badgeColor}">
+            ${status}
+          </span>
+        </div>
+      </div>
+
+      ${trackingStatusBody}
 
       <!-- Chi tiết sản phẩm trong đơn -->
       <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-1.5">
@@ -1866,15 +1929,15 @@ function renderSingleTrackingCard(order) {
           <div>
             <span class="text-[10px] uppercase font-bold text-stone-500 block">Thanh toán:</span>
             <strong class="text-stone-900 block mt-0.5">
-              ${isPaid ? '✅ Đã thanh toán (0đ khi nhận)' : (isBanking ? '⏳ Chờ chuyển khoản VietQR' : '💵 Thu tiền mặt COD khi nhận')}
+              ${isCanceled ? '❌ Đã hủy đơn (0đ)' : (isReturned ? '↩️ Đơn hoàn lại (0đ)' : (isPaid ? '✅ Đã thanh toán (0đ khi nhận)' : (isBanking ? '⏳ Chờ chuyển khoản VietQR' : '💵 Thu tiền mặt COD khi nhận')))}
             </strong>
             <p class="text-[11px] text-stone-600 mt-0.5">
-              ${isPaid ? 'Bưu tá không thu tiền (0đ)' : (isBanking ? 'Nội dung CK: TT ' + order.orderId : 'Được mở hộp xỏ thử dép vừa chân mới trả tiền')}
+              ${isCanceled ? 'Không phát sinh bất kỳ khoản phí nào' : (isReturned ? 'Kiện hàng đang hoàn về kho xưởng' : (isPaid ? 'Bưu tá không thu tiền (0đ)' : (isBanking ? 'Nội dung CK: TT ' + order.orderId : 'Được mở hộp xỏ thử dép vừa chân mới trả tiền')))}
             </p>
           </div>
           <div class="pt-2 mt-2 border-t border-amber-200/60 flex items-center justify-between">
             <span class="text-xs font-bold text-stone-700">Tổng thanh toán:</span>
-            <span class="text-base font-black text-amber-900 font-mono">${formatCurrency(order.finalTotal || 0)}</span>
+            <span class="text-base font-black ${isCanceled ? 'text-stone-400 line-through' : 'text-amber-900'} font-mono">${formatCurrency(order.finalTotal || 0)}</span>
           </div>
         </div>
       </div>
