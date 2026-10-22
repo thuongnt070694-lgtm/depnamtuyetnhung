@@ -109,13 +109,15 @@ const PRODUCTS_DATA = [
       "Nâu Socola",
       "Vàng Bò Vintage"
     ],
-    "description": "Thiết kế quai chéo hiện đại tạo điểm nhấn nam tính lịch lãm. Mặt lót chân bằng da thật dập chìm logo Tuyết Nhung, thấm hút mồ hôi chân tuyệt đối, đi thoáng mát không gây mùi hôi."
+    "description": "Thiết kế quai chéo hiện đại tạo điểm nhấn nam tính lịch lãm. Mặt lót chân bằng da thật dập chìm logo Tuyết Nhung, thấm hút mồ hôi chân tuyệt đối, đi thoáng mát không gây mùi hôi.",
+    "externalLink": "",
+    "externalLinkText": ""
   },
   {
     "id": 4,
     "name": "Dép Quai Hậu Nam Sandal Da Bò Khâu Viền - TN04",
     "category": "sandal",
-    "categoryName": "Sandal / Quai Hậu",
+    "categoryName": "Sandal & Quai Hậu",
     "price": 460000,
     "originalPrice": 590000,
     "tag": "Bảo Hành 12 Tháng",
@@ -144,7 +146,9 @@ const PRODUCTS_DATA = [
       "Đen Tuyền",
       "Nâu Da Bò"
     ],
-    "description": "Mẫu sandal thanh lịch phù hợp cho học sinh, sinh viên, giáo viên, nhân viên văn phòng hoặc dạo phố. Quai hậu có thể tùy chỉnh hoặc tháo gập linh hoạt thành dép lê tiện dụng 2 trong 1."
+    "description": "Mẫu sandal thanh lịch phù hợp cho học sinh, sinh viên, giáo viên, nhân viên văn phòng hoặc dạo phố. Quai hậu có thể tùy chỉnh hoặc tháo gập linh hoạt thành dép lê tiện dụng 2 trong 1.",
+    "externalLink": "",
+    "externalLinkText": ""
   },
   {
     "id": 5,
@@ -180,7 +184,9 @@ const PRODUCTS_DATA = [
       "Nâu Cổ Điển",
       "Xanh Navy"
     ],
-    "description": "Sự kết hợp hoàn hảo giữa vẻ trang trọng của đôi giày tây và sự tiện lợi, thoải mái của dép lê. Phối cùng quần tây, quần kaki hay jeans đều cực kỳ tôn dáng và đẳng cấp."
+    "description": "Sự kết hợp hoàn hảo giữa vẻ trang trọng của đôi giày tây và sự tiện lợi, thoải mái của dép lê. Phối cùng quần tây, quần kaki hay jeans đều cực kỳ tôn dáng và đẳng cấp.",
+    "externalLink": "",
+    "externalLinkText": ""
   },
   {
     "id": 6,
@@ -214,7 +220,9 @@ const PRODUCTS_DATA = [
       "Nâu Bò Tự Nhiên",
       "Đen Đậm"
     ],
-    "description": "Mẫu quai to phong cách Đức mạnh mẽ, có khóa đồng tăng giảm độ rộng theo độ dày mu bàn chân. Lớp lót da lộn êm ái chống bí mồ hôi kể cả trong mùa hè nóng nực."
+    "description": "Mẫu quai to phong cách Đức mạnh mẽ, có khóa đồng tăng giảm độ rộng theo độ dày mu bàn chân. Lớp lót da lộn êm ái chống bí mồ hôi kể cả trong mùa hè nóng nực.",
+    "externalLink": "",
+    "externalLinkText": ""
   },
   {
     "id": 7,
@@ -250,13 +258,15 @@ const PRODUCTS_DATA = [
       "Vàng Bò",
       "Nâu Đậm"
     ],
-    "description": "Dành riêng cho các quý ông thích sự gọn nhẹ, thanh thoát nhưng vẫn toát lên chất da bò mộc mạc đẳng cấp. Xưởng Tuyết Nhung tự cắt rập và hoàn thiện tỉ mỉ từng đôi."
+    "description": "Dành riêng cho các quý ông thích sự gọn nhẹ, thanh thoát nhưng vẫn toát lên chất da bò mộc mạc đẳng cấp. Xưởng Tuyết Nhung tự cắt rập và hoàn thiện tỉ mỉ từng đôi.",
+    "externalLink": "",
+    "externalLinkText": ""
   },
   {
     "id": 8,
     "name": "Dép Sandal Hai Quai Khóa Cài Da Thật - TN08",
     "category": "sandal",
-    "categoryName": "Sandal / Quai Hậu",
+    "categoryName": "Sandal & Quai Hậu",
     "price": 450000,
     "originalPrice": 580000,
     "tag": "Đa Năng",
@@ -283,7 +293,9 @@ const PRODUCTS_DATA = [
       "Nâu Vintage",
       "Đen Mờ"
     ],
-    "description": "Đôi sandal lý tưởng cho những chuyến đi du lịch dài ngày hay công việc thường ngày đòi hỏi đi lại nhiều. Da mềm như bơ, không gây cọ xát gót chân."
+    "description": "Đôi sandal lý tưởng cho những chuyến đi du lịch dài ngày hay công việc thường ngày đòi hỏi đi lại nhiều. Da mềm như bơ, không gây cọ xát gót chân.",
+    "externalLink": "",
+    "externalLinkText": ""
   }
 ];
 
