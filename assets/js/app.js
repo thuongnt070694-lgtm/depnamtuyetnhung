@@ -1502,14 +1502,75 @@ function handleOrderTrackingSearch() {
   searchOrderTracking(query);
 }
 
-function searchOrderTracking(query) {
+// ============================================
+// LOGIC TRA CỨU TIẾN ĐỘ ĐƠN HÀNG (MOBILE-FIRST)
+// ============================================
+
+function copyOrderCode(orderId) {
+  const code = '#' + String(orderId || '').replace(/#/g, '');
+  copyTextToClipboard(code).then(() => {
+    showToast(`📋 Đã sao chép mã đơn hàng ${code}!`, 'success');
+  }).catch(() => {
+    showToast(`Mã đơn: ${code}`, 'info');
+  });
+}
+window.copyOrderCode = copyOrderCode;
+
+// Tìm kiếm đơn hàng trực tuyến từ Supabase Database
+async function fetchOrdersFromSupabase(query) {
+  let url = (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.url) ? SUPABASE_CONFIG.url : localStorage.getItem('tuyetnhung_supabase_url');
+  let anonKey = (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.anonKey) ? SUPABASE_CONFIG.anonKey : localStorage.getItem('tuyetnhung_supabase_key');
+  if (!url || !anonKey || !url.trim() || !anonKey.trim()) return [];
+
+  const cleanQuery = (query || '').toLowerCase().replace(/#/g, '').trim();
+  const cleanPhone = (query || '').replace(/[^0-9]/g, '');
+
+  try {
+    const endpoint = `${url.trim().replace(/\/$/, '')}/rest/v1/orders?select=*&order=created_at.desc&limit=30`;
+    const res = await fetch(endpoint, {
+      headers: {
+        'apikey': anonKey.trim(),
+        'Authorization': `Bearer ${anonKey.trim()}`
+      }
+    });
+    if (res.ok) {
+      const rows = await res.json();
+      return (rows || []).map(r => ({
+        orderId: r.order_id,
+        name: r.name,
+        phone: r.phone,
+        address: r.address,
+        note: r.note || '',
+        paymentMethod: r.payment_method || 'COD',
+        paymentStatus: r.payment_status || (r.is_paid ? 'Đã thanh toán' : 'Chưa thanh toán'),
+        paymentText: r.payment_method || 'COD',
+        isPaid: !!r.is_paid,
+        items: r.items || [],
+        finalTotal: Number(r.final_total) || 0,
+        status: r.status || 'Chờ xác nhận',
+        createdAt: r.created_at ? new Date(r.created_at).toLocaleString('vi-VN') : ''
+      })).filter(o => {
+        const id = String(o.orderId || '').toLowerCase().replace(/#/g, '');
+        const phone = String(o.phone || '').replace(/[^0-9]/g, '');
+        if (id === cleanQuery || id.includes(cleanQuery)) return true;
+        if (cleanPhone && cleanPhone.length >= 4 && phone.includes(cleanPhone)) return true;
+        return false;
+      });
+    }
+  } catch(e) {
+    console.warn('Lỗi tra cứu Supabase:', e);
+  }
+  return [];
+}
+
+async function searchOrderTracking(query) {
   const container = document.getElementById('order-tracking-result');
   if (!container) return;
 
   const rawQuery = (query || '').trim();
   if (!rawQuery) {
     container.innerHTML = `
-      <div class="p-6 bg-stone-50 rounded-2xl border border-dashed border-stone-300 text-center text-stone-500 text-xs">
+      <div class="p-5 sm:p-6 bg-stone-50 rounded-2xl border border-dashed border-stone-300 text-center text-stone-500 text-xs">
         <span class="text-2xl block mb-2">🔎</span>
         Vui lòng nhập Số điện thoại hoặc Mã đơn hàng của bạn để tra cứu tiến độ.
       </div>
@@ -1517,300 +1578,319 @@ function searchOrderTracking(query) {
     return;
   }
 
-  let orders = [];
-  try {
-    orders = JSON.parse(localStorage.getItem('tuyetnhung_orders')) || [];
-  } catch(e) {
-    orders = [];
-  }
-
   const cleanQuery = rawQuery.toLowerCase().replace(/#/g, '');
   const cleanPhoneDigits = rawQuery.replace(/[^0-9]/g, '');
 
-  const matchedOrders = orders.filter(o => {
+  let localOrders = [];
+  try {
+    localOrders = JSON.parse(localStorage.getItem('tuyetnhung_orders')) || [];
+  } catch(e) {
+    localOrders = [];
+  }
+
+  const matchFilter = (o) => {
     const id = String(o.orderId || '').toLowerCase().replace(/#/g, '');
     const phone = String(o.phone || '').replace(/[^0-9]/g, '');
-    
     if (id === cleanQuery || id.includes(cleanQuery)) return true;
     if (cleanPhoneDigits && cleanPhoneDigits.length >= 4 && phone.includes(cleanPhoneDigits)) return true;
     return false;
-  });
+  };
 
+  let matchedOrders = localOrders.filter(matchFilter);
+
+  // Nếu đã tìm thấy ngay trong local storage, hiển thị trước
+  if (matchedOrders.length > 0) {
+    renderTrackingResults(matchedOrders, rawQuery, false);
+  } else {
+    container.innerHTML = `
+      <div class="p-6 bg-stone-50 rounded-2xl border border-stone-200 text-center space-y-2">
+        <div class="inline-block w-6 h-6 border-2 border-amber-900 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-xs text-stone-600 font-medium">Đang kiểm tra dữ liệu đơn hàng trên hệ thống xưởng...</p>
+      </div>
+    `;
+  }
+
+  // Tra cứu bổ sung từ Supabase (Đảm bảo đồng bộ với các thay đổi của Admin và thiết bị khác)
+  try {
+    const cloudOrders = await fetchOrdersFromSupabase(rawQuery);
+    if (cloudOrders && cloudOrders.length > 0) {
+      // Hợp nhất dữ liệu: cập nhật đơn từ cloud vào danh sách local
+      let merged = [...localOrders];
+      cloudOrders.forEach(co => {
+        const idx = merged.findIndex(m => String(m.orderId).toLowerCase().replace(/#/g, '') === String(co.orderId).toLowerCase().replace(/#/g, ''));
+        if (idx >= 0) {
+          merged[idx] = { ...merged[idx], ...co };
+        } else {
+          merged.push(co);
+        }
+      });
+      try {
+        localStorage.setItem('tuyetnhung_orders', JSON.stringify(merged));
+      } catch(e) {}
+      
+      matchedOrders = merged.filter(matchFilter);
+      renderTrackingResults(matchedOrders, rawQuery, true);
+      return;
+    }
+  } catch(err) {
+    console.warn('Lỗi đồng bộ Cloud:', err);
+  }
+
+  // Nếu sau khi kiểm tra cloud vẫn không có đơn nào
   if (matchedOrders.length === 0) {
     const zaloPhone = (typeof STORE_INFO !== 'undefined' && STORE_INFO.zalo) ? STORE_INFO.zalo : '0962860721';
     const zaloHelpUrl = `https://zalo.me/${zaloPhone}?text=${encodeURIComponent('Dạ chào xưởng Tuyết Nhung, tôi muốn kiểm tra tình trạng đơn hàng thông tin: ' + rawQuery)}`;
 
     container.innerHTML = `
-      <div class="p-6 bg-amber-50/70 rounded-2xl border border-amber-200 text-center space-y-3">
-        <div class="w-12 h-12 bg-amber-100 text-amber-900 rounded-full flex items-center justify-center text-xl mx-auto font-black">
+      <div class="p-5 sm:p-6 bg-amber-50/70 rounded-2xl border border-amber-200 text-center space-y-3">
+        <div class="w-12 h-12 bg-amber-100 text-amber-900 rounded-full flex items-center justify-center text-xl mx-auto font-black shadow-2xs">
           ❓
         </div>
         <div>
-          <h4 class="font-bold text-amber-950 text-sm">Chưa tìm thấy đơn hàng "${rawQuery}" trên trình duyệt này</h4>
-          <p class="text-xs text-stone-600 mt-1 max-w-sm mx-auto">
+          <h4 class="font-bold text-amber-950 text-sm">Chưa tìm thấy đơn hàng "${rawQuery}"</h4>
+          <p class="text-xs text-stone-600 mt-1 max-w-sm mx-auto leading-relaxed">
             Nếu anh/chị vừa đặt hàng qua Zalo hoặc Hotline, thợ xưởng đã tiếp nhận và đang tiến hành xử lý. Anh/chị có thể liên hệ trực tiếp để xưởng tra cứu nhanh nhé:
           </p>
         </div>
-        <div class="flex flex-col sm:flex-row gap-2 justify-center pt-2">
-          <a href="${zaloHelpUrl}" target="_blank" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
-            <span>💬 Nhắn Zalo Xưởng Tra Cứu</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 max-w-sm mx-auto">
+          <a href="${zaloHelpUrl}" target="_blank" class="px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors">
+            <span>💬 Nhắn Zalo Tra Cứu</span>
           </a>
-          <a href="tel:0962860721" class="px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
-            <span>📞 Gọi Hotline: 0962.860.721</span>
+          <a href="tel:0962860721" class="px-3.5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors">
+            <span>📞 Hotline: 0962.860.721</span>
           </a>
         </div>
       </div>
     `;
-    return;
+  }
+}
+
+function renderTrackingResults(matchedOrders, rawQuery, isRealtimeUpdated = false) {
+  const container = document.getElementById('order-tracking-result');
+  if (!container) return;
+
+  const displayList = [...matchedOrders].reverse();
+  const ordersHtml = displayList.map(order => renderSingleTrackingCard(order)).join('');
+
+  container.innerHTML = `
+    <div class="text-[11px] sm:text-xs text-stone-500 mb-2 flex items-center justify-between px-0.5">
+      <span>Tìm thấy <strong class="text-amber-950 font-bold">${matchedOrders.length}</strong> đơn hàng:</span>
+      <span class="text-[10px] sm:text-[11px] text-stone-400 bg-stone-100 px-2 py-0.5 rounded-md">Từ khóa: "${rawQuery}"</span>
+    </div>
+    <div class="space-y-3">
+      ${ordersHtml}
+    </div>
+  `;
+}
+
+function renderSingleTrackingCard(order) {
+  const isPaid = order.isPaid === true || order.paymentStatus === 'Đã thanh toán';
+  const status = order.status || 'Chờ xác nhận';
+  const isBanking = order.paymentMethod === 'banking' || (order.paymentText && order.paymentText.includes('Chuyển khoản'));
+
+  // Xác định 4 mốc tiến trình tinh gọn:
+  // 1: Tiếp nhận | 2: Đóng gói | 3: Đang giao | 4: Hoàn tất
+  let step = 1;
+  let stepPercent = '20%';
+  let badgeColor = 'bg-amber-100 text-amber-900 border-amber-300';
+  let bannerTitle = 'Xưởng đã tiếp nhận đơn hàng #' + order.orderId;
+  let bannerDesc = isPaid
+    ? 'Xưởng đã nhận được tiền chuyển khoản VietQR (0đ khi nhận). Thợ đang chuẩn bị đóng hộp gửi đi cho bạn!'
+    : 'Thợ xưởng đang kiểm tra size và chuẩn bị đóng hàng. Đơn gửi COD được mở hộp xỏ thử dép trước khi trả tiền.';
+  let bannerIcon = '📝';
+  let bannerBg = 'bg-amber-50 border-amber-200 text-amber-950';
+
+  if (status.includes('hủy') || status.includes('Hủy')) {
+    step = 0;
+    stepPercent = '0%';
+    badgeColor = 'bg-rose-100 text-rose-900 border-rose-300';
+    bannerTitle = 'Đơn hàng đã được hủy';
+    bannerDesc = 'Nếu có nhầm lẫn hoặc cần đặt lại mẫu khác, bạn vui lòng liên hệ Zalo xưởng bên dưới để được thợ hỗ trợ ngay.';
+    bannerIcon = '✕';
+    bannerBg = 'bg-rose-50 border-rose-200 text-rose-950';
+  } else if (status.includes('Đã giao') || status.includes('Hoàn tất') || status.includes('hoàn thành')) {
+    step = 4;
+    stepPercent = '100%';
+    badgeColor = 'bg-emerald-100 text-emerald-900 border-emerald-300';
+    bannerTitle = 'Giao hàng thành công • Bảo hành chính hãng 12 tháng';
+    bannerDesc = 'Kiện hàng đã được giao đến bạn. Sản phẩm được bảo hành 12 tháng da & keo đế. Nếu đi chưa vừa size, cứ nhắn xưởng đổi size tận nhà nhé!';
+    bannerIcon = '⭐';
+    bannerBg = 'bg-emerald-50 border-emerald-200 text-emerald-950';
+  } else if (status.includes('Đang giao') || status.includes('giao')) {
+    step = 3;
+    stepPercent = '75%';
+    badgeColor = 'bg-blue-100 text-blue-900 border-blue-300';
+    bannerTitle = 'Bưu tá đang vận chuyển đơn hàng';
+    bannerDesc = 'Kiện hàng đang trên đường giao tới bạn. Khi nhận hàng, bạn ĐƯỢC MỞ HỘP KIỂM TRA VÀ ĐI THỬ VỪA CHÂN mới thanh toán!';
+    bannerIcon = '🚚';
+    bannerBg = 'bg-blue-50 border-blue-200 text-blue-950';
+  } else if (status.includes('đóng') || status.includes('Đóng gói') || status.includes('Đã chuẩn bị')) {
+    step = 2;
+    stepPercent = '48%';
+    badgeColor = 'bg-purple-100 text-purple-900 border-purple-300';
+    bannerTitle = 'Đã kiểm tra kỹ & đóng hộp hoàn tất';
+    bannerDesc = 'Thợ xưởng đã kiểm tra chất lượng da sáp, đế đúc và đóng gói cẩn thận. Đơn đang chờ bưu tá qua lấy hàng.';
+    bannerIcon = '📦';
+    bannerBg = 'bg-purple-50 border-purple-200 text-purple-950';
   }
 
-  // Sắp xếp đơn mới nhất lên đầu
-  const displayList = [...matchedOrders].reverse();
-
-  const ordersHtml = displayList.map((order) => {
-    const isPaid = order.isPaid === true || order.paymentStatus === 'Đã thanh toán';
-    const status = order.status || 'Chờ xác nhận';
-    const isBanking = order.paymentMethod === 'banking' || (order.paymentText && order.paymentText.includes('Chuyển khoản'));
-
-    // Xác định bước tiến trình (1: Tiếp nhận, 2: Thanh toán, 3: Đóng gói, 4: Đang giao, 5: Đã giao)
-    let step = 1;
-    if (status.includes('Đã giao')) {
-      step = 5;
-    } else if (status.includes('Đang giao')) {
-      step = 4;
-    } else if (status.includes('đóng')) {
-      step = 3;
-    } else if (isPaid) {
-      step = 2;
-    } else {
-      step = 1;
-    }
-
-    const stepsData = [
-      {
-        num: 1,
-        title: 'Đã Tiếp Nhận',
-        desc: order.createdAt || 'Hệ thống đã nhận',
-        icon: '📝',
-        isDone: step >= 1
-      },
-      {
-        num: 2,
-        title: isPaid ? 'Đã Thanh Toán' : (isBanking ? 'Chờ Chuyển Tiền' : 'Thu COD'),
-        desc: isPaid ? 'Đã nhận qua ACB' : (isBanking ? 'Chờ đối chiếu STK' : 'Trả tiền khi nhận'),
-        icon: isPaid ? '✓' : (isBanking ? '⏳' : '💵'),
-        isDone: isPaid || !isBanking || step >= 3,
-        isWarning: isBanking && !isPaid && step < 3
-      },
-      {
-        num: 3,
-        title: 'Đã Đóng Gói',
-        desc: step >= 3 ? 'Đã kiểm tra & đóng hộp' : 'Đang xếp hàng',
-        icon: '📦',
-        isDone: step >= 3
-      },
-      {
-        num: 4,
-        title: 'Đang Giao',
-        desc: step >= 4 ? 'Shipper đang giao tới' : 'Chờ bưu tá nhận',
-        icon: '🚚',
-        isDone: step >= 4
-      },
-      {
-        num: 5,
-        title: 'Thành Công',
-        desc: step >= 5 ? 'Đã nhận (BH 12T)' : 'Được thử vừa chân',
-        icon: '⭐',
-        isDone: step >= 5
-      }
-    ];
-
-    let itemsHtml = '';
-    if (Array.isArray(order.items) && order.items.length > 0) {
-      itemsHtml = order.items.map(i => `
-        <div class="flex items-center justify-between py-2 border-b border-stone-100 last:border-0 text-xs">
-          <div class="flex items-center gap-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-800 flex-shrink-0"></span>
-            <div>
-              <span class="font-bold text-stone-900">${i.name}</span>
-              <div class="text-[11px] text-stone-500">Size: <strong class="text-amber-900">${i.size}</strong>${i.color ? ` • Màu: ${i.color}` : ''} • SL: x${i.quantity}</div>
+  // Danh sách sản phẩm tối ưu mobile
+  let itemsHtml = '';
+  if (Array.isArray(order.items) && order.items.length > 0) {
+    itemsHtml = order.items.map(i => `
+      <div class="flex items-center justify-between py-2 border-b border-stone-100 last:border-0 text-xs">
+        <div class="flex items-center gap-2.5 min-w-0 pr-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center font-bold text-xs flex-shrink-0">
+            👞
+          </div>
+          <div class="min-w-0">
+            <h5 class="font-bold text-stone-900 truncate leading-snug">${i.name}</h5>
+            <div class="flex items-center gap-1.5 text-[11px] text-stone-500 mt-0.5">
+              <span class="px-1.5 py-0.2 rounded bg-amber-50 text-amber-900 font-bold border border-amber-200 text-[10px]">Size ${i.size}</span>
+              ${i.color ? `<span>• ${i.color}</span>` : ''}
+              <span class="font-medium text-stone-600">• SL: <strong>x${i.quantity || 1}</strong></span>
             </div>
           </div>
-          <span class="font-extrabold text-amber-950 font-mono text-xs">${formatCurrency((i.price || 0) * (i.quantity || 1))}</span>
         </div>
-      `).join('');
-    } else {
-      itemsHtml = `<div class="text-xs text-stone-600 py-1">${order.itemsText || 'Dép da nam Tuyết Nhung'}</div>`;
-    }
+        <span class="font-black text-amber-950 font-mono text-xs whitespace-nowrap">${formatCurrency((i.price || 0) * (i.quantity || 1))}</span>
+      </div>
+    `).join('');
+  } else {
+    itemsHtml = `<div class="text-xs text-stone-600 py-1 font-medium">${order.itemsText || 'Dép da nam Tuyết Nhung'}</div>`;
+  }
 
-    const cleanBuyerPhone = String(order.phone || '').trim().replace(/[^0-9]/g, '');
-    let statusTextForBuyer = '';
-    if (status.includes('Đã giao')) {
-      statusTextForBuyer = `đã được giao thành công đến bạn! Dép đi có êm và vừa chân không ạ? Xưởng Tuyết Nhung bảo hành chính hãng 12 tháng da & đế. Nếu cần đổi size cứ nhắn xưởng hỗ trợ ngay nhé!`;
-    } else if (status.includes('Đang giao')) {
-      statusTextForBuyer = `đang trên đường giao đến bạn. Bạn chú ý điện thoại để shipper liên hệ nhé. Khi nhận hàng bạn ĐƯỢC MỞ HỘP KIỂM TRA VÀ ĐI THỬ VỪA CHÂN mới thanh toán ạ!`;
-    } else if (status.includes('đóng')) {
-      statusTextForBuyer = `đã được thợ xưởng kiểm tra da & đóng hộp dép hoàn tất, đang chờ bàn giao cho bên bưu tá để gửi đi sớm nhất!`;
-    } else if (isPaid) {
-      statusTextForBuyer = `đã được xưởng xác nhận NHẬN ĐỦ TIỀN CHUYỂN KHOẢN (0đ khi nhận hàng). Thợ đang chuẩn bị dép để đóng gói cho bạn nhé!`;
-    } else {
-      statusTextForBuyer = `đã được xưởng tiếp nhận. Thợ đang chuẩn bị mẫu dép đúng size để đóng gói gửi đi cho bạn nhé!`;
-    }
+  const cleanBuyerPhone = String(order.phone || '').trim().replace(/[^0-9]/g, '');
+  const workshopZaloUrl = `https://zalo.me/0962860721?text=${encodeURIComponent('Dạ chào xưởng Tuyết Nhung, tôi cần hỗ trợ kiểm tra đơn hàng #' + order.orderId + ' (' + order.name + ' - ' + order.phone + ')')}`;
 
-    const itemsSummary = Array.isArray(order.items) && order.items.length > 0
-      ? order.items.map(i => `${i.name} (Size ${i.size}) x${i.quantity}`).join(', ')
-      : (order.itemsText || 'Dép da nam thủ công');
-
-    const buyerZaloMsg = `Dạ chào bạn ${order.name}! Xưởng Dép Nam Tuyết Nhung thông báo đơn hàng #${order.orderId} của bạn ${statusTextForBuyer}\n` +
-      `• Sản phẩm: ${itemsSummary}\n` +
-      `• Tổng thanh toán: ${isPaid ? 'ĐÃ THANH TOÁN (0đ khi nhận)' : formatCurrency(order.finalTotal || 0) + ' (Thu COD khi nhận)'}\n` +
-      `• Nơi nhận: ${order.address}\n\n` +
-      `Cảm ơn bạn đã tin tưởng xưởng dép thủ công Tuyết Nhung! Hotline: 0962.860.721`;
-
-    const buyerZaloUrl = `https://zalo.me/${cleanBuyerPhone}?text=${encodeURIComponent(buyerZaloMsg)}`;
-    const workshopZaloUrl = `https://zalo.me/0962860721?text=${encodeURIComponent('Dạ chào xưởng Tuyết Nhung, tôi cần hỗ trợ về đơn hàng #' + order.orderId + ' (' + order.name + ' - ' + order.phone + ')')}`;
-
-
-    return `
-      <div class="bg-white rounded-2xl border-2 border-amber-800/20 p-4 sm:p-5 shadow-sm space-y-4 mb-3">
-        <!-- Header đơn hàng -->
-        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-200">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-mono font-black text-amber-950 text-base">#${order.orderId}</span>
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                step === 5 ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
-                step === 4 ? 'bg-blue-100 text-blue-800 border border-blue-300' :
-                step === 3 ? 'bg-purple-100 text-purple-800 border border-purple-300' :
-                'bg-amber-100 text-amber-900 border border-amber-300'
-              }">
-                ${status}
-              </span>
-            </div>
-            <span class="text-[11px] text-stone-400 block mt-0.5">Đặt lúc: ${order.createdAt || 'Gần đây'}</span>
+  return `
+    <div class="bg-white rounded-2xl border border-stone-200 p-3.5 sm:p-5 shadow-sm space-y-3.5 text-xs">
+      <!-- Header đơn hàng -->
+      <div class="flex items-start justify-between gap-2 pb-2.5 border-b border-stone-100">
+        <div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="font-mono font-black text-amber-950 text-base sm:text-lg">#${order.orderId}</span>
+            <button 
+              type="button" 
+              onclick="copyOrderCode('${order.orderId}')" 
+              class="px-1.5 py-0.5 rounded bg-stone-100 hover:bg-stone-200 text-stone-600 text-[10px] font-bold border border-stone-200 transition-colors flex items-center gap-1"
+              title="Sao chép mã đơn"
+            >
+              <span>📋</span><span>Chép</span>
+            </button>
           </div>
-
-          <div class="text-right">
-            <span class="text-[10px] text-stone-500 uppercase font-bold block">Tổng Thanh Toán:</span>
-            <span class="text-base font-black text-amber-900">${formatCurrency(order.finalTotal || 0)}</span>
-          </div>
+          <span class="text-[11px] text-stone-400 block mt-0.5">${order.createdAt ? 'Đặt lúc: ' + order.createdAt : 'Đơn mới đặt'}</span>
         </div>
 
-        <!-- Thanh tiến trình 5 bước trực quan -->
-        <div class="py-2">
-          <div class="text-xs font-black text-stone-900 mb-3 flex items-center justify-between">
-            <span>Tiến Độ Đơn Hàng:</span>
-            <span class="text-[11px] text-amber-900 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Giai đoạn ${step}/5</span>
-          </div>
-          
-          <div class="relative grid grid-cols-5 gap-1 sm:gap-2">
-            ${stepsData.map((s) => `
-              <div class="flex flex-col items-center text-center">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-2xs ${
-                  s.isDone 
-                    ? 'bg-amber-900 text-white ring-2 ring-amber-700/40 scale-105' 
-                    : (s.isWarning ? 'bg-amber-100 text-amber-900 border-2 border-dashed border-amber-400' : 'bg-stone-100 text-stone-400 border border-stone-200')
-                }">
-                  ${s.icon}
-                </div>
-                <span class="text-[10px] sm:text-[11px] font-bold mt-1.5 leading-tight ${s.isDone ? 'text-stone-900' : 'text-stone-400'}">
-                  ${s.title}
-                </span>
-                <span class="hidden sm:block text-[9px] text-stone-400 leading-tight mt-0.5">
-                  ${s.desc}
-                </span>
+        <div class="text-right flex-shrink-0">
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider inline-block border ${badgeColor}">
+            ${status}
+          </span>
+        </div>
+      </div>
+
+      <!-- Thanh tiến trình 4 mốc (Thiết kế tối ưu cho điện thoại) -->
+      <div class="py-1">
+        <div class="flex items-center justify-between text-xs mb-2">
+          <span class="font-bold text-stone-700">Tiến trình đơn:</span>
+          <span class="font-black text-amber-900 text-[10px] sm:text-[11px] bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Giai đoạn ${step}/4</span>
+        </div>
+
+        <div class="relative px-3 sm:px-4 pt-1 pb-1">
+          <!-- Đường thanh ngang xám nền -->
+          <div class="absolute left-6 right-6 top-4 h-1 bg-stone-200 -z-0 rounded-full"></div>
+          <!-- Đường tiến độ hoàn thành -->
+          <div class="absolute left-6 top-4 h-1 bg-amber-900 -z-0 rounded-full transition-all duration-500" style="width: calc(${stepPercent} - 16px)"></div>
+
+          <!-- 4 nút mốc tròn -->
+          <div class="flex justify-between items-center relative z-10">
+            <!-- Mốc 1 -->
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all ${step >= 1 ? 'bg-amber-900 text-white shadow-xs ring-2 ring-amber-300' : 'bg-stone-100 text-stone-400 border border-stone-200'}">
+                📝
               </div>
-            `).join('')}
+              <span class="text-[10px] sm:text-xs font-bold mt-1 text-center ${step >= 1 ? 'text-amber-950' : 'text-stone-400'}">Tiếp nhận</span>
+            </div>
+
+            <!-- Mốc 2 -->
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all ${step >= 2 ? 'bg-amber-900 text-white shadow-xs ring-2 ring-amber-300' : 'bg-stone-100 text-stone-400 border border-stone-200'}">
+                📦
+              </div>
+              <span class="text-[10px] sm:text-xs font-bold mt-1 text-center ${step >= 2 ? 'text-amber-950' : 'text-stone-400'}">Đóng gói</span>
+            </div>
+
+            <!-- Mốc 3 -->
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all ${step >= 3 ? 'bg-amber-900 text-white shadow-xs ring-2 ring-amber-300' : 'bg-stone-100 text-stone-400 border border-stone-200'}">
+                🚚
+              </div>
+              <span class="text-[10px] sm:text-xs font-bold mt-1 text-center ${step >= 3 ? 'text-amber-950' : 'text-stone-400'}">Đang giao</span>
+            </div>
+
+            <!-- Mốc 4 -->
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all ${step >= 4 ? 'bg-emerald-700 text-white shadow-xs ring-2 ring-emerald-300' : 'bg-stone-100 text-stone-400 border border-stone-200'}">
+                ⭐
+              </div>
+              <span class="text-[10px] sm:text-xs font-bold mt-1 text-center ${step >= 4 ? 'text-emerald-900 font-extrabold' : 'text-stone-400'}">Hoàn tất</span>
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- Chi tiết sản phẩm -->
-        <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-2">
-          <span class="text-[10px] font-black uppercase tracking-wider text-stone-500 block">Sản phẩm trong đơn:</span>
-          ${itemsHtml}
+      <!-- Banner thông báo giải thích trạng thái hiện tại -->
+      <div class="p-3 sm:p-3.5 rounded-xl border ${bannerBg} flex items-start gap-2.5">
+        <span class="text-xl flex-shrink-0 mt-0.5">${bannerIcon}</span>
+        <div class="text-xs">
+          <strong class="font-bold block text-xs sm:text-sm leading-tight">${bannerTitle}</strong>
+          <p class="text-[11px] sm:text-xs mt-1 leading-relaxed opacity-90">${bannerDesc}</p>
+        </div>
+      </div>
+
+      <!-- Chi tiết sản phẩm trong đơn -->
+      <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-1.5">
+        <span class="text-[10px] font-black uppercase tracking-wider text-stone-500 block">Sản phẩm trong đơn:</span>
+        ${itemsHtml}
+      </div>
+
+      <!-- Người nhận & Thanh toán -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+        <div class="p-3 bg-amber-50/50 rounded-xl border border-amber-200/70">
+          <span class="text-[10px] uppercase font-bold text-stone-500 block">Người nhận hàng:</span>
+          <strong class="text-stone-900 block mt-0.5">${order.name} - ${order.phone}</strong>
+          <p class="text-[11px] text-stone-600 mt-0.5 leading-snug">📍 ${order.address}</p>
+          ${order.note ? `<p class="text-[11px] text-amber-800 italic mt-1 bg-amber-100/50 p-1.5 rounded">💬 Ghi chú: ${order.note}</p>` : ''}
         </div>
 
-        <!-- Địa chỉ & Thanh toán -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200/80">
-            <span class="text-[10px] uppercase font-bold text-stone-500 block">Người nhận hàng:</span>
-            <strong class="text-stone-900 block mt-0.5">${order.name} - ${order.phone}</strong>
-            <p class="text-[11px] text-stone-600 mt-0.5">📍 ${order.address}</p>
-          </div>
-          <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200/80">
-            <span class="text-[10px] uppercase font-bold text-stone-500 block">Hình thức thanh toán:</span>
+        <div class="p-3 bg-amber-50/50 rounded-xl border border-amber-200/70 flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-stone-500 block">Thanh toán:</span>
             <strong class="text-stone-900 block mt-0.5">
-              ${isPaid ? '✅ Đã thanh toán (0đ khi nhận)' : (isBanking ? '⏳ Chuyển khoản VietQR' : '💵 Thu tiền mặt COD khi nhận')}
+              ${isPaid ? '✅ Đã thanh toán (0đ khi nhận)' : (isBanking ? '⏳ Chờ chuyển khoản VietQR' : '💵 Thu tiền mặt COD khi nhận')}
             </strong>
             <p class="text-[11px] text-stone-600 mt-0.5">
-              ${isPaid ? 'Bưu tá giao hàng không thu tiền (0đ)' : (isBanking ? 'Nội dung CK: TT ' + order.orderId : 'Được mở hộp xỏ thử dép vừa chân mới trả tiền')}
+              ${isPaid ? 'Bưu tá không thu tiền (0đ)' : (isBanking ? 'Nội dung CK: TT ' + order.orderId : 'Được mở hộp xỏ thử dép vừa chân mới trả tiền')}
             </p>
           </div>
-        </div>
-
-        <!-- Nút liên hệ hỗ trợ khi khách xem tiến độ -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-2 border-t border-stone-200/60">
-          <span class="text-[11px] text-stone-500 font-medium">Bạn cần đổi size dép hoặc hỗ trợ đơn #${order.orderId}?</span>
-          <div class="flex items-center gap-2">
-            <a href="${workshopZaloUrl}" target="_blank" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors" title="Nhắn tin Zalo với Xưởng Tuyết Nhung hỗ trợ đơn #${order.orderId}">
-              <span>💬 Chat Zalo Xưởng</span>
-            </a>
-            <a href="tel:0962860721" class="px-3.5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-1 transition-colors border border-stone-200" title="Gọi Hotline xưởng 0962.860.721">
-              <span>📞 Gọi Hotline</span>
-            </a>
-          </div>
-        </div>
-        <div class="hidden">
-          <a href="javascript:void(0)" onclick="sendZaloStatusToBuyer('${order.orderId}')" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer" title="Sao chép lời nhắn & Mở Zalo người mua ${order.phone}">
-            <span>💬 Nhắn Zalo Người Mua (${order.phone})</span>
-          </a>
-          <div class="flex items-center gap-2">
-            <a href="${workshopZaloUrl}" target="_blank" class="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs flex items-center justify-center gap-1 transition-colors border border-amber-200" title="Nhắn tin với Zalo Xưởng Tuyết Nhung">
-              <span>💬 Zalo Xưởng</span>
-            </a>
-            <a href="tel:0962860721" class="px-3.5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-1 transition-colors border border-stone-200" title="Gọi Hotline xưởng">
-              <span>📞 Gọi Xưởng</span>
-            </a>
+          <div class="pt-2 mt-2 border-t border-amber-200/60 flex items-center justify-between">
+            <span class="text-xs font-bold text-stone-700">Tổng thanh toán:</span>
+            <span class="text-base font-black text-amber-900 font-mono">${formatCurrency(order.finalTotal || 0)}</span>
           </div>
         </div>
       </div>
-    `;
-  }).join('');
 
-  container.innerHTML = `
-    <div class="text-xs text-stone-500 mb-2 flex items-center justify-between">
-      <span>Tìm thấy <strong>${matchedOrders.length}</strong> đơn hàng:</span>
-      <span class="text-[11px] text-stone-400">Từ khóa: "${rawQuery}"</span>
-    </div>
-    ${ordersHtml}
-  `;
-  return;
-}
-
-/* old block
-  const dummy = `
-        <div class="flex items-center gap-2 pt-1">
-
-
-          </a>
-
-
-          </a>
-        </div>
+      <!-- Nút hành động liên hệ xưởng (Rộng, dễ bấm trên mobile) -->
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <a href="${workshopZaloUrl}" target="_blank" class="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-colors" title="Chat Zalo cùng Xưởng Tuyết Nhung">
+          <span>💬 Chat Zalo Xưởng</span>
+        </a>
+        <a href="tel:0962860721" class="py-2.5 px-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-colors" title="Gọi Hotline xưởng 0962.860.721">
+          <span>📞 Hotline Xưởng</span>
+        </a>
       </div>
-    `;
-  }).join('');
-
-  container.innerHTML = `
-    <div class="text-xs text-stone-500 mb-2 flex items-center justify-between">
-      <span>Tìm thấy <strong>${matchedOrders.length}</strong> đơn hàng:</span>
-      <span class="text-[11px] text-stone-400">Từ khóa: "${rawQuery}"</span>
     </div>
-    ${ordersHtml}
   `;
 }
-
-*/
 
 // Xuất hàm ra window
 window.openOrderTrackingModal = openOrderTrackingModal;
