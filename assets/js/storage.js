@@ -6,29 +6,59 @@
 const DB_NAME = 'TuyetNhungStoreDB';
 const STORE_NAME = 'products_store';
 
-// Mở cơ sở dữ liệu IndexedDB của trình duyệt
+// Mở cơ sở dữ liệu IndexedDB của trình duyệt (có timeout bảo vệ chống treo trang)
 function openDatabase() {
   return new Promise((resolve) => {
     if (!window.indexedDB) {
       resolve(null);
       return;
     }
+    let isSettled = false;
+    const timer = setTimeout(() => {
+      if (!isSettled) {
+        isSettled = true;
+        console.warn('IndexedDB mở quá lâu, tự động bỏ qua để trang không bị đơ');
+        resolve(null);
+      }
+    }, 1200);
+
     try {
       const request = indexedDB.open(DB_NAME, 1);
+      request.onblocked = () => {
+        if (!isSettled) {
+          isSettled = true;
+          clearTimeout(timer);
+          resolve(null);
+        }
+      };
       request.onupgradeneeded = (e) => {
         const db = e.target.result;
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           db.createObjectStore(STORE_NAME);
         }
       };
-      request.onsuccess = (e) => resolve(e.target.result);
+      request.onsuccess = (e) => {
+        if (!isSettled) {
+          isSettled = true;
+          clearTimeout(timer);
+          resolve(e.target.result);
+        }
+      };
       request.onerror = (e) => {
-        console.warn('Không thể mở IndexedDB, dùng LocalStorage dự phòng:', e);
-        resolve(null);
+        if (!isSettled) {
+          isSettled = true;
+          clearTimeout(timer);
+          console.warn('Không thể mở IndexedDB, dùng LocalStorage dự phòng:', e);
+          resolve(null);
+        }
       };
     } catch(err) {
-      console.warn('Lỗi gọi indexedDB.open:', err);
-      resolve(null);
+      if (!isSettled) {
+        isSettled = true;
+        clearTimeout(timer);
+        console.warn('Lỗi gọi indexedDB.open:', err);
+        resolve(null);
+      }
     }
   });
 }
@@ -156,8 +186,9 @@ async function loadProductsFromStorage() {
       const tx = db.transaction(STORE_NAME, 'readonly');
       const req = tx.objectStore(STORE_NAME).get('products_list');
       const result = await new Promise((resolve) => {
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => resolve(null);
+        const t = setTimeout(() => resolve(null), 1000);
+        req.onsuccess = () => { clearTimeout(t); resolve(req.result); };
+        req.onerror = () => { clearTimeout(t); resolve(null); };
       });
       if (result && Array.isArray(result) && result.length > 0) {
         return result;
@@ -213,8 +244,9 @@ async function loadHomepageConfig() {
       const tx = db.transaction(STORE_NAME, 'readonly');
       const req = tx.objectStore(STORE_NAME).get('homepage_config');
       const res = await new Promise((resolve) => {
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => resolve(null);
+        const t = setTimeout(() => resolve(null), 1000);
+        req.onsuccess = () => { clearTimeout(t); resolve(req.result); };
+        req.onerror = () => { clearTimeout(t); resolve(null); };
       });
       if (res) return res;
     }

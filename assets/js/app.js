@@ -14,10 +14,72 @@ let appliedDiscount = 0; // % giảm giá
 
 let loadedProducts = typeof PRODUCTS_DATA !== 'undefined' ? [...PRODUCTS_DATA] : [];
 
-// Khởi tạo khi trang tải xong
-document.addEventListener('DOMContentLoaded', async () => {
+// Hàm tự động tải dữ liệu products.js tươi mới từ server (vượt qua hoàn toàn cache trình duyệt)
+async function fetchFreshProductsData() {
+  try {
+    if (window.location.protocol.startsWith('http')) {
+      const res = await fetch('assets/js/products.js?t=' + Date.now(), { cache: 'no-store' });
+      if (res.ok) {
+        const jsText = await res.text();
+        const script = document.createElement('script');
+        script.text = jsText;
+        document.head.appendChild(script);
+        if (typeof PRODUCTS_DATA !== 'undefined' && Array.isArray(PRODUCTS_DATA) && PRODUCTS_DATA.length > 0) {
+          loadedProducts = [...PRODUCTS_DATA];
+          await applyHomepageConfig();
+          initCategories();
+          renderProducts();
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Không thể nạp products.js tươi mới:', e);
+  }
+}
+
+// Khởi tạo khi trang tải xong (Render NGAY TỨC THÌ, an toàn 100%)
+async function startupStorefront() {
+  // 1. Render NGAY LẬP TỨC dữ liệu có sẵn để không bao giờ bị đơ/trắng trang
+  try {
+    if (typeof PRODUCTS_DATA !== 'undefined' && Array.isArray(PRODUCTS_DATA) && PRODUCTS_DATA.length > 0) {
+      loadedProducts = [...PRODUCTS_DATA];
+    }
+    await applyHomepageConfig();
+    initCategories();
+    renderProducts();
+    updateCartBadge();
+    setupEventListeners();
+  } catch (renderErr) {
+    console.error('Lỗi render khởi động:', renderErr);
+  }
+
+  // 2. Chạy ngầm cập nhật dữ liệu mới nhất (IndexedDB hoặc fetch tươi từ server)
+  try {
+    let storageProducts = null;
+    if (typeof loadProductsFromStorage === 'function') {
+      storageProducts = await Promise.race([
+        loadProductsFromStorage(),
+        new Promise(r => setTimeout(() => r(null), 800))
+      ]);
+    }
+
+    if (storageProducts && Array.isArray(storageProducts) && storageProducts.length > 0) {
+      loadedProducts = storageProducts;
+      await applyHomepageConfig();
+      initCategories();
+      renderProducts();
+    } else {
+      await fetchFreshProductsData();
+    }
+  } catch (bgErr) {
+    console.warn('Lỗi đồng bộ nền:', bgErr);
+  }
+}
+document.addEventListener('DOMContentLoaded', startupStorefront);
+const __dead_code_stub = () => {
+  if (false) { (async () => {
   if (typeof loadProductsFromStorage === 'function') {
-    loadedProducts = await loadProductsFromStorage();
+
   }
   await applyHomepageConfig();
   initCategories();
@@ -26,10 +88,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupEventListeners();
 });
 
+} };
+
 // Tự động cập nhật nếu tab khác thay đổi dữ liệu
 window.addEventListener('storage', async () => {
   if (typeof loadProductsFromStorage === 'function') {
-    loadedProducts = await loadProductsFromStorage();
+
     renderProducts();
   }
   initCategories();
@@ -285,10 +349,10 @@ function getFilteredProducts() {
   // Lọc theo từ khóa tìm kiếm
   if (currentSearch) {
     list = list.filter(p => 
-      p.name.toLowerCase().includes(currentSearch) ||
-      p.leatherType.toLowerCase().includes(currentSearch) ||
-      p.categoryName.toLowerCase().includes(currentSearch) ||
-      p.colors.some(c => c.toLowerCase().includes(currentSearch))
+      (p.name && p.name.toLowerCase().includes(currentSearch)) ||
+      (p.leatherType && p.leatherType.toLowerCase().includes(currentSearch)) ||
+      (p.categoryName && p.categoryName.toLowerCase().includes(currentSearch)) ||
+      (Array.isArray(p.colors) && p.colors.some(c => c && c.toLowerCase().includes(currentSearch)))
     );
   }
 
@@ -375,8 +439,18 @@ function renderProducts() {
   }
 
   container.innerHTML = products.map(product => {
-    const discountPercent = Math.round((1 - product.price / product.originalPrice) * 100);
-    const defaultSize = product.sizes[0];
+    // guarded prices and sizes
+    const curPrice = product.price || 0;
+    const origPrice = product.originalPrice || curPrice || 1;
+    const discountPercent = origPrice > curPrice ? Math.round((1 - curPrice / origPrice) * 100) : 0;
+    const sizes = (Array.isArray(product.sizes) && product.sizes.length > 0) ? product.sizes : [38, 39, 40, 41, 42, 43, 44];
+    const defaultSize = sizes[0];
+    const images = (Array.isArray(product.images) && product.images.length > 0) ? product.images : ['https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80'];
+    const mainImg = images[0];
+    const catName = product.categoryName || product.category || 'Dép Da Nam';
+    const rating = product.rating || 5;
+    const reviews = product.reviewsCount || 1;
+    const leather = product.leatherType || 'Da bò thật nguyên tấm 100%';
 
     return `
       <div class="product-card bg-white rounded-2xl overflow-hidden border border-stone-100 flex flex-col group relative shadow-sm hover:border-amber-200">
@@ -396,19 +470,19 @@ function renderProducts() {
         <!-- Khung ảnh sản phẩm -->
         <div class="relative overflow-hidden bg-stone-100 aspect-square cursor-pointer" onclick="openQuickView(${product.id})">
           <img 
-            src="${product.images[0]}" 
+            src="${mainImg}" 
             alt="${product.name}" 
             class="img-zoom w-full h-full object-cover object-center"
             loading="lazy"
           />
-          ${product.images.length > 1 ? `
+          ${images.length > 1 ? `
             <span class="absolute bottom-2 right-2 z-10 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 backdrop-blur-xs">
-              📷 ${product.images.length} góc chụp
+              📷 ${images.length} góc chụp
             </span>
           ` : ''}
           <div class="absolute inset-0 bg-stone-900 bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
             <button class="px-4 py-2 bg-white text-stone-900 font-bold text-xs rounded-full shadow-lg hover:bg-amber-800 hover:text-white transition-colors">
-              🔍 Xem ${product.images.length} Góc Ảnh Chi Tiết
+              🔍 Xem ${images.length} Góc Ảnh Chi Tiết
             </button>
           </div>
         </div>
@@ -418,10 +492,10 @@ function renderProducts() {
           <div>
             <!-- Danh mục & Đánh giá -->
             <div class="flex items-center justify-between text-xs text-stone-500 mb-1.5">
-              <span class="font-medium text-amber-900">${product.categoryName}</span>
+              <span class="font-medium text-amber-900">${catName}</span>
               <div class="flex items-center text-amber-500">
-                <span>★ ${product.rating}</span>
-                <span class="text-stone-400 ml-1">(${product.reviewsCount})</span>
+                <span>★ ${rating}</span>
+                <span class="text-stone-400 ml-1">(${reviews})</span>
               </div>
             </div>
 
@@ -437,7 +511,7 @@ function renderProducts() {
             <!-- Đặc điểm nổi bật -->
             <p class="text-xs text-stone-600 line-clamp-1 mb-3 flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-amber-700 flex-shrink-0"></span>
-              ${product.leatherType}
+              ${leather}
             </p>
 
             <!-- Chọn size nhanh -->
@@ -447,7 +521,7 @@ function renderProducts() {
                 <button onclick="openSizeGuideModal()" class="text-amber-800 hover:underline">Bảng đo size</button>
               </div>
               <div class="flex flex-wrap gap-1.5" id="size-options-${product.id}">
-                ${product.sizes.map((s, idx) => `
+                ${sizes.map((s, idx) => `
                   <button 
                     onclick="selectCardSize(${product.id}, ${s})"
                     data-size="${s}"
@@ -724,7 +798,7 @@ function openQuickView(productId) {
         <div class="relative aspect-square rounded-2xl overflow-hidden bg-stone-100 mb-3 border border-stone-200 group">
           <img id="qv-main-image" src="${product.images[0]}" alt="${product.name}" class="w-full h-full object-cover transition-all duration-300" />
           
-          ${product.images.length > 1 ? `
+          ${images.length > 1 ? `
             <!-- Nút Prev / Next ảnh -->
             <button onclick="prevQvImage()" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-stone-800 shadow-md flex items-center justify-center font-bold text-xs opacity-0 group-hover:opacity-100 transition-opacity">
               ◀

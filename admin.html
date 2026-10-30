@@ -2058,8 +2058,8 @@
 
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="assets/js/products.js?v=20261030_03"></script>
-  <script src="assets/js/storage.js?v=20261030_03"></script>
+  <script src="assets/js/products.js?v=20261030_04"></script>
+  <script src="assets/js/storage.js?v=20261030_04"></script>
   <script>
     let productsList = [];
     let currentEditingImages = [];
@@ -5545,7 +5545,7 @@ const SUPABASE_CONFIG = ${JSON.stringify({
 
         if (putRes.ok) {
           showToast('🎉 XUẤT BẢN THÀNH CÔNG! Vercel đang cập nhật cho mọi người...', 'success');
-          alert('🎉 XUẤT BẢN THÀNH CÔNG!\\n\\nToàn bộ ảnh dép da thật và giá mới đã được gửi thẳng lên GitHub.\\nVercel đang tự động triển khai cập nhật website.\\n\\nSau khoảng 20 - 30 giây, bất kỳ ai truy cập depnamtuyetnhung.vercel.app trên điện thoại hay máy tính khác sẽ thấy ngay hình ảnh mới!');
+          alert('🎉 XUẤT BẢN THÀNH CÔNG!\n\nToàn bộ ảnh dép da thật và giá mới đã được gửi thẳng lên GitHub.\nVercel đang tự động triển khai cập nhật website.\n\nSau khoảng 20 - 30 giây, bất kỳ ai truy cập depnamtuyetnhung.vercel.app trên điện thoại hay máy tính khác sẽ thấy ngay hình ảnh mới!');
         } else {
           const errData = await putRes.json();
           console.error('Lỗi GitHub API:', errData);
