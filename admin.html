@@ -1370,7 +1370,7 @@
               onclick="addImageFromUrl()" 
               class="px-4 py-2 bg-stone-800 hover:bg-stone-900 text-white font-bold text-xs rounded-xl transition-colors"
             >
-              Thêm Link
+              Thêm Link</button>
     
           </div>
 
@@ -1635,14 +1635,14 @@
             id="btn-clear-token" 
             class="text-[11px] text-stone-400 hover:text-rose-600 underline hidden"
           >
-            Xóa token đã lưu
+            Xóa token đã lưu</button>
   
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" onclick="closeGitHubTokenModal()" class="px-4 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold hover:bg-stone-50">
-              Hủy
+            <button type="button" onclick="closeGitHubTokenModal()" class="px-4 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold hover:bg-stone-50">Hủy</button>
+            <button type="button" onclick="exportProductsFile()" class="px-3.5 py-2.5 rounded-xl border border-stone-300 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold" title="Tải file dự phòng">📥 Tải File</button>
     
             <button type="button" onclick="saveTokenAndPublish()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-md flex items-center gap-1.5">
-              <span>Lưu & Xuất Bản Ngay 🚀</span>
+              <span>Lưu & Xuất Bản Ngay 🚀</span></button>
     
           </div>
         </div>
@@ -1679,7 +1679,7 @@
             onclick="addNewCategoryFromManager()" 
             class="px-4 py-2.5 bg-amber-900 hover:bg-amber-950 text-white font-bold text-xs rounded-xl whitespace-nowrap shadow-xs"
           >
-            + Thêm Mới
+            + Thêm Mới</button>
   
         </div>
       </div>
@@ -2058,8 +2058,8 @@
 
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="assets/js/products.js"></script>
-  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/products.js?v=20261030_03"></script>
+  <script src="assets/js/storage.js?v=20261030_03"></script>
   <script>
     let productsList = [];
     let currentEditingImages = [];
@@ -5110,7 +5110,7 @@ alter publication supabase_realtime add table public.orders;
                 onclick="setPrimaryImage(${idx})" 
                 class="w-full py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] rounded shadow transition-colors"
               >
-                Làm ảnh chính
+                Làm ảnh chính</button>
       
             ` : ''}
             <button 
@@ -5118,7 +5118,7 @@ alter publication supabase_realtime add table public.orders;
               onclick="removeImage(${idx})" 
               class="w-full py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] rounded shadow transition-colors"
             >
-              🗑️ Xóa ảnh
+              🗑️ Xóa ảnh</button>
     
           </div>
         </div>
@@ -5297,6 +5297,7 @@ alter publication supabase_realtime add table public.orders;
     }
 
     function exportProductsFile() {
+      initCategoriesList();
       const exportCats = getExportCategories();
       const code = `/**
  * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Đã cập nhật từ trang quản trị)
@@ -5305,7 +5306,7 @@ const PRODUCTS_DATA = ${JSON.stringify(productsList, null, 2)};
 
 const CATEGORIES = ${JSON.stringify(exportCats, null, 2)};
 
-const STORE_INFO = ${JSON.stringify(STORE_INFO, null, 2)};
+const STORE_INFO = ${JSON.stringify(typeof STORE_INFO !== 'undefined' ? STORE_INFO : {}, null, 2)};
 
 const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
 
@@ -5486,6 +5487,7 @@ const SUPABASE_CONFIG = ${JSON.stringify({
         }
       }
 
+      initCategoriesList();
       const exportCats = getExportCategories();
       const code = `/**
  * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Tự động xuất bản từ Trang Quản Trị)
@@ -5494,7 +5496,7 @@ const PRODUCTS_DATA = ${JSON.stringify(productsList, null, 2)};
 
 const CATEGORIES = ${JSON.stringify(exportCats, null, 2)};
 
-const STORE_INFO = ${JSON.stringify(STORE_INFO, null, 2)};
+const STORE_INFO = ${JSON.stringify(typeof STORE_INFO !== 'undefined' ? STORE_INFO : {}, null, 2)};
 
 const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
 
