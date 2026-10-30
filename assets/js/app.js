@@ -76,20 +76,6 @@ async function startupStorefront() {
   }
 }
 document.addEventListener('DOMContentLoaded', startupStorefront);
-const __dead_code_stub = () => {
-  if (false) { (async () => {
-  if (typeof loadProductsFromStorage === 'function') {
-
-  }
-  await applyHomepageConfig();
-  initCategories();
-  renderProducts();
-  updateCartBadge();
-  setupEventListeners();
-});
-
-} };
-
 // Tự động cập nhật nếu tab khác thay đổi dữ liệu
 window.addEventListener('storage', async () => {
   if (typeof loadProductsFromStorage === 'function') {
@@ -1597,10 +1583,7 @@ async function fetchOrdersFromSupabase(query) {
   if (!url || !anonKey || !url.trim() || !anonKey.trim()) return [];
 
   const cleanQuery = (query || '').toLowerCase().replace(/#/g, '').trim();
-  const cleanPhone = (query || '').replace(/[^0-9]/g, '');
-
-  try {
-  const mapSupabaseRow = (r) => ({
+  const cleanPhone = (query || '').replace(/[^0-9]/g, ''); const mapSupabaseRow = (r) => ({
     orderId: r.order_id,
     name: r.name,
     phone: r.phone,
