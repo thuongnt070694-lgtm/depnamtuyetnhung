@@ -769,20 +769,35 @@ function openQuickView(productId) {
   if (!product) return;
 
   activeQuickViewProduct = product;
-  selectedQuickViewSize = product.sizes[0];
+  currentQvImageIndex = 0;
+
+  const sizes = (Array.isArray(product.sizes) && product.sizes.length > 0) ? product.sizes : [38, 39, 40, 41, 42, 43, 44];
+  selectedQuickViewSize = sizes[0];
 
   const modal = document.getElementById('quick-view-modal');
   const container = document.getElementById('quick-view-content');
   if (!modal || !container) return;
 
-  const discountPercent = Math.round((1 - product.price / product.originalPrice) * 100);
+  const curPrice = product.price || 0;
+  const origPrice = product.originalPrice || curPrice || 1;
+  const discountPercent = origPrice > curPrice ? Math.round((1 - curPrice / origPrice) * 100) : 0;
+  const images = (Array.isArray(product.images) && product.images.length > 0) ? product.images : ['https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80'];
+  const mainImg = images[0];
+  const catName = product.categoryName || product.category || 'Dép Da Nam';
+  const rating = product.rating || 5;
+  const reviews = product.reviewsCount || 1;
+  const colors = (Array.isArray(product.colors) && product.colors.length > 0) ? product.colors : ['Nâu Bò', 'Đen'];
+  const leather = product.leatherType || 'Da bò thật nguyên tấm 100%';
+  const sole = product.soleType || 'Đế cao su đúc nguyên khối chống mòn';
+  const stitching = product.stitching || 'Khâu viền chỉ dù số 8 thủ công';
+  const desc = product.description || 'Mẫu dép da nam may tay thủ công tỉ mỉ tại xưởng Tuyết Nhung.';
 
   container.innerHTML = `
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
       <!-- Ảnh sản phẩm & Bộ sưu tập nhiều góc chụp -->
       <div>
         <div class="relative aspect-square rounded-2xl overflow-hidden bg-stone-100 mb-3 border border-stone-200 group">
-          <img id="qv-main-image" src="${product.images[0]}" alt="${product.name}" class="w-full h-full object-cover transition-all duration-300" />
+          <img id="qv-main-image" src="${mainImg}" alt="${product.name}" class="w-full h-full object-cover transition-all duration-300" />
           
           ${images.length > 1 ? `
             <!-- Nút Prev / Next ảnh -->
@@ -793,14 +808,14 @@ function openQuickView(productId) {
               ▶
             </button>
             <span id="qv-img-indicator" class="absolute bottom-2.5 right-2.5 bg-black/60 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-xs">
-              1 / ${product.images.length}
+              1 / ${images.length}
             </span>
           ` : ''}
         </div>
 
         <!-- Dải ảnh thu nhỏ (Thumbnails) -->
         <div class="flex gap-2 overflow-x-auto pb-1.5" id="qv-thumbnails-container">
-          ${product.images.map((img, i) => `
+          ${images.map((img, i) => `
             <button 
               onclick="switchQvImage(${i})" 
               class="qv-thumb-btn w-16 h-16 rounded-xl overflow-hidden border-2 ${i === 0 ? 'border-amber-800 ring-2 ring-amber-700/40' : 'border-stone-200 opacity-70 hover:opacity-100'} flex-shrink-0 transition-all"
@@ -815,7 +830,7 @@ function openQuickView(productId) {
       <div class="flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold px-2.5 py-1 rounded bg-amber-100 text-amber-900">${product.categoryName}</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded bg-amber-100 text-amber-900">${catName}</span>
             <span class="text-xs text-stone-500">Mã: TN-${product.id.toString().padStart(3, '0')}</span>
           </div>
 
@@ -823,13 +838,13 @@ function openQuickView(productId) {
 
           <div class="flex items-center gap-2 mb-4">
             <div class="flex text-amber-500">★★★★★</div>
-            <span class="text-xs font-semibold text-stone-700">${product.rating}/5.0</span>
-            <span class="text-xs text-stone-400">(${product.reviewsCount} khách hàng tin tưởng đánh giá)</span>
+            <span class="text-xs font-semibold text-stone-700">${rating}/5.0</span>
+            <span class="text-xs text-stone-400">(${reviews} khách hàng tin tưởng đánh giá)</span>
           </div>
 
           <div class="flex items-baseline gap-3 p-3 bg-stone-50 rounded-xl border border-stone-200 mb-4">
-            <span class="text-2xl font-extrabold text-amber-950">${formatCurrency(product.price)}</span>
-            <span class="text-sm text-stone-400 line-through">${formatCurrency(product.originalPrice)}</span>
+            <span class="text-2xl font-extrabold text-amber-950">${formatCurrency(curPrice)}</span>
+            <span class="text-sm text-stone-400 line-through">${formatCurrency(origPrice)}</span>
             <span class="text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded-full">Tiết kiệm ${discountPercent}%</span>
           </div>
 
@@ -837,19 +852,19 @@ function openQuickView(productId) {
           <div class="space-y-2 mb-4 text-xs text-stone-700 bg-amber-50/50 p-3.5 rounded-xl border border-amber-200/60">
             <div class="flex items-start gap-2">
               <span class="font-bold text-amber-900 w-24 flex-shrink-0">Chất liệu da:</span>
-              <span>${product.leatherType}</span>
+              <span>${leather}</span>
             </div>
             <div class="flex items-start gap-2">
               <span class="font-bold text-amber-900 w-24 flex-shrink-0">Loại đế:</span>
-              <span>${product.soleType}</span>
+              <span>${sole}</span>
             </div>
             <div class="flex items-start gap-2">
               <span class="font-bold text-amber-900 w-24 flex-shrink-0">Đường may:</span>
-              <span>${product.stitching}</span>
+              <span>${stitching}</span>
             </div>
           </div>
 
-          <p class="text-stone-600 text-xs mb-4 leading-relaxed">${product.description}</p>
+          <p class="text-stone-600 text-xs mb-4 leading-relaxed">${desc}</p>
 
           <!-- Chọn size -->
           <div class="mb-4">
@@ -858,7 +873,7 @@ function openQuickView(productId) {
               <button onclick="openSizeGuideModal()" class="text-amber-800 hover:underline font-medium">📏 Hướng dẫn đo size chuẩn</button>
             </div>
             <div class="flex flex-wrap gap-2" id="qv-size-group">
-              ${product.sizes.map((s, idx) => `
+              ${sizes.map((s, idx) => `
                 <button 
                   onclick="selectQuickViewSize(${s})"
                   id="qv-size-${s}"
@@ -874,7 +889,7 @@ function openQuickView(productId) {
           <div class="mb-5">
             <span class="text-xs font-bold text-stone-800 block mb-2">Màu sắc:</span>
             <div class="flex gap-2">
-              ${product.colors.map((c, idx) => `
+              ${colors.map((c, idx) => `
                 <span class="text-xs px-3 py-1.5 rounded-md border font-medium ${idx === 0 ? 'border-amber-800 bg-amber-50 text-amber-900 font-bold' : 'border-stone-200 text-stone-600'}">
                   ${c}
                 </span>
@@ -924,12 +939,14 @@ function selectQuickViewSize(size) {
 // Chuyển đổi xem ảnh đa góc trong Quick View
 let currentQvImageIndex = 0;
 function switchQvImage(index) {
-  if (!activeQuickViewProduct || !activeQuickViewProduct.images[index]) return;
+  if (!activeQuickViewProduct) return;
+  const images = (Array.isArray(activeQuickViewProduct.images) && activeQuickViewProduct.images.length > 0) ? activeQuickViewProduct.images : [];
+  if (!images[index]) return;
   currentQvImageIndex = index;
   const mainImg = document.getElementById('qv-main-image');
   const indicator = document.getElementById('qv-img-indicator');
-  if (mainImg) mainImg.src = activeQuickViewProduct.images[index];
-  if (indicator) indicator.innerText = `${index + 1} / ${activeQuickViewProduct.images.length}`;
+  if (mainImg) mainImg.src = images[index];
+  if (indicator) indicator.innerText = `${index + 1} / ${images.length}`;
 
   const thumbs = document.querySelectorAll('.qv-thumb-btn');
   thumbs.forEach((btn, idx) => {
@@ -943,33 +960,36 @@ function switchQvImage(index) {
 
 function nextQvImage() {
   if (!activeQuickViewProduct) return;
-  const nextIdx = (currentQvImageIndex + 1) % activeQuickViewProduct.images.length;
+  const images = (Array.isArray(activeQuickViewProduct.images) && activeQuickViewProduct.images.length > 0) ? activeQuickViewProduct.images : [];
+  if (images.length === 0) return;
+  const nextIdx = (currentQvImageIndex + 1) % images.length;
   switchQvImage(nextIdx);
 }
 
 function prevQvImage() {
   if (!activeQuickViewProduct) return;
-  const prevIdx = (currentQvImageIndex - 1 + activeQuickViewProduct.images.length) % activeQuickViewProduct.images.length;
+  const images = (Array.isArray(activeQuickViewProduct.images) && activeQuickViewProduct.images.length > 0) ? activeQuickViewProduct.images : [];
+  if (images.length === 0) return;
+  const prevIdx = (currentQvImageIndex - 1 + images.length) % images.length;
   switchQvImage(prevIdx);
 }
 
-// Thêm vào giỏ từ Quick View
 function addQuickViewToCart() {
   if (!activeQuickViewProduct) return;
-  addToCart(activeQuickViewProduct, selectedQuickViewSize, activeQuickViewProduct.colors[0], 1);
+  const colors = (Array.isArray(activeQuickViewProduct.colors) && activeQuickViewProduct.colors.length > 0) ? activeQuickViewProduct.colors : ['Nâu Bò'];
+  addToCart(activeQuickViewProduct, selectedQuickViewSize, colors[0], 1);
   closeQuickView();
   openCartDrawer();
 }
 
-// Mua ngay từ Quick View
 function quickViewBuyNow() {
   if (!activeQuickViewProduct) return;
-  addToCart(activeQuickViewProduct, selectedQuickViewSize, activeQuickViewProduct.colors[0], 1);
+  const colors = (Array.isArray(activeQuickViewProduct.colors) && activeQuickViewProduct.colors.length > 0) ? activeQuickViewProduct.colors : ['Nâu Bò'];
+  addToCart(activeQuickViewProduct, selectedQuickViewSize, colors[0], 1);
   closeQuickView();
   openCheckoutModal();
 }
 
-// Đóng Quick View
 function closeQuickView() {
   const modal = document.getElementById('quick-view-modal');
   if (modal) modal.classList.add('hidden');
