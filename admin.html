@@ -1602,6 +1602,15 @@
       </p>
 
       <div class="space-y-4 text-xs">
+<div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-300 text-xs text-emerald-950 space-y-1.5">
+          <div class="flex items-center gap-2 font-bold text-emerald-900">
+            <span>🛡️ BẢO MẬT CẤP DOANH NGHIỆP:</span>
+          </div>
+          <p class="leading-relaxed text-[11px] text-stone-700">
+            Hệ thống đã hỗ trợ <strong>Ẩn hoàn toàn Token trên Vercel</strong>! Bạn chỉ cần thêm biến <code>GITHUB_TOKEN</code> vào <em>Vercel Settings ➔ Environment Variables</em>. Sau khi thêm, khi bấm <em>"Xuất Bản"</em> máy chủ Vercel sẽ tự động gửi thẳng lên GitHub mà <strong>không cần lưu Token ở trình duyệt</strong>, chống lộ 100%!
+          </p>
+        </div>
+        
         <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 space-y-2">
           <p class="font-bold text-amber-950 flex items-center gap-1.5 text-xs">
             <span>👉 3 bước nhanh để lấy mã Token (Mất 20 giây):</span>
@@ -5396,19 +5405,7 @@ const SUPABASE_CONFIG = ${JSON.stringify({
     }
 
     async function publishDirectlyToGitHub() {
-      const token = localStorage.getItem('tuyetnhung_gh_token');
-      if (!token) {
-        openGitHubTokenModal();
-        return;
-      }
-
-      showToast('⏳ Đang kết nối GitHub và xuất bản lên Vercel...', 'info');
-
-      const repo = 'thuongnt070694-lgtm/depnamtuyetnhung';
-      const filePath = 'assets/js/products.js';
-      const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
-
-      // Đọc các giá trị trong form Banner & Xưởng da
+      // 1. Thu thập cấu hình Banner & Xưởng da mới nhất
       if (document.getElementById('banner-img-url')) {
         const bImg = document.getElementById('banner-img-url').value.trim();
         if (bImg) homepageConfig.heroImage = bImg;
@@ -5435,7 +5432,6 @@ const SUPABASE_CONFIG = ${JSON.stringify({
         }
         homepageConfig.heroImageBg = currentBannerBg || 'dark';
 
-        // Tùy chọn ảnh Story 1
         if (document.getElementById('story1-img-fit')) {
           homepageConfig.story1Fit = homepageConfig.storyImage1Fit = document.getElementById('story1-img-fit').value;
         }
@@ -5447,7 +5443,6 @@ const SUPABASE_CONFIG = ${JSON.stringify({
         }
         homepageConfig.story1Bg = homepageConfig.storyImage1Bg = currentStory1Bg || 'dark';
 
-        // Tùy chọn ảnh Story 2
         if (document.getElementById('story2-img-fit')) {
           homepageConfig.story2Fit = homepageConfig.storyImage2Fit = document.getElementById('story2-img-fit').value;
         }
@@ -5459,25 +5454,23 @@ const SUPABASE_CONFIG = ${JSON.stringify({
         }
         homepageConfig.story2Bg = homepageConfig.storyImage2Bg = currentStory2Bg || 'dark';
 
-      // Lưu cài đặt Chatbot
-      if (document.getElementById('chatbot-enabled')) {
-        homepageConfig.chatbotEnabled = document.getElementById('chatbot-enabled').checked;
-      }
-      if (document.getElementById('chatbot-name')) {
-        homepageConfig.chatbotName = document.getElementById('chatbot-name').value.trim() || 'Trợ Lý Ảo Tuyết Nhung';
-      }
-      if (document.getElementById('chatbot-subtitle')) {
-        homepageConfig.chatbotSubtitle = document.getElementById('chatbot-subtitle').value.trim() || '🟢 Trực tuyến 24/7 • Tư vấn tức thì';
-      }
-      if (document.getElementById('chatbot-greeting')) {
-        homepageConfig.chatbotGreeting = document.getElementById('chatbot-greeting').value.trim();
-      }
-      if (document.getElementById('chatbot-sound')) {
-        homepageConfig.chatbotSound = document.getElementById('chatbot-sound').checked;
-      }
+        if (document.getElementById('chatbot-enabled')) {
+          homepageConfig.chatbotEnabled = document.getElementById('chatbot-enabled').checked;
+        }
+        if (document.getElementById('chatbot-name')) {
+          homepageConfig.chatbotName = document.getElementById('chatbot-name').value.trim() || 'Trợ Lý Ảo Tuyết Nhung';
+        }
+        if (document.getElementById('chatbot-subtitle')) {
+          homepageConfig.chatbotSubtitle = document.getElementById('chatbot-subtitle').value.trim() || '🟢 Trực tuyến 24/7 • Tư vấn tức thì';
+        }
+        if (document.getElementById('chatbot-greeting')) {
+          homepageConfig.chatbotGreeting = document.getElementById('chatbot-greeting').value.trim();
+        }
+        if (document.getElementById('chatbot-sound')) {
+          homepageConfig.chatbotSound = document.getElementById('chatbot-sound').checked;
+        }
       }
 
-      // Nếu chưa có ảnh banner hoặc vẫn là ảnh giày sneaker unsplash cũ, tự động chọn ảnh dép da thật TN01
       if (!homepageConfig.heroImage || homepageConfig.heroImage.includes('photo-1603808033192-082d6919d3e1')) {
         if (productsList.length > 0 && productsList[0].images && productsList[0].images[0]) {
           homepageConfig.heroImage = productsList[0].images[0];
@@ -5489,6 +5482,60 @@ const SUPABASE_CONFIG = ${JSON.stringify({
 
       initCategoriesList();
       const exportCats = getExportCategories();
+      const currentAcc = getAdminAccount();
+      const storeInfoData = typeof STORE_INFO !== 'undefined' ? STORE_INFO : {};
+      const sheetsWebhookData = localStorage.getItem('tuyetnhung_sheets_webhook') || '';
+      const supabaseConfigData = {
+        url: localStorage.getItem('tuyetnhung_supabase_url') || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.url : '') || '',
+        anonKey: localStorage.getItem('tuyetnhung_supabase_key') || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.anonKey : '') || ''
+      };
+
+      showToast('⏳ Đang kết nối máy chủ xuất bản an toàn...', 'info');
+
+      // PHƯƠNG ÁN 1: GỬI LÊN VERCEL SERVERLESS BACKEND (BẢO MẬT 100% CẤP DOANH NGHIỆP - ẨN TOKEN HOÀN TOÀN)
+      try {
+        if (window.location.protocol.startsWith('http')) {
+          const apiRes = await fetch('/api/publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              adminPassword: currentAcc.password || 'tuyetnhung2026',
+              productsData: productsList,
+              categories: exportCats,
+              storeInfo: storeInfoData,
+              homepageConfig: homepageConfig,
+              googleSheetsWebhook: sheetsWebhookData,
+              supabaseConfig: supabaseConfigData
+            })
+          });
+
+          if (apiRes.ok) {
+            showToast('🎉 XUẤT BẢN THÀNH CÔNG QUA MÁY CHỦ BẢO MẬT!', 'success');
+            alert('🎉 XUẤT BẢN THÀNH CÔNG BẢO MẬT 100%\n\nToàn bộ sản phẩm và giá mới đã được máy chủ Vercel bí mật gửi thẳng lên GitHub (Không hề lộ Token ở trình duyệt).\nVercel đang tự động triển khai website...\n\nSau khoảng 20 - 30 giây, mọi người truy cập ' + (window.location.hostname || 'depnamtuyetnhung.com') + ' sẽ thấy ngay dữ liệu mới!');
+            return;
+          }
+
+          const apiJson = await apiRes.json().catch(() => ({}));
+          // Nếu backend báo chưa cài đặt GITHUB_TOKEN trên Vercel
+          if (apiJson.needSetup) {
+            console.info('Vercel Backend chưa cài GITHUB_TOKEN trong Environment Variables, chuyển sang chế độ dự phòng.');
+          }
+        }
+      } catch (backendErr) {
+        console.warn('Không thể gọi /api/publish, chuyển sang chế độ dự phòng:', backendErr);
+      }
+
+      // PHƯƠNG ÁN 2: CHẾ ĐỘ DỰ PHÒNG QUA TOKEN TRÌNH DUYỆT (KHI CHƯA CẤU HÌNH VERCEL ENV HOẶC TEST CỤC BỘ)
+      const token = localStorage.getItem('tuyetnhung_gh_token');
+      if (!token) {
+        openGitHubTokenModal();
+        return;
+      }
+
+      const repo = 'thuongnt070694-lgtm/depnamtuyetnhung';
+      const filePath = 'assets/js/products.js';
+      const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+
       const code = `/**
  * Danh sách sản phẩm Dép Nam Thủ Công Tuyết Nhung (Tự động xuất bản từ Trang Quản Trị)
  */
@@ -5496,20 +5543,16 @@ const PRODUCTS_DATA = ${JSON.stringify(productsList, null, 2)};
 
 const CATEGORIES = ${JSON.stringify(exportCats, null, 2)};
 
-const STORE_INFO = ${JSON.stringify(typeof STORE_INFO !== 'undefined' ? STORE_INFO : {}, null, 2)};
+const STORE_INFO = ${JSON.stringify(storeInfoData, null, 2)};
 
 const HOMEPAGE_CONFIG = ${JSON.stringify(homepageConfig, null, 2)};
 
-const GOOGLE_SHEETS_WEBHOOK_URL = ${JSON.stringify(localStorage.getItem('tuyetnhung_sheets_webhook') || '')};
+const GOOGLE_SHEETS_WEBHOOK_URL = ${JSON.stringify(sheetsWebhookData)};
 
-const SUPABASE_CONFIG = ${JSON.stringify({
-  url: localStorage.getItem('tuyetnhung_supabase_url') || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.url : '') || '',
-  anonKey: localStorage.getItem('tuyetnhung_supabase_key') || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.anonKey : '') || ''
-}, null, 2)};
+const SUPABASE_CONFIG = ${JSON.stringify(supabaseConfigData, null, 2)};
 `;
 
       try {
-        // 1. Lấy SHA hiện tại của file
         const getRes = await fetch(apiUrl, {
           headers: {
             'Authorization': `token ${token.trim()}`,
@@ -5522,12 +5565,11 @@ const SUPABASE_CONFIG = ${JSON.stringify({
           const data = await getRes.json();
           sha = data.sha;
         } else if (getRes.status === 401 || getRes.status === 403) {
-          showToast('Mã GitHub Token không hợp lệ hoặc đã hết hạn! Vui lòng dán lại mã mới.', 'error');
+          showToast('Mã GitHub Token không hợp lệ hoặc đã hết hạn!', 'error');
           openGitHubTokenModal();
           return;
         }
 
-        // 2. Ghi đè file products.js mới lên GitHub
         const putRes = await fetch(apiUrl, {
           method: 'PUT',
           headers: {
@@ -5544,17 +5586,11 @@ const SUPABASE_CONFIG = ${JSON.stringify({
         });
 
         if (putRes.ok) {
-          showToast('🎉 XUẤT BẢN THÀNH CÔNG! Vercel đang cập nhật cho mọi người...', 'success');
-          alert('🎉 XUẤT BẢN THÀNH CÔNG!\n\nToàn bộ ảnh dép da thật và giá mới đã được gửi thẳng lên GitHub.\nVercel đang tự động triển khai cập nhật website.\n\nSau khoảng 20 - 30 giây, bất kỳ ai truy cập ' + (window.location.hostname || 'depnamtuyetnhung.com') + ' trên điện thoại hay máy tính khác sẽ thấy ngay hình ảnh mới!');
+          showToast('🎉 XUẤT BẢN THÀNH CÔNG!', 'success');
+          alert('🎉 XUẤT BẢN THÀNH CÔNG!\n\nToàn bộ ảnh dép da thật và giá mới đã được gửi thẳng lên GitHub.\nVercel đang tự động triển khai website.\n\nSau khoảng 20 - 30 giây, bất kỳ ai truy cập ' + (window.location.hostname || 'depnamtuyetnhung.com') + ' trên điện thoại hay máy tính khác sẽ thấy ngay hình ảnh mới!');
         } else {
-          const errData = await putRes.json();
-          console.error('Lỗi GitHub API:', errData);
-          if (putRes.status === 401 || putRes.status === 403) {
-            showToast('Mã Token không có quyền ghi repository! Hãy tạo token có tích quyền "repo".', 'error');
-            openGitHubTokenModal();
-          } else {
-            showToast('Lỗi xuất bản: ' + (errData.message || 'Không thể ghi file'), 'error');
-          }
+          const errData = await putRes.json().catch(() => ({}));
+          showToast('Lỗi xuất bản: ' + (errData.message || 'Không thể ghi file'), 'error');
         }
       } catch (err) {
         console.error('Lỗi kết nối GitHub API:', err);
