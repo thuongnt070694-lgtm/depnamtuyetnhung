@@ -4,7 +4,7 @@
 const PRODUCTS_DATA = [
   {
     "id": 10,
-    "name": "Thưởng mẫu mới",
+    "name": "Thưởng mẫu mới tooken",
     "category": "quai-ngang",
     "categoryName": "Dép Quai Ngang",
     "tag": "Mẫu Mới",
